@@ -15,6 +15,10 @@ int main(int argc, char **argv)
   int count = 0;
   if (ros::ok())
   {
+    std_msgs::String msg;
+
+    //chatter_pub.publish(msg);
+
     loop_rate.sleep();
 
     while (count <5) {
