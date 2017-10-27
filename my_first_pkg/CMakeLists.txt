@@ -122,3 +122,15 @@ include_directories(
 add_executable(beautiful_world_node src/hello_world_node.cpp)
 add_dependencies(beautiful_world_node my_first_pkg_generate_message_cpp)
 target_link_libraries(beautiful_world_node ${catkin_LIBRARIES})
+
+add_executable(test1 src/publish1.cpp)
+add_dependencies(test1 my_first_pkg_generate_message_cpp)
+target_link_libraries(test1 ${catkin_LIBRARIES})
+
+add_executable(test2 src/publish2.cpp)
+add_dependencies(test2 my_first_pkg_generate_message_cpp)
+target_link_libraries(test2 ${catkin_LIBRARIES})
+
+add_executable(receiving src/subscribe.cpp)
+add_dependencies(receiving my_first_pkg_generate_message_cpp)
+target_link_libraries(receiving ${catkin_LIBRARIES})
