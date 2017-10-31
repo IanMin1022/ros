@@ -67,10 +67,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+ DEPENDENCIES
+ std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -103,7 +103,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES my_first_pkg
+  LIBRARIES my_first_pkg
   CATKIN_DEPENDS roscpp std_msgs
   DEPENDS system_lib
 )
@@ -115,7 +115,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include/my_first_pkg
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -131,6 +131,6 @@ add_executable(test2 src/publish2.cpp)
 add_dependencies(test2 my_first_pkg_generate_message_cpp)
 target_link_libraries(test2 ${catkin_LIBRARIES})
 
-add_executable(receiving src/subscribe.cpp)
+add_executable(receiving src/subscribe.cpp src/sub.cpp)
 add_dependencies(receiving my_first_pkg_generate_message_cpp)
 target_link_libraries(receiving ${catkin_LIBRARIES})

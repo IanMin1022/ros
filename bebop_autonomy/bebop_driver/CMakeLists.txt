@@ -44,11 +44,23 @@ catkin_package(
    DEPENDS system_lib libavcodec libavformat libswscale
 )
 
-# roslint
+
+# roslint - bind node files
 set(ROSLINT_CPP_OPTS "--filter=-build/include")
 roslint_cpp(
   src/bebop.cpp
   src/bebop_driver_node.cpp
+  src/bebop_driver_nodelet.cpp
+  src/bebop_video_decoder.cpp
+  include/bebop_driver/bebop.h
+  include/bebop_driver/bebop_driver_nodelet.h
+  include/bebop_driver/bebop_video_decoder.h
+)
+
+set(ROSLINT_CPP_OPTS "--filter=-build/include")
+roslint_cpp(
+  src/bebop.cpp
+  src/bebop_driver_node1.cpp
   src/bebop_driver_nodelet.cpp
   src/bebop_video_decoder.cpp
   include/bebop_driver/bebop.h
@@ -92,9 +104,15 @@ target_link_libraries(bebop_driver_nodelet
   ${catkin_LIBRARIES}
   bebop
 )
-
+# make a excutable nodes
 add_executable(bebop_driver_node src/bebop_driver_node.cpp)
 target_link_libraries(bebop_driver_node
+  ${catkin_LIBRARIES}
+  bebop
+)
+
+add_executable(bebop_driver_node1 src/bebop_driver_node1.cpp)
+target_link_libraries(bebop_driver_node1
   ${catkin_LIBRARIES}
   bebop
 )
