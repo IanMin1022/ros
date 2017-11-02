@@ -11,13 +11,15 @@ class Sub {
 public:
 
   void chatterCallback(const std_msgs::String::ConstPtr& msg);
-  void parameter();
+  void parameter(void);
 	void subscribe(ros::NodeHandle&);
   const char* mm;
+
 private:
   //const std_msgs::String::ConstPtr yas;
 	ros::Subscriber subs;
-
+  double ye = 7;
+  bool enabled = true;
 };
 
 extern Sub* sub;

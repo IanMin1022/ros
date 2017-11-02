@@ -49,7 +49,7 @@ catkin_package(
 set(ROSLINT_CPP_OPTS "--filter=-build/include")
 roslint_cpp(
   src/bebop.cpp
-  src/bebop_driver_node.cpp
+  src/bebop_driver_node_1.cpp
   src/bebop_driver_nodelet.cpp
   src/bebop_video_decoder.cpp
   include/bebop_driver/bebop.h
@@ -60,7 +60,7 @@ roslint_cpp(
 set(ROSLINT_CPP_OPTS "--filter=-build/include")
 roslint_cpp(
   src/bebop.cpp
-  src/bebop_driver_node1.cpp
+  src/bebop_driver_node_2.cpp
   src/bebop_driver_nodelet.cpp
   src/bebop_video_decoder.cpp
   include/bebop_driver/bebop.h
@@ -105,14 +105,14 @@ target_link_libraries(bebop_driver_nodelet
   bebop
 )
 # make a excutable nodes
-add_executable(bebop_driver_node src/bebop_driver_node.cpp)
-target_link_libraries(bebop_driver_node
+add_executable(bebop_driver_node_1 src/bebop_driver_node_1.cpp)
+target_link_libraries(bebop_driver_node_1
   ${catkin_LIBRARIES}
   bebop
 )
 
-add_executable(bebop_driver_node1 src/bebop_driver_node1.cpp)
-target_link_libraries(bebop_driver_node1
+add_executable(bebop_driver_node_2 src/bebop_driver_node_2.cpp)
+target_link_libraries(bebop_driver_node_2
   ${catkin_LIBRARIES}
   bebop
 )

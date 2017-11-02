@@ -1,5 +1,5 @@
 #include "ros/ros.h"
-#include "sub.h"
+#include "my_first_pkg/sub.h"
 #include <cmath>
 #include "std_msgs/String.h"
 #include <stdio.h>
@@ -7,15 +7,21 @@
 
 Sub* sub;
 
-void Sub::chatterCallback(const std_msgs::String::ConstPtr& msg)
-{
-  //yas = msg
-}
-
 void Sub::parameter() {
-  ROS_INFO("%s",mm);
+  //ROS_INFO("%s",mm);
 	//subs = nh.subscribe("chatter1", 100, &Sub::chatterCallback, this);
-	// ROS_INFO("SUBSCRIBED");
+  //const char* jack = mm;
+  //if(mm != NULL) //enabled = true;
+  if(!enabled)
+  {
+    return;
+  }
+  else
+  {
+      ROS_INFO("SUBSCRIBED, %d", ye);
+      enabled = false;
+  }
+
 }
 
 void Sub::subscribe(ros::NodeHandle& nh) {

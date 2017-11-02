@@ -133,49 +133,25 @@ void BebopDriverNodelet::onInit()
   }
 
 // Separte subscrbie depends on each IP
-  if (param_bebop_ip == "192.168.0.18")
-  {
-    cmd_vel_sub_ = nh.subscribe("cmd_vel", 1, &BebopDriverNodelet::CmdVelCallback, this);
-    camera_move_sub_ = nh.subscribe("camera_control", 1, &BebopDriverNodelet::CameraMoveCallback, this);
-    takeoff_sub_ = nh.subscribe("takeoff", 1, &BebopDriverNodelet::TakeoffCallback, this);
-    land_sub_ = nh.subscribe("land", 1, &BebopDriverNodelet::LandCallback, this);
-    reset_sub_ = nh.subscribe("reset", 1, &BebopDriverNodelet::EmergencyCallback, this);
-    flattrim_sub_ = nh.subscribe("flattrim", 1, &BebopDriverNodelet::FlatTrimCallback, this);
-    navigatehome_sub_ = nh.subscribe("autoflight/navigate_home", 1, &BebopDriverNodelet::NavigateHomeCallback, this);
-    start_autoflight_sub_ = nh.subscribe("autoflight/start", 1, &BebopDriverNodelet::StartAutonomousFlightCallback, this);
-    pause_autoflight_sub_ = nh.subscribe("autoflight/pause", 1, &BebopDriverNodelet::PauseAutonomousFlightCallback, this);
-    stop_autoflight_sub_ = nh.subscribe("autoflight/stop", 1, &BebopDriverNodelet::StopAutonomousFlightCallback, this);
-    animation_sub_ = nh.subscribe("flip", 1, &BebopDriverNodelet::FlipAnimationCallback, this);
-    snapshot_sub_ = nh.subscribe("snapshot", 10, &BebopDriverNodelet::TakeSnapshotCallback, this);
-    exposure_sub_ = nh.subscribe("set_exposure", 10, &BebopDriverNodelet::SetExposureCallback, this);
-    toggle_recording_sub_ = nh.subscribe("record", 10, &BebopDriverNodelet::ToggleRecordingCallback, this);
+  cmd_vel_sub_ = nh.subscribe("cmd_vel", 1, &BebopDriverNodelet::CmdVelCallback, this);
+  camera_move_sub_ = nh.subscribe("camera_control", 1, &BebopDriverNodelet::CameraMoveCallback, this);
+  takeoff_sub_ = nh.subscribe("takeoff", 1, &BebopDriverNodelet::TakeoffCallback, this);
+  land_sub_ = nh.subscribe("land", 1, &BebopDriverNodelet::LandCallback, this);
+  reset_sub_ = nh.subscribe("reset", 1, &BebopDriverNodelet::EmergencyCallback, this);
+  flattrim_sub_ = nh.subscribe("flattrim", 1, &BebopDriverNodelet::FlatTrimCallback, this);
+  navigatehome_sub_ = nh.subscribe("autoflight/navigate_home", 1, &BebopDriverNodelet::NavigateHomeCallback, this);
+  start_autoflight_sub_ = nh.subscribe("autoflight/start", 1, &BebopDriverNodelet::StartAutonomousFlightCallback, this);
+  pause_autoflight_sub_ = nh.subscribe("autoflight/pause", 1, &BebopDriverNodelet::PauseAutonomousFlightCallback, this);
+  stop_autoflight_sub_ = nh.subscribe("autoflight/stop", 1, &BebopDriverNodelet::StopAutonomousFlightCallback, this);
+  animation_sub_ = nh.subscribe("flip", 1, &BebopDriverNodelet::FlipAnimationCallback, this);
+  snapshot_sub_ = nh.subscribe("snapshot", 10, &BebopDriverNodelet::TakeSnapshotCallback, this);
+  exposure_sub_ = nh.subscribe("set_exposure", 10, &BebopDriverNodelet::SetExposureCallback, this);
+  toggle_recording_sub_ = nh.subscribe("record", 10, &BebopDriverNodelet::ToggleRecordingCallback, this);
 
-    odom_pub_ = nh.advertise<nav_msgs::Odometry>("odom", 30);
-    camera_joint_pub_ = nh.advertise<sensor_msgs::JointState>("joint_states", 10, true);
-    gps_fix_pub_ = nh.advertise<sensor_msgs::NavSatFix>("fix", 10, true);
-  }
-  else if (param_bebop_ip == "192.168.0.12")
-  {
-    cmd_vel_sub_ = nh.subscribe("cmd_vel1", 1, &BebopDriverNodelet::CmdVelCallback, this);
-    camera_move_sub_ = nh.subscribe("camera_control1", 1, &BebopDriverNodelet::CameraMoveCallback, this);
-    takeoff_sub_ = nh.subscribe("takeoff1", 1, &BebopDriverNodelet::TakeoffCallback, this);
-    land_sub_ = nh.subscribe("land1", 1, &BebopDriverNodelet::LandCallback, this);
-    reset_sub_ = nh.subscribe("reset1", 1, &BebopDriverNodelet::EmergencyCallback, this);
-    flattrim_sub_ = nh.subscribe("flattrim1", 1, &BebopDriverNodelet::FlatTrimCallback, this);
-    navigatehome_sub_ = nh.subscribe("autoflight/navigate_home1", 1, &BebopDriverNodelet::NavigateHomeCallback, this);
-    start_autoflight_sub_ = nh.subscribe("autoflight/start1", 1, &BebopDriverNodelet::StartAutonomousFlightCallback, this);
-    pause_autoflight_sub_ = nh.subscribe("autoflight/pause1", 1, &BebopDriverNodelet::PauseAutonomousFlightCallback, this);
-    stop_autoflight_sub_ = nh.subscribe("autoflight/stop1", 1, &BebopDriverNodelet::StopAutonomousFlightCallback, this);
-    animation_sub_ = nh.subscribe("flip1", 1, &BebopDriverNodelet::FlipAnimationCallback, this);
-    snapshot_sub_ = nh.subscribe("snapshot1", 10, &BebopDriverNodelet::TakeSnapshotCallback, this);
-    exposure_sub_ = nh.subscribe("set_exposure1", 10, &BebopDriverNodelet::SetExposureCallback, this);
-    toggle_recording_sub_ = nh.subscribe("record1", 10, &BebopDriverNodelet::ToggleRecordingCallback, this);
-
-    odom_pub_ = nh.advertise<nav_msgs::Odometry>("odom1", 30);
-    camera_joint_pub_ = nh.advertise<sensor_msgs::JointState>("joint_states1", 10, true);
-    gps_fix_pub_ = nh.advertise<sensor_msgs::NavSatFix>("fix1", 10, true);
-  }
-
+  odom_pub_ = nh.advertise<nav_msgs::Odometry>("odom", 30);
+  camera_joint_pub_ = nh.advertise<sensor_msgs::JointState>("joint_states", 10, true);
+  gps_fix_pub_ = nh.advertise<sensor_msgs::NavSatFix>("fix", 10, true);
+  
   cinfo_manager_ptr_.reset(new camera_info_manager::CameraInfoManager(nh, "bebop_front", param_camera_info_url));
   image_transport_ptr_.reset(new image_transport::ImageTransport(nh));
   image_transport_pub_ = image_transport_ptr_->advertiseCamera("image_raw", 60);

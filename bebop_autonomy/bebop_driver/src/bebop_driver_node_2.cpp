@@ -31,7 +31,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 
 int main(int argc, char* argv[])
 {
-  ros::init(argc, argv, "bebop_driver_node", ros::init_options::NoSigintHandler);
+  ros::init(argc, argv, "bebop_driver_node_2", ros::init_options::NoSigintHandler);
   nodelet::Loader nll;
 
   nodelet::M_string remap(ros::names::getRemappings());
