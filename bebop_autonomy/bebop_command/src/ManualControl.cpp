@@ -16,25 +16,8 @@
 #define DO_TAKEOFF 6
 #define DO_RESET 8
 
-#define FIRST 101
-#define SECOND 102
-#define THIRD 103
-#define FOURTH 104
-
 ManualControl* control;
-/*
-ManualControl::ManualControl() {
-	input->registerKeyListener(this);
-}
 
-ManualControl::~ManualControl() {
-	input->unregisterKeyListener(this);
-	for(auto & el : pub) {
-		el.shutdown();
-	}
-	enabled = false;
-}
-*/
 // 좌우, 앞뒤로 까딱 추가하기
 int Converter(const char* input)
 {
@@ -171,36 +154,30 @@ void ManualControl::advertise_2(ros::NodeHandle& nh) {
 }
 
 void ManualControl::publishVel() {
-//	if(!enabled) return;
-	double des_x = 0, des_y = 0, des_z = 0, des_yaw = 0;
-	double x = 0, y = 0, z = 0, yaw = 0;
-	int sector = 0;
+	// get variables in string and convert it to double
+
 	// 0 <= speed <= 1
+	// change yaw to fit in 0 - 360
 
-	if (yaw >= 0 && yaw < 90) sector = 101;
-	else if (yaw >= 90 && yaw <= 180) sector = 102;
-	else if (yaw >= -180 && yaw < -90) sector = 103;
-	else if (yaw >= -90 && yaw < 0) sector = 104;
+	// x_speed = ( sin(yaw) * x_gap - cos(yaw) * y_gap ) / ( sin(yaw) * cos(yaw - 90) - cos(yaw) * sin(yaw - 90));
+	// y_speed = ( cos(yaw - 90) * y_gap - sin(yaw - 90) * x_gap ) / ( sin(yaw) * cos(yaw - 90) - cos(yaw) * sin(yaw - 90));
+	// ( sin(yaw) * cos(yaw - 90) - cos(yaw) * sin(yaw - 90)) = 1
+	x_speed_old = x_speed;
+	y_speed_old = y_speed;
 
-	switch (sector) {
-		case FIRST:
-					if( des_x > x ) last.linear.x = (yaw / 90 *speed) + ((90-yaw) / yaw * speed);
-					else if( des_x < x ) last.linear.x = -((yaw / 90 *speed) + ((90-yaw) / yaw * speed));
-					else last.linear.x = 0;
+	x_speed = ( sin(yaw) * x_gap - cos(yaw) * y_gap );
+	y_speed = ( cos(yaw - 90) * y_gap - sin(yaw - 90) * x_gap );
 
-					if( input->isKeyDown(SDL_SCANCODE_A) && !input->isKeyDown(SDL_SCANCODE_D) ) last.linear.y = speed;
-					else if( !input->isKeyDown(SDL_SCANCODE_A) && input->isKeyDown(SDL_SCANCODE_D) ) last.linear.y = -speed;
-					break;
-		case SECOND:
-					break;
-		case THIRD:
-					break;
-		case FOURTH:
-					break;
-		default:
-					return;
-	}
+	x_value = P_x_gain * x_gap + D_x_gain * (x_gap - x_gap_old) / dt;
+	y_value = P_y_gain * y_gap + D_y_gain * (y_gap - y_gap_old) / dt;
 
+	x_gap_old = x_gap;
+	y_gap_old = y_gap;
+
+	last.linear.x = x_value;
+	last.linear.y = y_value;
+
+	// give some offset
 	if( des_z > z ) last.linear.z = speed;
 	else if( des_z < z ) last.linear.z = -speed;
 	else last.linear.z = 0;
@@ -210,22 +187,22 @@ void ManualControl::publishVel() {
 	else last.angular.z = 0;
 
 
-	pub[VELOCITY].publish(last);
+	pub_1[VELOCITY].publish(last);
 }
 
 void ManualControl::doMisc_1(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
 		pub_1[LAND].publish(m);
-		ROS_INFO("EXECUTING LAND!!");
+		//ROS_INFO("EXECUTING LAND!!");
 	} else if(type == DO_RESET) {
 		std_msgs::Empty m;
 		pub_1[RESET].publish(m);
-		ROS_INFO("EXECUTING EMERGENCY ROTOR STOP!!");
+		//ROS_INFO("EXECUTING EMERGENCY ROTOR STOP!!");
 	} else if(type == DO_TAKEOFF) {
 		std_msgs::Empty m;
 		pub_1[TAKEOFF].publish(m);
-		ROS_INFO("EXECUTING TAKEOFF!!");
+		//ROS_INFO("EXECUTING TAKEOFF!!");
 	}
 }
 
@@ -233,15 +210,15 @@ void ManualControl::doMisc_2(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
 		pub_2[LAND].publish(m);
-		ROS_INFO("EXECUTING LAND!!");
+		//ROS_INFO("EXECUTING LAND!!");
 	} else if(type == DO_RESET) {
 		std_msgs::Empty m;
 		pub_2[RESET].publish(m);
-		ROS_INFO("EXECUTING EMERGENCY ROTOR STOP!!");
+		//ROS_INFO("EXECUTING EMERGENCY ROTOR STOP!!");
 	} else if(type == DO_TAKEOFF) {
 		std_msgs::Empty m;
 		pub_2[TAKEOFF].publish(m);
-		ROS_INFO("EXECUTING TAKEOFF!!");
+		//ROS_INFO("EXECUTING TAKEOFF!!");
 	}
 }
 

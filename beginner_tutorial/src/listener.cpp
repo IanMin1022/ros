@@ -6,7 +6,9 @@
  */
 void chatterCallback(const std_msgs::String::ConstPtr& msg)
 {
-  ROS_INFO("I heard: [%s]", msg->data.c_str());
+  const char* kudo = msg->data.c_str();
+  double temp = ::atof(kudo);
+  ROS_INFO("I heard: [%f]", temp);
 }
 
 int main(int argc, char **argv)

@@ -82,12 +82,8 @@ int main(int argc, char** argv) {
 		loop_rate.sleep();
 	}
 
-
 	ros::shutdown();
-//	delete window;
-//	delete patroller;
 	delete control;
 	delete stats;
-//delete input;
 	return 0;
 }

@@ -38,6 +38,18 @@ private:
 	bool enabled = true;
 	ros::Publisher pub_1[9];
 	ros::Publisher pub_2[9];
+	double des_x = 0, des_y = 0, des_z = 0, des_yaw = 0;
+	double x = 0, y = 0, z = 0, yaw = 0;
+	double x_gap = 0, y_gap = 0, z_gap = 0, yaw_gap = 0;
+	double x_gap_old = 0, y_gap_old = 0;
+	double x_speed = 0;
+	double y_speed = 0;
+	double x_speed_old = 0;
+	double y_speed_old = 0;
+	double P_x_gain = 0, P_y_gain = 0;
+	double D_x_gain = 0, D_y_gain = 0;
+	double x_value = 0, y_value = 0;
+	double dt = 0.05;
 	double speed = 0.7;
 	double rotSpeed = 0.7;
 	double camX = 0;

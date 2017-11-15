@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
 
 	image_transport::ImageTransport it(nh);
 	image_transport::TransportHints hints("compressed", ros::TransportHints(), local_nh);
-	image_transport::Subscriber sub = it.subscribe("bebop/image_raw", 1, &Window::updateVideoTexture, window, hints);
+	image_transport::Subscriber sub = it.subscribe("bebop_2/image_raw", 1, &Window::updateVideoTexture, window, hints);
 
 	stats->subscribe(nh);
 

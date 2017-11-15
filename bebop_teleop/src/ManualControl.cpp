@@ -111,15 +111,15 @@ geometry_msgs::Twist* ManualControl::getLast() {
 }
 
 void ManualControl::advertise(ros::NodeHandle& nh) {
-	pub[VELOCITY] = nh.advertise<geometry_msgs::Twist>("bebop/cmd_vel", 1);
-	pub[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop/takeoff", 1);
-	pub[LAND] = nh.advertise<std_msgs::Empty>("bebop/land", 1);
-	pub[RESET] = nh.advertise<std_msgs::Empty>("bebop/reset", 1);
-	pub[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop/camera_control", 1);
-	pub[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop/snapshot", 1);
-	pub[RECORD] = nh.advertise<std_msgs::Bool>("bebop/record", 1);
-	pub[FLIP] = nh.advertise<std_msgs::UInt8>("bebop/flip", 1);
-	pub[HOME] = nh.advertise<std_msgs::Bool>("bebop/autoflight/navigate_home", 1);
+	pub[VELOCITY] = nh.advertise<geometry_msgs::Twist>("bebop_2/cmd_vel", 1);
+	pub[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_2/takeoff", 1);
+	pub[LAND] = nh.advertise<std_msgs::Empty>("bebop_2/land", 1);
+	pub[RESET] = nh.advertise<std_msgs::Empty>("bebop_2/reset", 1);
+	pub[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_2/camera_control", 1);
+	pub[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_2/snapshot", 1);
+	pub[RECORD] = nh.advertise<std_msgs::Bool>("bebop_2/record", 1);
+	pub[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_2/flip", 1);
+	pub[HOME] = nh.advertise<std_msgs::Bool>("bebop_2/autoflight/navigate_home", 1);
 }
 
 void ManualControl::toggle() {
