@@ -17,7 +17,7 @@ ManualControl Manual;
 void Command_1(const std_msgs::String::ConstPtr& msg)
 {
   const char* do_it = msg->data.c_str();
-  ROS_INFO("Fisrt node is executed");
+  //ROS_INFO("Fisrt node is executed");
   //Manual.transmit = do_it;
 	control->key_1(do_it);
 }
@@ -25,49 +25,59 @@ void Command_1(const std_msgs::String::ConstPtr& msg)
 void Command_2(const std_msgs::String::ConstPtr& msg)
 {
   const char* do_it = msg->data.c_str();
-  ROS_INFO("Second node is executed");
+  //ROS_INFO("Second node is executed");
 	control->key_2(do_it);
+}
+
+void Script_node_1(const std_msgs::String::ConstPtr& msg)
+{
+  const char* reading = msg->data.c_str();
+
+  std::istringstream devide(reading);
+
+  std::string temp;
+  devide >> temp;
+  int x_1 = ::atof(temp.c_str());
+
+  devide >> temp;
+  int y_1 = ::atof(temp.c_str());
+
+  devide >> temp;
+  int z_1 = ::atof(temp.c_str());
+
+  devide >> temp;
+  int yaw_1 = ::atof(temp.c_str());
+
+  // Check whether x_des moved well or not
+	control.x_des = x_1;
+  control.y_des = y_1;
+  control.z_des = z_1;
+  control.yaw_des = yaw_1;
 }
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "I'm the node master");
 	ros::NodeHandle nh;
-//	ros::NodeHandle local_nh("~");
-
-//	local_nh.param( "font_path", Window::font_path, std::string("/usr/share/fonts/truetype/freefont/FreeSans.ttf") );
-//	local_nh.param( "circle_path", Window::circle_path, std::string("/home/michionlion/catkin_ws/src/bebop_dobob/circle.bmp") );
+  //ros::NodeHandle local_nh("~");
 
 	ros::Subscriber node_1 = nh.subscribe("Command_1", 100, Command_1);
 	ros::Subscriber node_2 = nh.subscribe("Command_2", 100, Command_2);
 
-//	bool fail = false;
-//	input = new Input();
+  // you should check the frequency and how it works depend on the frequency
+  ros::Subscriber script_node_1 = nh.subscribe("script_1", 100, Script_node_1);
+
+  // need to add current coordinates subscriber (a.k.a camera node)
+
 	stats = new StateTracker();
-//	window = new Window(fail);
 	control = new ManualControl();
-//	patroller = new Patroller();
 
 	control->advertise_1(nh);
   control->advertise_2(nh);
-
-//	image_transport::ImageTransport it(nh);
-//	image_transport::TransportHints hints("compressed", ros::TransportHints(), local_nh);
-//	image_transport::Subscriber sub = it.subscribe("bebop/image_raw", 1, &Window::updateVideoTexture, window, hints);
 
 	stats->subscribe(nh);
 
   ros::Rate loop_rate(1);
 
-	// bool pressed;
-	// InputWindow input(pressed);
-	// if(pressed) {
-	// ROS_ERROR("SDL INITIALIZER ERROR");
-	// ros::shutdown();
-	// return -1;
-	// }
-
-
-	// fprintf(stdout, "\nKeys:\nW: forward\tS: backward\nA: left\t\tD: right\nSPACE: up\tLSHIFT: down\nCTRL: land\tRSHIFT: takeoff\nUP: camera up\tDOWN: camera down\nLEFT: rot left\tRIGHT: rot right\nENTER: emergency rotor shutdown\n2: start video\t3: end video\n1: Take a camera snapshot\nUse I, J, K, and L sparingly for arial flips. You can also use '[' and ']' to start and stop autohome navigation.\nEnsure SDL Window is focused for input to be processed!\n");
 	while( ros::ok() ) {
 		ros::spinOnce();
 //	printf("am I working\n" );

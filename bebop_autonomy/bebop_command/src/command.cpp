@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include <string>
-
+#include <iostream>
 #include <sstream>
 
 int main(int argc, char **argv)

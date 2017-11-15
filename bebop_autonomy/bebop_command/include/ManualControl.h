@@ -16,13 +16,7 @@
 
 class ManualControl {
 public:
-	/*
-	ManualControl(void);
-	~ManualControl(void);
-	void toggle(void);
-	bool isEnabled(void);
-	*/
-	void publishVel(void);
+	void position_control_1(const char* transmit);
 	void doMisc_1(short);
 	void doMisc_2(short);
 	void doFlip_1(short);
@@ -31,14 +25,11 @@ public:
 	void advertise_2(ros::NodeHandle&);
 	void key_1(const char* transmit);
 	void key_2(const char* transmit);
-	geometry_msgs::Twist* getLast(void);
-
 
 private:
-	bool enabled = true;
 	ros::Publisher pub_1[9];
 	ros::Publisher pub_2[9];
-	double des_x = 0, des_y = 0, des_z = 0, des_yaw = 0;
+	double x_des = 0, y_des = 0, z_des = 0, yaw_des = 0;
 	double x = 0, y = 0, z = 0, yaw = 0;
 	double x_gap = 0, y_gap = 0, z_gap = 0, yaw_gap = 0;
 	double x_gap_old = 0, y_gap_old = 0;
@@ -52,8 +43,6 @@ private:
 	double dt = 0.05;
 	double speed = 0.7;
 	double rotSpeed = 0.7;
-	double camX = 0;
-	double camY = 0;
 	geometry_msgs::Twist last;
 };
 

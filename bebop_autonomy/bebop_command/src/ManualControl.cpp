@@ -4,10 +4,10 @@
 #include <std_msgs/Bool.h>
 #include <std_msgs/Empty.h>
 #include <std_msgs/UInt8.h>
-//#include <stdio.h>
+#include <string>
+#include <iostream>
+#include <sstream>
 
-#define SPEED_INCREMENT 0.0125
-#define ROTATE_INCREMENT 0.00625
 #define Flip_forward 1
 #define Flip_backword 2
 #define FLip_left 3
@@ -58,6 +58,7 @@ int Converter(const char* input)
 }
 
 void ManualControl::key_1(const char* transmit) {
+	ROS_INFO("Value test : %f", x_des);
 	int flag = Converter(transmit);
 	if(transmit != NULL)
 		switch(flag) {
@@ -125,9 +126,6 @@ void ManualControl::key_2(const char* transmit) {
 		}
 }
 
-geometry_msgs::Twist* ManualControl::getLast() {
-	return &last;
-}
 
 void ManualControl::advertise_1(ros::NodeHandle& nh) {
 	pub_1[VELOCITY] = nh.advertise<geometry_msgs::Twist>("bebop_1/cmd_vel", 1);
@@ -153,8 +151,27 @@ void ManualControl::advertise_2(ros::NodeHandle& nh) {
 	pub_2[HOME] = nh.advertise<std_msgs::Bool>("bebop_2/autoflight/navigate_home", 1);
 }
 
-void ManualControl::publishVel() {
-	// get variables in string and convert it to double
+void ManualControl::position_control_1(const char* transmit) {
+	// Splitting String in 4 sections and converting it to double
+  std::istringstream devide(transmit);
+
+	std::string temp;
+	devide >> temp;
+	x = ::atof(temp.c_str());
+
+	devide >> temp;
+	y = ::atof(temp.c_str());
+
+	devide >> temp;
+	z = ::atof(temp.c_str());
+
+	devide >> temp;
+	yaw = ::atof(temp.c_str());
+
+	x_gap = x_des - x;
+	y_gap = y_des - y;
+	z_gap = z_des - z;
+	yaw_gap = yaw_des - yaw;
 
 	// 0 <= speed <= 1
 	// change yaw to fit in 0 - 360
