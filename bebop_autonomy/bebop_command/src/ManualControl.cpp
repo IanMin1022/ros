@@ -21,25 +21,25 @@ ManualControl* control;
 // 좌우, 앞뒤로 까딱 추가하기
 int Converter(const char* input)
 {
-	char forward = 'f';
-	char backward = 'b';
-	char left = 'e';
-	char right = 'i';
-	char land = 'l';
-	char take_off = 't';
-	if (input[0] == forward)
+	char flip_forward = 'F';
+	char flip_backward = 'B';
+	char flip_left = 'E';
+	char flip_right = 'I';
+	char land = 'L';
+	char take_off = 'T';
+	if (input[5] == flip_forward)
 	{
 		return 1;
 	}
-	else if (input[0] == backward)
+	else if (input[5] == flip_backward)
 	{
 		return 2;
 	}
-	else if (input[1] == left)
+	else if (input[6] == flip_left)
 	{
 		return 3;
 	}
-	else if (input[1] == right)
+	else if (input[6] == flip_right)
 	{
 		return 4;
 	}
@@ -56,13 +56,26 @@ int Converter(const char* input)
 		return 0;
 	}
 }
+/*
+void ManualControl::test() {
 
+	ROS_INFO("%lf", x_des[0]);
+}
+*/
 void ManualControl::key_1(const char* transmit) {
-	ROS_INFO("Value test : %f", x_des);
 	int flag = Converter(transmit);
+
+	std::istringstream devide(transmit);
+
+	// Splitting motion command and time
+	std::string temp;
+  devide >> temp;
+	devide >> temp;
+
+	double motion_timer = ::atof(temp.c_str());
+
 	if(transmit != NULL)
 		switch(flag) {
-
 		case 1:
 			doFlip_1(0);
 			break;
@@ -94,6 +107,7 @@ void ManualControl::key_1(const char* transmit) {
 
 void ManualControl::key_2(const char* transmit) {
 	int flag = Converter(transmit);
+
 	if(transmit != NULL)
 		switch(flag) {
 
@@ -151,27 +165,11 @@ void ManualControl::advertise_2(ros::NodeHandle& nh) {
 	pub_2[HOME] = nh.advertise<std_msgs::Bool>("bebop_2/autoflight/navigate_home", 1);
 }
 
-void ManualControl::position_control_1(const char* transmit) {
-	// Splitting String in 4 sections and converting it to double
-  std::istringstream devide(transmit);
-
-	std::string temp;
-	devide >> temp;
-	x = ::atof(temp.c_str());
-
-	devide >> temp;
-	y = ::atof(temp.c_str());
-
-	devide >> temp;
-	z = ::atof(temp.c_str());
-
-	devide >> temp;
-	yaw = ::atof(temp.c_str());
-
-	x_gap = x_des - x;
-	y_gap = y_des - y;
-	z_gap = z_des - z;
-	yaw_gap = yaw_des - yaw;
+void ManualControl::position_control_1() {
+	x_gap = x_des[0] - x[0];
+	y_gap = y_des[0] - y[0];
+	yaw_gap = yaw_des[0] - yaw[0];
+	z_gap = z_des[0] - z[0];
 
 	// 0 <= speed <= 1
 	// change yaw to fit in 0 - 360
@@ -182,11 +180,17 @@ void ManualControl::position_control_1(const char* transmit) {
 	x_speed_old = x_speed;
 	y_speed_old = y_speed;
 
-	x_speed = ( sin(yaw) * x_gap - cos(yaw) * y_gap );
-	y_speed = ( cos(yaw - 90) * y_gap - sin(yaw - 90) * x_gap );
+	x_speed = ( sin(yaw[0]) * x_gap - cos(yaw[0]) * y_gap );
+	y_speed = ( cos(yaw[0] - 90) * y_gap - sin(yaw[0] - 90) * x_gap );
 
 	x_value = P_x_gain * x_gap + D_x_gain * (x_gap - x_gap_old) / dt;
 	y_value = P_y_gain * y_gap + D_y_gain * (y_gap - y_gap_old) / dt;
+
+	if ( x_value > 1) x_value = 1;
+	else if ( x_value < -1) x_value = -1;
+
+	if ( y_value > 1) x_value = 1;
+	else if ( y_value < -1) x_value = -1;
 
 	x_gap_old = x_gap;
 	y_gap_old = y_gap;
@@ -195,12 +199,12 @@ void ManualControl::position_control_1(const char* transmit) {
 	last.linear.y = y_value;
 
 	// give some offset
-	if( des_z > z ) last.linear.z = speed;
-	else if( des_z < z ) last.linear.z = -speed;
+	if( z_des[0] > z[0] ) last.linear.z = speed;
+	else if( z_des[0] < z[0] ) last.linear.z = -speed;
 	else last.linear.z = 0;
 
-	if( des_yaw > yaw ) last.angular.z = rotSpeed;
-	else if( des_yaw < yaw ) last.angular.z = -rotSpeed;
+	if( yaw_des[0] > yaw[0] ) last.angular.z = rotSpeed;
+	else if( yaw_des[0] < yaw[0] ) last.angular.z = -rotSpeed;
 	else last.angular.z = 0;
 
 

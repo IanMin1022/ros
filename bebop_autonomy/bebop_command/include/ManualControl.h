@@ -16,7 +16,7 @@
 
 class ManualControl {
 public:
-	void position_control_1(const char* transmit);
+	void position_control_1();
 	void doMisc_1(short);
 	void doMisc_2(short);
 	void doFlip_1(short);
@@ -25,12 +25,13 @@ public:
 	void advertise_2(ros::NodeHandle&);
 	void key_1(const char* transmit);
 	void key_2(const char* transmit);
+	double x_des[7], y_des[7], z_des[7], yaw_des[7];
+	double x[7], y[7], z[7], yaw[7];
+//	void test();
 
 private:
 	ros::Publisher pub_1[9];
 	ros::Publisher pub_2[9];
-	double x_des = 0, y_des = 0, z_des = 0, yaw_des = 0;
-	double x = 0, y = 0, z = 0, yaw = 0;
 	double x_gap = 0, y_gap = 0, z_gap = 0, yaw_gap = 0;
 	double x_gap_old = 0, y_gap_old = 0;
 	double x_speed = 0;

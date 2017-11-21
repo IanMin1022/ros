@@ -14,12 +14,13 @@ void chatterCallback(const std_msgs::String::ConstPtr& msg)
   std::istringstream devide(kudo);
 
   std::string subs;
+  double temp[2];
   devide >> subs;
-  double temp1 = ::atof(subs.c_str());
+  temp[0] = ::atof(subs.c_str());
 
   devide >> subs;
-  double temp2 = ::atof(subs.c_str());
-  ROS_INFO("I heard: [%f, %f]", temp1, temp2);
+  temp[1] = ::atof(subs.c_str());
+  if(temp[0] != 0 )  ROS_INFO("I heard: [%f, %f]", temp[0], temp[1]);
 
 
 
