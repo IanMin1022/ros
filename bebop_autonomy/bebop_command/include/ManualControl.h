@@ -38,8 +38,8 @@ private:
 	double y_speed = 0;
 	double x_speed_old = 0;
 	double y_speed_old = 0;
-	double P_x_gain = 0, P_y_gain = 0;
-	double D_x_gain = 0, D_y_gain = 0;
+	double P_x_gain = 0.2, P_y_gain = 0.2;
+	double D_x_gain = 2, D_y_gain = 2;
 	double x_value = 0, y_value = 0;
 	double dt = 0.05;
 	double speed = 0.7;

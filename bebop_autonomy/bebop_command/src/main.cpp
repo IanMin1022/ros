@@ -14,6 +14,8 @@
 
 ManualControl Manual;
 
+bool manner = false;
+
 void Camera_node(const std_msgs::String::ConstPtr& msg)
 {
   // Splitting String in 4 sections and converting it to double
@@ -141,7 +143,8 @@ void Camera_node(const std_msgs::String::ConstPtr& msg)
   control -> z[6] = z_7;
   control -> yaw[6] = yaw_7;
 
-  control -> position_control_1();
+  if ( manner )
+    control -> position_control_1();
 }
 
 void Script_node_1(const std_msgs::String::ConstPtr& msg)
@@ -153,9 +156,11 @@ void Script_node_1(const std_msgs::String::ConstPtr& msg)
   std::string temp;
   devide >> temp;
   double flag = ::atof(temp.c_str());
-  if(flag == 0)
+
+  if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
+    manner = false;
     control-> key_1(do_it);
   }
   else
@@ -172,6 +177,7 @@ void Script_node_1(const std_msgs::String::ConstPtr& msg)
     double yaw = ::atof(temp.c_str());
 
     // Check whether x_des moved well or not
+    manner = true;
   	control -> x_des[0] = x;
     control -> y_des[0] = y;
     control -> z_des[0] = z;

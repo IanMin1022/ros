@@ -14,39 +14,40 @@ int main(int argc, char **argv)
   ros::Rate loop_rate(1);
   loop_rate.sleep();
   // Command is TAKE_OFF LAND FLIP_FORWARD FLIP_BACKWARD FLIP_LEFT FLIP_RIGHT
+  // Make a time function so that you can know the whole function time****
   if (ros::ok())
   {
     ros::spinOnce();
     std_msgs::String send_1;
-
     std::stringstream msg_1;
+
     msg_1 << "TAKE_OFF";
     send_1.data = msg_1.str();
     ROS_INFO("%s", send_1.data.c_str());
     chatter_pub_1.publish(send_1);
     msg_1.str("");
-    ros::Duration(5).sleep();
+    ros::Duration(3).sleep();
 
-    msg_1 << "5 0 0 0";
+    msg_1 << "0 5 0 0";
+    send_1.data = msg_1.str();
+    ROS_INFO("%s", send_1.data.c_str());
+    chatter_pub_1.publish(send_1);
+    msg_1.str("");
+    ros::Duration(1).sleep();
+
+    msg_1 << "0 -5 0 0";
     send_1.data = msg_1.str();
     ROS_INFO("%s", send_1.data.c_str());
     chatter_pub_1.publish(send_1);
     msg_1.str("");
     ros::Duration(2).sleep();
 
-    msg_1 << "-5 0 0 0";
+    msg_1 << "0 5 0 0";
     send_1.data = msg_1.str();
     ROS_INFO("%s", send_1.data.c_str());
     chatter_pub_1.publish(send_1);
     msg_1.str("");
-    ros::Duration(4).sleep();
-
-    msg_1 << "5 0 0 0";
-    send_1.data = msg_1.str();
-    ROS_INFO("%s", send_1.data.c_str());
-    chatter_pub_1.publish(send_1);
-    msg_1.str("");
-    ros::Duration(2).sleep();
+    ros::Duration(1).sleep();
 
     msg_1 << "FLIP_FORWARD";
     send_1.data = msg_1.str();
@@ -54,12 +55,13 @@ int main(int argc, char **argv)
     chatter_pub_1.publish(send_1);
     msg_1.str("");
     ros::Duration(2).sleep();
-
+    
     msg_1 << "LAND";
     send_1.data = msg_1.str();
     ROS_INFO("%s", send_1.data.c_str());
     chatter_pub_1.publish(send_1);
     msg_1.str("");
+    ros::Duration(2).sleep();
   }
 
   return 0;

@@ -55,3 +55,6 @@ target_link_libraries( bebop_command
 
 add_executable(command src/command.cpp)
 target_link_libraries(command ${catkin_LIBRARIES})
+
+add_executable(script src/script.cpp)
+target_link_libraries(script ${catkin_LIBRARIES})

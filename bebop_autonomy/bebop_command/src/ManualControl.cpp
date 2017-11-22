@@ -94,10 +94,12 @@ void ManualControl::key_1(const char* transmit) {
 
 		case DO_LAND:
 			doMisc_1(DO_LAND);
+			ROS_INFO("I'm landing");
 			break;
 
 		case DO_TAKEOFF:
 			doMisc_1(DO_TAKEOFF);
+			ROS_INFO("I'm taking off");
 			break;
 
 		default:
@@ -189,9 +191,10 @@ void ManualControl::position_control_1() {
 	if ( x_value > 1) x_value = 1;
 	else if ( x_value < -1) x_value = -1;
 
-	if ( y_value > 1) x_value = 1;
-	else if ( y_value < -1) x_value = -1;
-
+	if ( y_value > 1) y_value = 1;
+	else if ( y_value < -1) y_value = -1;
+	ROS_INFO(" check value :::::: %f ", y_value);
+	//ROS_INFO(" real value :::::: %f ", D_y_gain * (y_gap - y_gap_old) / dt);
 	x_gap_old = x_gap;
 	y_gap_old = y_gap;
 
