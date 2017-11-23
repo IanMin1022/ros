@@ -414,8 +414,8 @@ void ManualControl::position_control_1() {
 	// y_speed = ( cos(yaw - 90) * y_gap - sin(yaw - 90) * x_gap ) / ( sin(yaw) * cos(yaw - 90) - cos(yaw) * sin(yaw - 90));
 	// ( sin(yaw) * cos(yaw - 90) - cos(yaw) * sin(yaw - 90)) = 1
 
-	x_speed[0] = ( sin(Deg2Pi(yaw[0] + 90)) * x_gap[0] - cos(Deg2Pi(yaw[0] + 90)) * y_gap[0] );
-	y_speed[0] = ( cos(Deg2Pi(yaw[0])) * y_gap[0] - sin(Deg2Pi(yaw[0])) * x_gap[0] );
+	x_speed[0] = ( sin(Deg2Pi(yaw[0])) * x_gap[0] - cos(Deg2Pi(yaw[0])) * y_gap[0] );
+	y_speed[0] = ( cos(Deg2Pi(yaw[0] - 90)) * y_gap[0] - sin(Deg2Pi(yaw[0] - 90)) * x_gap[0] );
 
 	x_value = P_x_gain * x_speed[0] + D_x_gain * (x_speed[0] - x_speed_old[0]) / dt;
 	y_value = P_y_gain * y_speed[0] + D_y_gain * (y_speed[0] - y_speed_old[0]) / dt;
@@ -429,9 +429,9 @@ void ManualControl::position_control_1() {
 
 	x_speed_old[0] = x_speed[0];
 	y_speed_old[0] = y_speed[0];
-
-	last.linear.x = x_value;
-	last.linear.y = y_value;
+	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
+	last.linear.x = x_value; // which acts like y_value;
+	last.linear.y = y_value; // which acts like x_value;
 
 	// give some offset
 	if( z_des[0] > z[0] ) last.linear.z = speed;
