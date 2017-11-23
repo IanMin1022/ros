@@ -45,7 +45,7 @@ link_directories(${SDL2_LIBRARY_DIRS}
 	${catkin_LIBRARY_DIRS})
 
 
-add_executable( bebop_command src/ManualControl.cpp src/StateTracker.cpp src/main.cpp)
+add_executable( bebop_command src/ManualControl.cpp src/StateTracker.cpp src/Script_subscriber.cpp src/main.cpp )
 
 target_link_libraries( bebop_command
 	${SDL2_LIBRARIES}
@@ -53,8 +53,8 @@ target_link_libraries( bebop_command
 	${catkin_LIBRARIES}
 )
 
-add_executable(command src/command.cpp)
-target_link_libraries(command ${catkin_LIBRARIES})
+add_executable( script_1 src/first_script.cpp src/Script_publisher.cpp )
+target_link_libraries( script_1 ${catkin_LIBRARIES} )
 
-add_executable(script src/script.cpp)
-target_link_libraries(script ${catkin_LIBRARIES})
+add_executable( camera src/Camera.cpp )
+target_link_libraries( camera ${catkin_LIBRARIES} )

@@ -1,15 +1,10 @@
+#include "ros/ros.h"
+#include "std_msgs/String.h"
 #include "ManualControl.h"
-#include "Script_subscriber.h"
-#include "StateTracker.h"
-#include <geometry_msgs/Twist.h>
-#include <ros/ros.h>
-#include <std_msgs/String.h>
-#include <std_msgs/Bool.h>
-#include <std_msgs/Empty.h>
-#include <std_msgs/UInt8.h>
-#include <stdio.h>
-#include <string.h>
-
+#include <string>
+#include <iostream>
+#include <sstream>
+/*
 void Camera_node(const std_msgs::String::ConstPtr& msg)
 {
   // Splitting String in 4 sections and converting it to double
@@ -140,39 +135,36 @@ void Camera_node(const std_msgs::String::ConstPtr& msg)
   if ( subscriber->manner )
     control -> position_control_1();
 }
+*/
+int main(int argc, char **argv)
+{
+  ros::init(argc, argv, "Script");
+  ros::NodeHandle nh;
 
-int main(int argc, char** argv) {
-	ros::init(argc, argv, "node_master");
-	ros::NodeHandle nh;
-  //ros::NodeHandle local_nh("~");
+  ros::Publisher chatter_pub_1 = nh.advertise<std_msgs::String>("Camera", 1000);
 
-	ros::Subscriber camera_node = nh.subscribe("Camera", 1000, Camera_node);
+  std_msgs::String script_1;
 
-  // you should check the frequency and how it works depend on the frequency
+  std_msgs::String script_send_1;
 
-  // need to add current coordinates subscriber (a.k.a camera node)
-	stats = new StateTracker();
-	control = new ManualControl();
-  subscriber = new Script_subscriber();
-
-	control->advertise_1(nh);
-  control->advertise_2(nh);
-
-  subscriber->subscribe(nh);
-	stats->subscribe(nh);
+  std::stringstream transfer_1;
 
   ros::Rate loop_rate(100);
 
-	while( ros::ok() ) {
-		ros::spinOnce();
+  while (ros::ok())
+  {
+    ros::spinOnce();
+    std_msgs::String send_1;
 
-		// ROS_INFO( "STATS: Batt: %d%% Wifi: %d GPS: %s\nGPS: (Latitude: %0.6f Longitude: %0.6f)\nVELX: %0.3f VELY: %0.3f VELZ: %0.3f", stats->getBattery(), stats->getWifiStrength(), stats->hasFix() ? "Has Fix" : "No Fix", stats->getLatitude(), stats->getLongitude(), stats->getXVelocity(), stats->getYVelocity(), stats->getZVelocity() );
-		loop_rate.sleep();
-	}
+    std::stringstream msg_1;
+    msg_1 << "0 0 0 0";
+    send_1.data = msg_1.str();
+    ROS_INFO("%s", send_1.data.c_str());
+    chatter_pub_1.publish(send_1);
+    msg_1.str("");
 
-	ros::shutdown();
-  delete subscriber;
-	delete control;
-	delete stats;
-	return 0;
+    loop_rate.sleep();
+  }
+
+  return 0;
 }

@@ -12,7 +12,7 @@ void chatterCallback(const std_msgs::String::ConstPtr& msg)
 {
   const char* kudo = msg->data.c_str();
   std::istringstream devide(kudo);
-
+  //ROS_INFO("works");
   std::string subs;
   double temp[2];
   devide >> subs;
@@ -20,7 +20,7 @@ void chatterCallback(const std_msgs::String::ConstPtr& msg)
 
   devide >> subs;
   temp[1] = ::atof(subs.c_str());
-  if(temp[0] != 0 )  ROS_INFO("I heard: [%f, %f]", temp[0], temp[1]);
+  if(temp[0] == 0 )  ROS_INFO("I heard: [%f, %f]", temp[0], temp[1]);
 
 
 
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
    * is the number of messages that will be buffered up before beginning to throw
    * away the oldest ones.
    */
-  ros::Subscriber sub = n.subscribe("chatter", 10, chatterCallback);
+  ros::Subscriber sub = n.subscribe("Script_1", 10, chatterCallback);
 
   /**
    * ros::spin() will enter a loop, pumping callbacks.  With this version, all
