@@ -22,6 +22,8 @@
 
 ManualControl* control;
 
+int flip_time_1 = 7, flip_time_2 = 7, flip_time_3 = 7, flip_time_4 = 7, flip_time_5 = 7, flip_time_6 = 7, flip_time_7 = 7;
+
 void Motion_timer(const ros::TimerEvent& event) {
 	if ( control->SideFlag_1 ) {
 		control->LeftNRight_1(control->motion_counter);
@@ -84,6 +86,48 @@ void Motion_timer(const ros::TimerEvent& event) {
 		control->UpDownFlag_1 || control->UpDownFlag_2 || control->UpDownFlag_3 || control->UpDownFlag_4 ||
 			control->UpDownFlag_5 || control->UpDownFlag_6 || control->UpDownFlag_7 ) control->motion_counter++;
 	else control->motion_counter = 0;
+
+	if ( flip_time_1 < 7)
+	{
+		if ( flip_time_1 == 6) subscriber->manner_1 = true;
+		flip_time_1++;
+	}
+
+	if ( flip_time_2 < 7)
+	{
+		if ( flip_time_2 == 6) subscriber->manner_2 = true;
+		flip_time_2++;
+	}
+
+	if ( flip_time_3 < 7)
+	{
+		if ( flip_time_3 == 6) subscriber->manner_3 = true;
+		flip_time_3++;
+	}
+
+	if ( flip_time_4 < 7)
+	{
+		if ( flip_time_4 == 6) subscriber->manner_4 = true;
+		flip_time_4++;
+	}
+
+	if ( flip_time_5 < 7)
+	{
+		if ( flip_time_5 == 6) subscriber->manner_5 = true;
+		flip_time_5++;
+	}
+
+	if ( flip_time_6 < 7)
+	{
+		if ( flip_time_6 == 6) subscriber->manner_6 = true;
+		flip_time_6++;
+	}
+
+	if ( flip_time_7 < 7)
+	{
+		if ( flip_time_7 == 6) subscriber->manner_7 = true;
+		flip_time_7++;
+	}
 }
 
 // 좌우, 앞뒤로 까딱 추가하기
@@ -652,42 +696,56 @@ void ManualControl::doFlip_1(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_1[FLIP].publish(m);
+	
+	flip_time_1 = 0 ;
 }
 
 void ManualControl::doFlip_2(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_2[FLIP].publish(m);
+
+	flip_time_2 = 0 ;
 }
 
 void ManualControl::doFlip_3(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_3[FLIP].publish(m);
+
+	flip_time_3 = 0 ;
 }
 
 void ManualControl::doFlip_4(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_4[FLIP].publish(m);
+
+	flip_time_4 = 0 ;
 }
 
 void ManualControl::doFlip_5(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_5[FLIP].publish(m);
+
+	flip_time_5 = 0 ;
 }
 
 void ManualControl::doFlip_6(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_6[FLIP].publish(m);
+
+	flip_time_6 = 0 ;
 }
 
 void ManualControl::doFlip_7(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_7[FLIP].publish(m);
+
+	flip_time_7 = 0 ;
 }
 
 void ManualControl::LeftNRight_1(short count) {
@@ -874,6 +932,7 @@ void ManualControl::UpDown_4(short count) {
 		pub_4[VELOCITY].publish(motion);
 		UpDownFlag_4 = false;
 		subscriber->manner_4 = true;
+	}
 }
 
 void ManualControl::UpDown_5(short count) {

@@ -31,14 +31,14 @@ int main(int argc, char **argv)
     script -> script_7("TAKE_OFF");
     script -> timer(5);
 
-    script -> script_1("UPDOWN");
-    script -> script_2("UPDOWN");
-    script -> script_3("UPDOWN");
-    script -> script_4("UPDOWN");
-    script -> script_5("UPDOWN");
-    script -> script_6("UPDOWN");
-    script -> script_7("UPDOWN");
-    script -> timer(6);
+    script -> script_1("FLIP_FORWARD");
+    script -> script_2("FLIP_FORWARD");
+    script -> script_3("FLIP_FORWARD");
+    script -> script_4("FLIP_FORWARD");
+    script -> script_5("FLIP_FORWARD");
+    script -> script_6("UFLIP_FORWARDPDOWN");
+    script -> script_7("FLIP_FORWARD");
+    script -> timer(10);
 
     script -> script_1("SIDE");
     script -> script_2("SIDE");
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
     script -> script_5("SIDE");
     script -> script_6("SIDE");
     script -> script_7("SIDE");
-    script -> timer(7);
+    script -> timer(15);
 
     script -> script_1("LAND");
     script -> script_2("LAND");
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     script -> script_5("LAND");
     script -> script_6("LAND");
     script -> script_7("LAND");
-    script -> timer(9);
+    script -> timer(20);
 
 
   }
