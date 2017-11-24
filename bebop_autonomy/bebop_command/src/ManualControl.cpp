@@ -149,7 +149,7 @@ int Converter(const char* input) {
 	else if (input[6] == flip_left)	{
 		return 3;
 	}
-	else if (input[6] == flip_right){
+	else if (input[6] == flip_right) {
 		return 4;
 	}
 	else if (input[0] == land) {
@@ -696,7 +696,7 @@ void ManualControl::doFlip_1(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_1[FLIP].publish(m);
-	
+
 	flip_time_1 = 0 ;
 }
 

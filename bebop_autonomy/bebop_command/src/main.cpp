@@ -136,8 +136,7 @@ void Camera_node(const std_msgs::String::ConstPtr& msg) {
   control -> z[6] = z_7;
   control -> yaw[6] = yaw_7;
 
-  if ( subscriber->manner_1 )
-    control->position_control_1();
+  if ( subscriber->manner_1 ) control->position_control_1();
 }
 
 int main(int argc, char** argv) {

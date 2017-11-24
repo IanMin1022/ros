@@ -24,6 +24,8 @@ public:
   std_msgs::String send;
   std::stringstream msg;
 
+  int stop = 0;
+
 private:
 
 };

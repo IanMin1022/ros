@@ -21,6 +21,7 @@ void Script::advertise(ros::NodeHandle& nh) {
 void Script::timer(float input_time) {
   float time_gap = input_time - old_time;
   old_time = input_time;
+
   ros::Duration(time_gap).sleep();
 }
 
