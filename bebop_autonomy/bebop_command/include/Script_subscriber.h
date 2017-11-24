@@ -19,7 +19,7 @@ public:
   void Script_node_5(const std_msgs::String::ConstPtr&);
   void Script_node_6(const std_msgs::String::ConstPtr&);
   void Script_node_7(const std_msgs::String::ConstPtr&);
-  bool manner = false;
+  bool manner_1 = false, manner_2 = false, manner_3 = false, manner_4 = false, manner_5 = false, manner_6 = false, manner_7 = false;
 
 private:
   ros::Subscriber sub[7];

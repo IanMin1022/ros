@@ -10,8 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void Camera_node(const std_msgs::String::ConstPtr& msg)
-{
+void Camera_node(const std_msgs::String::ConstPtr& msg) {
   // Splitting String in 4 sections and converting it to double
   const char* reading = msg->data.c_str();
 
@@ -137,28 +136,28 @@ void Camera_node(const std_msgs::String::ConstPtr& msg)
   control -> z[6] = z_7;
   control -> yaw[6] = yaw_7;
 
-  if ( subscriber->manner )
-    control -> position_control_1();
+  if ( subscriber->manner_1 )
+    control->position_control_1();
 }
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "node_master");
 	ros::NodeHandle nh;
   //ros::NodeHandle local_nh("~");
-
+  ros::Timer CheckTime = nh.createTimer(ros::Duration(0.3), Motion_timer);
 	ros::Subscriber camera_node = nh.subscribe("Camera", 1000, Camera_node);
 
   // you should check the frequency and how it works depend on the frequency
-
   // need to add current coordinates subscriber (a.k.a camera node)
+
 	stats = new StateTracker();
 	control = new ManualControl();
   subscriber = new Script_subscriber();
 
-	control->advertise_1(nh);
-  control->advertise_2(nh);
+	control->advertise(nh);
 
   subscriber->subscribe(nh);
+
 	stats->subscribe(nh);
 
   ros::Rate loop_rate(100);
