@@ -143,7 +143,7 @@ int main(int argc, char** argv) {
 	ros::init(argc, argv, "node_master");
 	ros::NodeHandle nh;
   //ros::NodeHandle local_nh("~");
-  ros::Timer CheckTime = nh.createTimer(ros::Duration(0.3), Motion_timer);
+  ros::Timer CheckTime = nh.createTimer(ros::Duration(0.4), Motion_timer);
 	ros::Subscriber camera_node = nh.subscribe("Camera", 1000, Camera_node);
 
   // you should check the frequency and how it works depend on the frequency

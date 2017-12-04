@@ -22,111 +22,69 @@
 
 ManualControl* control;
 
-int flip_time_1 = 7, flip_time_2 = 7, flip_time_3 = 7, flip_time_4 = 7, flip_time_5 = 7, flip_time_6 = 7, flip_time_7 = 7;
-
 void Motion_timer(const ros::TimerEvent& event) {
-	if ( control->SideFlag_1 ) {
-		control->LeftNRight_1(control->motion_counter);
+	if ( control->SideFlag ) {
+		if ( control->SideFlag_1 ) {
+			control->LeftNRight_1(control->side_counter);
+		}
+
+		if ( control->SideFlag_2 ) {
+			control->LeftNRight_2(control->side_counter);
+		}
+
+		if ( control->SideFlag_3 ) {
+			control->LeftNRight_3(control->side_counter);
+		}
+
+		if ( control->SideFlag_4 ) {
+			control->LeftNRight_4(control->side_counter);
+		}
+
+		if ( control->SideFlag_5 ) {
+			control->LeftNRight_5(control->side_counter);
+		}
+
+		if ( control->SideFlag_6 ) {
+			control->LeftNRight_6(control->side_counter);
+		}
+
+		if ( control->SideFlag_7 ) {
+			control->LeftNRight_7(control->side_counter);
+		}
+
+		control->side_counter++;
 	}
 
-	if ( control->SideFlag_2 ) {
-		control->LeftNRight_2(control->motion_counter);
-	}
+	if ( control->UpDownFlag ) {
+		if ( control->UpDownFlag_1 ) {
+			control->UpDown_1(control->updown_counter);
+		}
 
-	if ( control->SideFlag_3 ) {
-		control->LeftNRight_3(control->motion_counter);
-	}
+		if ( control->UpDownFlag_2 ) {
+			control->UpDown_2(control->updown_counter);
+		}
 
-	if ( control->SideFlag_4 ) {
-		control->LeftNRight_4(control->motion_counter);
-	}
+		if ( control->UpDownFlag_3 ) {
+			control->UpDown_3(control->updown_counter);
+		}
 
-	if ( control->SideFlag_5 ) {
-		control->LeftNRight_5(control->motion_counter);
-	}
+		if ( control->UpDownFlag_4 ) {
+			control->UpDown_4(control->updown_counter);
+		}
 
-	if ( control->SideFlag_6 ) {
-		control->LeftNRight_6(control->motion_counter);
-	}
+		if ( control->UpDownFlag_5 ) {
+			control->UpDown_5(control->updown_counter);
+		}
 
-	if ( control->SideFlag_7 ) {
-		control->LeftNRight_7(control->motion_counter);
-	}
+		if ( control->UpDownFlag_6 ) {
+			control->UpDown_6(control->updown_counter);
+		}
 
-	if ( control->UpDownFlag_1 ) {
-		control->UpDown_1(control->motion_counter);
-	}
+		if ( control->UpDownFlag_7 ) {
+			control->UpDown_7(control->updown_counter);
+		}
 
-	if ( control->UpDownFlag_2 ) {
-		control->UpDown_2(control->motion_counter);
-	}
-
-	if ( control->UpDownFlag_3 ) {
-		control->UpDown_3(control->motion_counter);
-	}
-
-	if ( control->UpDownFlag_4 ) {
-		control->UpDown_4(control->motion_counter);
-	}
-
-	if ( control->UpDownFlag_5 ) {
-		control->UpDown_5(control->motion_counter);
-	}
-
-	if ( control->UpDownFlag_6 ) {
-		control->UpDown_6(control->motion_counter);
-	}
-
-	if ( control->UpDownFlag_7 ) {
-		control->UpDown_7(control->motion_counter);
-	}
-
-	if ( control->SideFlag_1 || control->SideFlag_2 || control->SideFlag_3 || control->SideFlag_4 ||
-		control->SideFlag_5 || control->SideFlag_6 || control->SideFlag_7 ||
-		control->UpDownFlag_1 || control->UpDownFlag_2 || control->UpDownFlag_3 || control->UpDownFlag_4 ||
-			control->UpDownFlag_5 || control->UpDownFlag_6 || control->UpDownFlag_7 ) control->motion_counter++;
-	else control->motion_counter = 0;
-
-	if ( flip_time_1 < 7)
-	{
-		if ( flip_time_1 == 6) subscriber->manner_1 = true;
-		flip_time_1++;
-	}
-
-	if ( flip_time_2 < 7)
-	{
-		if ( flip_time_2 == 6) subscriber->manner_2 = true;
-		flip_time_2++;
-	}
-
-	if ( flip_time_3 < 7)
-	{
-		if ( flip_time_3 == 6) subscriber->manner_3 = true;
-		flip_time_3++;
-	}
-
-	if ( flip_time_4 < 7)
-	{
-		if ( flip_time_4 == 6) subscriber->manner_4 = true;
-		flip_time_4++;
-	}
-
-	if ( flip_time_5 < 7)
-	{
-		if ( flip_time_5 == 6) subscriber->manner_5 = true;
-		flip_time_5++;
-	}
-
-	if ( flip_time_6 < 7)
-	{
-		if ( flip_time_6 == 6) subscriber->manner_6 = true;
-		flip_time_6++;
-	}
-
-	if ( flip_time_7 < 7)
-	{
-		if ( flip_time_7 == 6) subscriber->manner_7 = true;
-		flip_time_7++;
+		control->updown_counter++;
 	}
 }
 
@@ -203,11 +161,15 @@ void ManualControl::key_1(const char* transmit) {
 			break;
 
 		case SIDE:
+			control->SideFlag = true;
 			control->SideFlag_1 = true;
+			control->side_counter = 0;
 			break;
 
 		case UPDOWN:
+			control->UpDownFlag = true;
 			control->UpDownFlag_1 = true;
+			control->updown_counter = 0;
 			break;
 
 		default:
@@ -246,11 +208,15 @@ void ManualControl::key_2(const char* transmit) {
 			break;
 
 		case SIDE:
+			control->SideFlag = true;
 			control->SideFlag_2 = true;
+			control->side_counter = 0;
 			break;
 
 		case UPDOWN:
+			control->UpDownFlag = true;
 			control->UpDownFlag_2 = true;
+			control->updown_counter = 0;
 			break;
 
 		default:
@@ -289,11 +255,15 @@ void ManualControl::key_3(const char* transmit) {
 			break;
 
 		case SIDE:
+			control->SideFlag = true;
 			control->SideFlag_3 = true;
+			control->side_counter = 0;
 			break;
 
 		case UPDOWN:
+			control->UpDownFlag = true;
 			control->UpDownFlag_3 = true;
+			control->updown_counter = 0;
 			break;
 
 		default:
@@ -332,11 +302,15 @@ void ManualControl::key_4(const char* transmit) {
 			break;
 
 		case SIDE:
+			control->SideFlag = true;
 			control->SideFlag_4 = true;
+			control->side_counter = 0;
 			break;
 
 		case UPDOWN:
+			control->UpDownFlag = true;
 			control->UpDownFlag_4 = true;
+			control->updown_counter = 0;
 			break;
 
 		default:
@@ -375,11 +349,15 @@ void ManualControl::key_5(const char* transmit) {
 			break;
 
 		case SIDE:
+			control->SideFlag = true;
 			control->SideFlag_5 = true;
+			control->side_counter = 0;
 			break;
 
 		case UPDOWN:
+			control->UpDownFlag = true;
 			control->UpDownFlag_5 = true;
+			control->updown_counter = 0;
 			break;
 
 		default:
@@ -418,11 +396,15 @@ void ManualControl::key_6(const char* transmit) {
 			break;
 
 		case SIDE:
+			control->SideFlag = true;
 			control->SideFlag_6 = true;
+			control->side_counter = 0;
 			break;
 
 		case UPDOWN:
+			control->UpDownFlag = true;
 			control->UpDownFlag_6 = true;
+			control->updown_counter = 0;
 			break;
 
 		default:
@@ -461,11 +443,15 @@ void ManualControl::key_7(const char* transmit) {
 			break;
 
 		case SIDE:
+			control->SideFlag = true;
 			control->SideFlag_7 = true;
+			control->side_counter = 0;
 			break;
 
 		case UPDOWN:
+			control->UpDownFlag = true;
 			control->UpDownFlag_7 = true;
+			control->updown_counter = 0;
 			break;
 
 		default:
@@ -553,7 +539,7 @@ void ManualControl::position_control_1() {
 
 	// 0 <= speed <= 1
 	// change yaw to fit in 0 - 360
-
+	//ROS_INFO("works");
 	x_speed[0] = ( sin(Deg2Pi(yaw[0])) * x_gap[0] - cos(Deg2Pi(yaw[0])) * y_gap[0] );
 	y_speed[0] = ( cos(Deg2Pi(yaw[0] - 90)) * y_gap[0] - sin(Deg2Pi(yaw[0] - 90)) * x_gap[0] );
 
@@ -583,13 +569,13 @@ void ManualControl::position_control_1() {
 	else if( yaw_des[0] < yaw[0] ) last.angular.z = -rotSpeed;
 	else last.angular.z = 0;
 
-
 	pub_1[VELOCITY].publish(last);
 }
 
 void ManualControl::doMisc_1(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
+		subscriber->manner_1 = false;
 		pub_1[LAND].publish(m);
 	}
 	else if(type == DO_RESET) {
@@ -605,6 +591,7 @@ void ManualControl::doMisc_1(short type) {
 void ManualControl::doMisc_2(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
+		subscriber->manner_2 = false;
 		pub_2[LAND].publish(m);
 	}
 	else if(type == DO_RESET) {
@@ -620,6 +607,7 @@ void ManualControl::doMisc_2(short type) {
 void ManualControl::doMisc_3(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
+		subscriber->manner_3 = false;
 		pub_3[LAND].publish(m);
 	}
 	else if(type == DO_RESET) {
@@ -635,6 +623,7 @@ void ManualControl::doMisc_3(short type) {
 void ManualControl::doMisc_4(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
+		subscriber->manner_4 = false;
 		pub_4[LAND].publish(m);
 	}
 	else if(type == DO_RESET) {
@@ -650,6 +639,7 @@ void ManualControl::doMisc_4(short type) {
 void ManualControl::doMisc_5(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
+		subscriber->manner_5 = false;
 		pub_5[LAND].publish(m);
 	}
 	else if(type == DO_RESET) {
@@ -665,6 +655,7 @@ void ManualControl::doMisc_5(short type) {
 void ManualControl::doMisc_6(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
+		subscriber->manner_6 = false;
 		pub_6[LAND].publish(m);
 	}
 	else if(type == DO_RESET) {
@@ -680,6 +671,7 @@ void ManualControl::doMisc_6(short type) {
 void ManualControl::doMisc_7(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
+		subscriber->manner_7 = false;
 		pub_7[LAND].publish(m);
 	}
 	else if(type == DO_RESET) {
@@ -696,64 +688,54 @@ void ManualControl::doFlip_1(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_1[FLIP].publish(m);
-
-	flip_time_1 = 0 ;
 }
 
 void ManualControl::doFlip_2(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_2[FLIP].publish(m);
-
-	flip_time_2 = 0 ;
 }
 
 void ManualControl::doFlip_3(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_3[FLIP].publish(m);
-
-	flip_time_3 = 0 ;
 }
 
 void ManualControl::doFlip_4(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_4[FLIP].publish(m);
-
-	flip_time_4 = 0 ;
 }
 
 void ManualControl::doFlip_5(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_5[FLIP].publish(m);
-
-	flip_time_5 = 0 ;
 }
 
 void ManualControl::doFlip_6(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_6[FLIP].publish(m);
-
-	flip_time_6 = 0 ;
 }
 
 void ManualControl::doFlip_7(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_7[FLIP].publish(m);
-
-	flip_time_7 = 0 ;
 }
 
 void ManualControl::LeftNRight_1(short count) {
 	if ( count == 0)	{
-		motion.angular.z = 0.1;
+		motion.angular.z = 0;
 		pub_1[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.angular.z = 0.1;
+		pub_1[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.angular.z = -0.1;
 		pub_1[VELOCITY].publish(motion);
 	}
@@ -761,16 +743,19 @@ void ManualControl::LeftNRight_1(short count) {
 		motion.angular.z = 0;
 		pub_1[VELOCITY].publish(motion);
 		SideFlag_1 = false;
-		subscriber->manner_1 = true;
 	}
 }
 
 void ManualControl::LeftNRight_2(short count) {
 	if ( count == 0)	{
-		motion.angular.z = 0.1;
+		motion.angular.z = 0;
 		pub_2[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.angular.z = 0.1;
+		pub_2[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.angular.z = -0.1;
 		pub_2[VELOCITY].publish(motion);
 	}
@@ -778,16 +763,19 @@ void ManualControl::LeftNRight_2(short count) {
 		motion.angular.z = 0;
 		pub_2[VELOCITY].publish(motion);
 		SideFlag_2 = false;
-		subscriber->manner_2 = true;
 	}
 }
 
 void ManualControl::LeftNRight_3(short count) {
 	if ( count == 0)	{
-		motion.angular.z = 0.1;
+		motion.angular.z = 0;
 		pub_3[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.angular.z = 0.1;
+		pub_3[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.angular.z = -0.1;
 		pub_3[VELOCITY].publish(motion);
 	}
@@ -795,16 +783,19 @@ void ManualControl::LeftNRight_3(short count) {
 		motion.angular.z = 0;
 		pub_3[VELOCITY].publish(motion);
 		SideFlag_3 = false;
-		subscriber->manner_3 = true;
 	}
 }
 
 void ManualControl::LeftNRight_4(short count) {
 	if ( count == 0)	{
-		motion.angular.z = 0.1;
+		motion.angular.z = 0;
 		pub_4[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.angular.z = 0.1;
+		pub_4[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.angular.z = -0.1;
 		pub_4[VELOCITY].publish(motion);
 	}
@@ -812,16 +803,19 @@ void ManualControl::LeftNRight_4(short count) {
 		motion.angular.z = 0;
 		pub_4[VELOCITY].publish(motion);
 		SideFlag_4 = false;
-		subscriber->manner_4 = true;
 	}
 }
 
 void ManualControl::LeftNRight_5(short count) {
 	if ( count == 0)	{
-		motion.angular.z = 0.1;
+		motion.angular.z = 0;
 		pub_5[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.angular.z = 0.1;
+		pub_5[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.angular.z = -0.1;
 		pub_5[VELOCITY].publish(motion);
 	}
@@ -829,16 +823,19 @@ void ManualControl::LeftNRight_5(short count) {
 		motion.angular.z = 0;
 		pub_5[VELOCITY].publish(motion);
 		SideFlag_5 = false;
-		subscriber->manner_5 = true;
 	}
 }
 
 void ManualControl::LeftNRight_6(short count) {
 	if ( count == 0)	{
-		motion.angular.z = 0.1;
+		motion.angular.z = 0;
 		pub_6[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.angular.z = 0.1;
+		pub_6[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.angular.z = -0.1;
 		pub_6[VELOCITY].publish(motion);
 	}
@@ -846,16 +843,19 @@ void ManualControl::LeftNRight_6(short count) {
 		motion.angular.z = 0;
 		pub_6[VELOCITY].publish(motion);
 		SideFlag_6 = false;
-		subscriber->manner_6 = true;
 	}
 }
 
 void ManualControl::LeftNRight_7(short count) {
 	if ( count == 0)	{
-		motion.angular.z = 0.1;
+		motion.angular.z = 0;
 		pub_7[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.angular.z = 0.1;
+		pub_7[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.angular.z = -0.1;
 		pub_7[VELOCITY].publish(motion);
 	}
@@ -863,33 +863,43 @@ void ManualControl::LeftNRight_7(short count) {
 		motion.angular.z = 0;
 		pub_7[VELOCITY].publish(motion);
 		SideFlag_7 = false;
-		subscriber->manner_7 = true;
 	}
 }
 
 void ManualControl::UpDown_1(short count) {
 	if ( count == 0)	{
-		motion.linear.x = 0.1;
+		motion.linear.x = 0;
 		pub_1[VELOCITY].publish(motion);
+		ROS_INFO("1");
 	}
 	else if ( count == 1)	{
+		motion.linear.x = 0.1;
+		pub_1[VELOCITY].publish(motion);
+		ROS_INFO("2");
+	}
+	else if ( count == 2)	{
 		motion.linear.x = -0.1;
 		pub_1[VELOCITY].publish(motion);
+		ROS_INFO("3");
 	}
 	else	{
 		motion.linear.x = 0;
 		pub_1[VELOCITY].publish(motion);
+		ROS_INFO("4");
 		UpDownFlag_1 = false;
-		subscriber->manner_1 = true;
 	}
 }
 
 void ManualControl::UpDown_2(short count) {
 	if ( count == 0)	{
-		motion.linear.x = 0.1;
+		motion.linear.x = 0;
 		pub_2[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.linear.x = 0.1;
+		pub_2[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.linear.x = -0.1;
 		pub_2[VELOCITY].publish(motion);
 	}
@@ -897,16 +907,19 @@ void ManualControl::UpDown_2(short count) {
 		motion.linear.x = 0;
 		pub_2[VELOCITY].publish(motion);
 		UpDownFlag_2 = false;
-		subscriber->manner_2 = true;
 	}
 }
 
 void ManualControl::UpDown_3(short count) {
 	if ( count == 0)	{
-		motion.linear.x = 0.1;
+		motion.linear.x = 0;
 		pub_3[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.linear.x = 0.1;
+		pub_3[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.linear.x = -0.1;
 		pub_3[VELOCITY].publish(motion);
 	}
@@ -914,16 +927,19 @@ void ManualControl::UpDown_3(short count) {
 		motion.linear.x = 0;
 		pub_3[VELOCITY].publish(motion);
 		UpDownFlag_3 = false;
-		subscriber->manner_3 = true;
 	}
 }
 
 void ManualControl::UpDown_4(short count) {
 	if ( count == 0)	{
-		motion.linear.x = 0.1;
+		motion.linear.x = 0;
 		pub_4[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.linear.x = 0.1;
+		pub_4[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.linear.x = -0.1;
 		pub_4[VELOCITY].publish(motion);
 	}
@@ -931,16 +947,19 @@ void ManualControl::UpDown_4(short count) {
 		motion.linear.x = 0;
 		pub_4[VELOCITY].publish(motion);
 		UpDownFlag_4 = false;
-		subscriber->manner_4 = true;
 	}
 }
 
 void ManualControl::UpDown_5(short count) {
 	if ( count == 0)	{
-		motion.linear.x = 0.1;
+		motion.linear.x = 0;
 		pub_5[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.linear.x = 0.1;
+		pub_5[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.linear.x = -0.1;
 		pub_5[VELOCITY].publish(motion);
 	}
@@ -948,16 +967,19 @@ void ManualControl::UpDown_5(short count) {
 		motion.linear.x = 0;
 		pub_5[VELOCITY].publish(motion);
 		UpDownFlag_5 = false;
-		subscriber->manner_5 = true;
 	}
 }
 
 void ManualControl::UpDown_6(short count) {
 	if ( count == 0)	{
-		motion.linear.x = 0.1;
+		motion.linear.x = 0;
 		pub_6[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.linear.x = 0.1;
+		pub_6[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.linear.x = -0.1;
 		pub_6[VELOCITY].publish(motion);
 	}
@@ -965,16 +987,19 @@ void ManualControl::UpDown_6(short count) {
 		motion.linear.x = 0;
 		pub_6[VELOCITY].publish(motion);
 		UpDownFlag_6 = false;
-		subscriber->manner_6 = true;
 	}
 }
 
 void ManualControl::UpDown_7(short count) {
 	if ( count == 0)	{
-		motion.linear.x = 0.1;
+		motion.linear.x = 0;
 		pub_7[VELOCITY].publish(motion);
 	}
 	else if ( count == 1)	{
+		motion.linear.x = 0.1;
+		pub_7[VELOCITY].publish(motion);
+	}
+	else if ( count == 2)	{
 		motion.linear.x = -0.1;
 		pub_7[VELOCITY].publish(motion);
 	}
@@ -982,6 +1007,5 @@ void ManualControl::UpDown_7(short count) {
 		motion.linear.x = 0;
 		pub_7[VELOCITY].publish(motion);
 		UpDownFlag_7 = false;
-		subscriber->manner_7 = true;
 	}
 }

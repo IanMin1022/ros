@@ -64,7 +64,8 @@ public:
 
 	double x_des[7], y_des[7], z_des[7], yaw_des[7];
 	double x[7], y[7], z[7], yaw[7];
-	int motion_counter = 0;
+	int side_counter = 0, updown_counter = 0;
+	bool SideFlag = false, UpDownFlag = false;
 	bool SideFlag_1 = false, SideFlag_2 = false, SideFlag_3 = false, SideFlag_4 = false, SideFlag_5 = false, SideFlag_6 = false, SideFlag_7 = false;
 	bool UpDownFlag_1 = false, UpDownFlag_2 = false, UpDownFlag_3 = false, UpDownFlag_4 = false, UpDownFlag_5 = false, UpDownFlag_6 = false, UpDownFlag_7 = false;
 

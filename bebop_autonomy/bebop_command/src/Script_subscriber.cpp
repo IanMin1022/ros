@@ -40,7 +40,6 @@ void Script_subscriber::Script_node_1(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    subscriber -> manner_1 = false;
     control-> key_1(do_it);
   }
   else
@@ -78,7 +77,6 @@ void Script_subscriber::Script_node_2(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    subscriber -> manner_2 = false;
     control-> key_2(do_it);
   }
   else
@@ -116,7 +114,6 @@ void Script_subscriber::Script_node_3(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    subscriber -> manner_3 = false;
     control-> key_3(do_it);
   }
   else
@@ -154,7 +151,6 @@ void Script_subscriber::Script_node_4(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    subscriber -> manner_4 = false;
     control-> key_4(do_it);
   }
   else
@@ -192,7 +188,6 @@ void Script_subscriber::Script_node_5(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    subscriber -> manner_5 = false;
     control-> key_5(do_it);
   }
   else
@@ -230,7 +225,6 @@ void Script_subscriber::Script_node_6(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    subscriber -> manner_6 = false;
     control-> key_6(do_it);
   }
   else
@@ -268,7 +262,6 @@ void Script_subscriber::Script_node_7(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    subscriber -> manner_7 = false;
     control-> key_7(do_it);
   }
   else

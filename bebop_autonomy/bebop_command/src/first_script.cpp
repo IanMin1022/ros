@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     ros::spinOnce();
 
     script -> script_1("TAKE_OFF");
-    //script -> script_2("TAKE_OFF");
+    script -> script_2("TAKE_OFF");
     script -> script_3("TAKE_OFF");
     script -> script_4("TAKE_OFF");
     script -> script_5("TAKE_OFF");
@@ -31,23 +31,23 @@ int main(int argc, char **argv)
     script -> script_7("TAKE_OFF");
     script -> timer(5);
 
-    //script -> script_1("FLIP_FORWARD");
-    script -> script_2("TAKE_OFF");
+    script -> script_1("0 0 0 0");
+    script -> script_2("UPDOWN");
     script -> script_3("FLIP_FORWARD");
     script -> script_4("FLIP_FORWARD");
     script -> script_5("FLIP_FORWARD");
     script -> script_6("FLIP_FORWARD");
     script -> script_7("FLIP_FORWARD");
-    script -> timer(10);
+    script -> timer(8);
 
-    script -> script_1("LAND");
-    //script -> script_2("SIDE");
+    script -> script_1("UPDOWN");
+    script -> script_2("SIDE");
     script -> script_3("SIDE");
     script -> script_4("SIDE");
     script -> script_5("SIDE");
     script -> script_6("SIDE");
     script -> script_7("SIDE");
-    script -> timer(15);
+    script -> timer(10);
 
     script -> script_1("LAND");
     script -> script_2("LAND");
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     script -> script_5("LAND");
     script -> script_6("LAND");
     script -> script_7("LAND");
-    script -> timer(20);
+    script -> timer(12);
 
 
   }
