@@ -9,11 +9,9 @@
 Script_subscriber* subscriber;
 
 Script_subscriber::Script_subscriber() {
-
 }
 
 Script_subscriber::~Script_subscriber() {
-
 }
 
 void Script_subscriber::subscribe(ros::NodeHandle& nh)

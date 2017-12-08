@@ -1,170 +1,118 @@
 #include "ros/ros.h"
-#include "std_msgs/String.h"
+#include "geometry_msgs/PoseStamped.h"
 #include "ManualControl.h"
-#include <string>
-#include <iostream>
-#include <sstream>
-/*
-void Camera_node(const std_msgs::String::ConstPtr& msg)
-{
-  // Splitting String in 4 sections and converting it to double
-  const char* reading = msg->data.c_str();
+#include "Script_subscriber.h"
+#include "Camera.h"
 
-  std::istringstream devide(reading);
+Camera_node* camera_node;
 
-  std::string temp;
-  devide >> temp;
-  double x_1 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double y_1 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double z_1 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double yaw_1 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double x_2 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double y_2 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double z_2 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double yaw_2 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double x_3 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double y_3 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double z_3 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double yaw_3 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double x_4 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double y_4 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double z_4 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double yaw_4 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double x_5 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double y_5 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double z_5 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double yaw_5 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double x_6 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double y_6 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double z_6 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double yaw_6 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double x_7 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double y_7 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double z_7 = ::atof(temp.c_str());
-
-  devide >> temp;
-  double yaw_7 = ::atof(temp.c_str());
-
-  control -> x[0] = x_1;
-  control -> y[0] = y_1;
-  control -> z[0] = z_1;
-  control -> yaw[0] = yaw_1;
-
-  control -> x[1] = x_2;
-  control -> y[1] = y_2;
-  control -> z[1] = z_2;
-  control -> yaw[1] = yaw_2;
-
-  control -> x[2] = x_3;
-  control -> y[2] = y_3;
-  control -> z[2] = z_3;
-  control -> yaw[2] = yaw_3;
-
-  control -> x[3] = x_4;
-  control -> y[3] = y_4;
-  control -> z[3] = z_4;
-  control -> yaw[3] = yaw_4;
-
-  control -> x[4] = x_5;
-  control -> y[4] = y_5;
-  control -> z[4] = z_5;
-  control -> yaw[4] = yaw_5;
-
-  control -> x[5] = x_6;
-  control -> y[5] = y_6;
-  control -> z[5] = z_6;
-  control -> yaw[5] = yaw_6;
-
-  control -> x[6] = x_7;
-  control -> y[6] = y_7;
-  control -> z[6] = z_7;
-  control -> yaw[6] = yaw_7;
-
-  if ( subscriber->manner )
-    control -> position_control_1();
+Camera_node::Camera_node() {
 }
-*/
-int main(int argc, char **argv)
+
+Camera_node::~Camera_node() {
+}
+
+double Rad2Deg(double rad) {
+	return rad * 180 /  M_PI;
+}
+
+double toEulerAngle(double x, double y, double z, double w) {
+  /*
+	// roll (x-axis rotation)
+	double sinr = +2.0 * (q.w() * q.x() + q.y() * q.z());
+	double cosr = +1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y());
+	roll = atan2(sinr, cosr);
+
+	// pitch (y-axis rotation)
+	double sinp = +2.0 * (q.w() * q.y() - q.z() * q.x());
+	if (fabs(sinp) >= 1)
+		pitch = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+	else
+		pitch = asin(sinp);
+  */
+	// yaw (z-axis rotation)
+	double siny = +2.0 * (y * w - x * z);
+	double cosy = +1.0 - 2.0 * (y * y + z * z);
+
+	double result = Rad2Deg(atan2(siny, cosy)) + 90;
+
+	if ( result >= 0) return result;
+	else {
+		if ( result < 0 ) return result + 360;
+		else return result + 90;
+	}
+}
+
+void Camera_node::Reading_camera_1(const geometry_msgs::PoseStamped& msg) {
+    control->x[0] = msg.pose.position.x;
+    control->y[0] = msg.pose.position.z;
+    control->z[0] = msg.pose.position.y;
+		// 0~180 => 0~180, 180~360 => -180~0
+    control->yaw[0] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
+		if ( subscriber->manner_1 ) control->position_control_1();
+}
+
+void Camera_node::Reading_camera_2(const geometry_msgs::PoseStamped& msg) {
+    control->x[1] = msg.pose.position.x;
+    control->y[1] = msg.pose.position.z;
+    control->z[1] = msg.pose.position.y;
+		// 0~180 => 0~180, 180~360 => -180~0
+    control->yaw[1] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
+		if ( subscriber->manner_2 ) control->position_control_2();
+}
+
+void Camera_node::Reading_camera_3(const geometry_msgs::PoseStamped& msg) {
+    control->x[2] = msg.pose.position.x;
+    control->y[2] = msg.pose.position.z;
+    control->z[2] = msg.pose.position.y;
+		// 0~180 => 0~180, 180~360 => -180~0
+    control->yaw[2] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
+		if ( subscriber->manner_3 ) control->position_control_3();
+}
+
+void Camera_node::Reading_camera_4(const geometry_msgs::PoseStamped& msg) {
+    control->x[3] = msg.pose.position.x;
+    control->y[3] = msg.pose.position.z;
+    control->z[3] = msg.pose.position.y;
+		// 0~180 => 0~180, 180~360 => -180~0
+    control->yaw[3] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
+		if ( subscriber->manner_4 ) control->position_control_4();
+}
+
+void Camera_node::Reading_camera_5(const geometry_msgs::PoseStamped& msg) {
+    control->x[4] = msg.pose.position.x;
+    control->y[4] = msg.pose.position.z;
+    control->z[4] = msg.pose.position.y;
+		// 0~180 => 0~180, 180~360 => -180~0
+    control->yaw[4] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
+		if ( subscriber->manner_5 ) control->position_control_5();
+}
+
+void Camera_node::Reading_camera_6(const geometry_msgs::PoseStamped& msg) {
+    control->x[5] = msg.pose.position.x;
+    control->y[5] = msg.pose.position.z;
+    control->z[5] = msg.pose.position.y;
+		// 0~180 => 0~180, 180~360 => -180~0
+    control->yaw[5] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
+		if ( subscriber->manner_6 ) control->position_control_6();
+}
+
+void Camera_node::Reading_camera_7(const geometry_msgs::PoseStamped& msg) {
+    control->x[6] = msg.pose.position.x;
+    control->y[6] = msg.pose.position.z;
+    control->z[6] = msg.pose.position.y;
+		// 0~180 => 0~180, 180~360 => -180~0
+    control->yaw[6] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
+		if ( subscriber->manner_7 ) control->position_control_7();
+}
+
+void Camera_node::subscribe(ros::NodeHandle& nh)
 {
-  ros::init(argc, argv, "Script");
-  ros::NodeHandle nh;
-
-  ros::Publisher chatter_pub_1 = nh.advertise<std_msgs::String>("Camera", 1000);
-
-  std_msgs::String script_1;
-
-  std_msgs::String script_send_1;
-
-  std::stringstream transfer_1;
-
-  ros::Rate loop_rate(100);
-
-  while (ros::ok())
-  {
-    ros::spinOnce();
-    std_msgs::String send_1;
-
-    std::stringstream msg_1;
-    msg_1 << "0 0 0 0";
-    send_1.data = msg_1.str();
-    ROS_INFO("%s", send_1.data.c_str());
-    chatter_pub_1.publish(send_1);
-    msg_1.str("");
-
-    loop_rate.sleep();
-  }
-
-  return 0;
+  sub[0] = nh.subscribe("/vrpn_client_node/Drone_01/pose", 100, &Camera_node::Reading_camera_1, this);
+  sub[1] = nh.subscribe("/vrpn_client_node/Drone_02/pose", 100, &Camera_node::Reading_camera_2, this);
+  sub[2] = nh.subscribe("/vrpn_client_node/Drone_03/pose", 100, &Camera_node::Reading_camera_3, this);
+  sub[3] = nh.subscribe("/vrpn_client_node/Drone_04/pose", 100, &Camera_node::Reading_camera_4, this);
+  sub[4] = nh.subscribe("/vrpn_client_node/Drone_05/pose", 100, &Camera_node::Reading_camera_5, this);
+  sub[5] = nh.subscribe("/vrpn_client_node/Drone_06/pose", 100, &Camera_node::Reading_camera_6, this);
+  sub[6] = nh.subscribe("/vrpn_client_node/Drone_07/pose", 100, &Camera_node::Reading_camera_7, this);
 }

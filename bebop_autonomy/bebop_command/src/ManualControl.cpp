@@ -20,6 +20,21 @@
 #define SIDE 10
 #define UPDOWN 11
 
+#define SPEED_X_MAX 0.5
+#define SPEED_Y_MAX 0.5
+#define SPEED_Z_MAX 0.5
+#define SPEED_YAW_MAX 0.5
+
+#define P_x_gain 0.2
+#define P_y_gain 0.2
+#define P_z_gain 0.2
+#define P_yaw_gain 0.2
+#define D_x_gain 0.2
+#define D_y_gain 0.2
+#define D_z_gain 0.2
+#define D_yaw_gain 0.2
+#define dt 0.05
+
 ManualControl* control;
 
 void Motion_timer(const ros::TimerEvent& event) {
@@ -127,7 +142,7 @@ int Converter(const char* input) {
 	}
 }
 
-double Deg2Pi(double deg) {
+double Deg2Rad(double deg) {
 	return deg * M_PI / 180;
 }
 
@@ -530,7 +545,7 @@ void ManualControl::advertise(ros::NodeHandle& nh) {
 	pub_7[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_7/flip", 1);
 	pub_7[HOME] = nh.advertise<std_msgs::Bool>("bebop_7/autoflight/navigate_home", 1);
 }
-
+// horizontal axis is x, vertical axis is y.
 void ManualControl::position_control_1() {
 	x_gap[0] = x_des[0] - x[0];
 	y_gap[0] = y_des[0] - y[0];
@@ -539,37 +554,279 @@ void ManualControl::position_control_1() {
 
 	// 0 <= speed <= 1
 	// change yaw to fit in 0 - 360
-	//ROS_INFO("works");
-	x_speed[0] = ( sin(Deg2Pi(yaw[0])) * x_gap[0] - cos(Deg2Pi(yaw[0])) * y_gap[0] );
-	y_speed[0] = ( cos(Deg2Pi(yaw[0] - 90)) * y_gap[0] - sin(Deg2Pi(yaw[0] - 90)) * x_gap[0] );
+	x_speed[0] = ( sin(Deg2Rad(yaw[0])) * x_gap[0] - cos(Deg2Rad(yaw[0])) * y_gap[0] );
+	y_speed[0] = ( cos(Deg2Rad(yaw[0] - 90)) * y_gap[0] - sin(Deg2Rad(yaw[0] - 90)) * x_gap[0] );
 
-	x_value = P_x_gain * x_speed[0] + D_x_gain * (x_speed[0] - x_speed_old[0]) / dt;
-	y_value = P_y_gain * y_speed[0] + D_y_gain * (y_speed[0] - y_speed_old[0]) / dt;
+	double x_value = P_x_gain * x_speed[0] + D_x_gain * (x_speed[0] - x_speed_old[0]) / dt;
+	double y_value = P_y_gain * y_speed[0] + D_y_gain * (y_speed[0] - y_speed_old[0]) / dt;
+	double z_value = P_z_gain * z_gap[0] + D_z_gain * (z_gap[0] - z_gap_old[0]) / dt;
+	double yaw_value = P_yaw_gain * yaw_gap[0] + D_yaw_gain * (yaw_gap[0] - yaw_gap_old[0]) / dt;
 
-	if ( x_value > 1) x_value = 1;
-	else if ( x_value < -1) x_value = -1;
-	//ROS_INFO(" x value :::::: %f ", x_value);
-	if ( y_value > 1) y_value = 1;
-	else if ( y_value < -1) y_value = -1;
-	//ROS_INFO(" y value :::::: %f ", y_value);
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	ROS_INFO("x speed is %f", x_value);
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	ROS_INFO("y speed is %f", y_value);
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	ROS_INFO("z speed is %f", z_value);
+	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
+	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+	ROS_INFO("yaw speed is %f", yaw_value);
 
 	x_speed_old[0] = x_speed[0];
 	y_speed_old[0] = y_speed[0];
+	z_gap_old[0] = z_gap[0];
+	yaw_gap_old[0] = yaw_gap[0];
 
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = x_value; // which acts like y_value;
-	last.linear.y = y_value; // which acts like x_value;
-
-	// give some offset
-	if( z_des[0] > z[0] ) last.linear.z = speed;
-	else if( z_des[0] < z[0] ) last.linear.z = -speed;
-	else last.linear.z = 0;
-
-	if( yaw_des[0] > yaw[0] ) last.angular.z = rotSpeed;
-	else if( yaw_des[0] < yaw[0] ) last.angular.z = -rotSpeed;
-	else last.angular.z = 0;
+	last.linear.x = y_value; // which acts like y_value;
+	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.z = z_value;
+	last.angular.z = yaw_value;
 
 	pub_1[VELOCITY].publish(last);
+}
+
+void ManualControl::position_control_2() {
+	x_gap[1] = x_des[1] - x[1];
+	y_gap[1] = y_des[1] - y[1];
+	z_gap[1] = z_des[1] - z[1];
+	yaw_gap[1] = yaw_des[1] - yaw[1];
+
+	x_speed[1] = ( sin(Deg2Rad(yaw[1])) * x_gap[1] - cos(Deg2Rad(yaw[1])) * y_gap[1] );
+	y_speed[1] = ( cos(Deg2Rad(yaw[1] - 90)) * y_gap[1] - sin(Deg2Rad(yaw[1] - 90)) * x_gap[1] );
+
+	double x_value = P_x_gain * x_speed[1] + D_x_gain * (x_speed[1] - x_speed_old[1]) / dt;
+	double y_value = P_y_gain * y_speed[1] + D_y_gain * (y_speed[1] - y_speed_old[1]) / dt;
+	double z_value = P_z_gain * z_gap[1] + D_z_gain * (z_gap[1] - z_gap_old[1]) / dt;
+	double yaw_value = P_yaw_gain * yaw_gap[1] + D_yaw_gain * (yaw_gap[1] - yaw_gap_old[1]) / dt;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+
+	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
+	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+
+	x_speed_old[1] = x_speed[1];
+	y_speed_old[1] = y_speed[1];
+	z_gap_old[1] = z_gap[1];
+	yaw_gap_old[1] = yaw_gap[1];
+
+	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
+	last.linear.x = y_value; // which acts like y_value;
+	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.z = z_value;
+	last.angular.z = yaw_value;
+
+	pub_2[VELOCITY].publish(last);
+}
+
+void ManualControl::position_control_3() {
+	x_gap[2] = x_des[2] - x[2];
+	y_gap[2] = y_des[2] - y[2];
+	z_gap[2] = z_des[2] - z[2];
+	yaw_gap[2] = yaw_des[2] - yaw[2];
+
+	x_speed[2] = ( sin(Deg2Rad(yaw[2])) * x_gap[2] - cos(Deg2Rad(yaw[2])) * y_gap[2] );
+	y_speed[2] = ( cos(Deg2Rad(yaw[2] - 90)) * y_gap[2] - sin(Deg2Rad(yaw[2] - 90)) * x_gap[2] );
+
+	double x_value = P_x_gain * x_speed[2] + D_x_gain * (x_speed[2] - x_speed_old[2]) / dt;
+	double y_value = P_y_gain * y_speed[2] + D_y_gain * (y_speed[2] - y_speed_old[2]) / dt;
+	double z_value = P_z_gain * z_gap[2] + D_z_gain * (z_gap[2] - z_gap_old[2]) / dt;
+	double yaw_value = P_yaw_gain * yaw_gap[2] + D_yaw_gain * (yaw_gap[2] - yaw_gap_old[2]) / dt;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+
+	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
+	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+
+	x_speed_old[2] = x_speed[2];
+	y_speed_old[2] = y_speed[2];
+	z_gap_old[2] = z_gap[2];
+	yaw_gap_old[2] = yaw_gap[2];
+
+	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
+	last.linear.x = y_value; // which acts like y_value;
+	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.z = z_value;
+	last.angular.z = yaw_value;
+
+	pub_3[VELOCITY].publish(last);
+}
+
+void ManualControl::position_control_4() {
+	x_gap[3] = x_des[3] - x[3];
+	y_gap[3] = y_des[3] - y[3];
+	z_gap[3] = z_des[3] - z[3];
+	yaw_gap[3] = yaw_des[3] - yaw[3];
+
+	x_speed[3] = ( sin(Deg2Rad(yaw[3])) * x_gap[3] - cos(Deg2Rad(yaw[3])) * y_gap[3] );
+	y_speed[3] = ( cos(Deg2Rad(yaw[3] - 90)) * y_gap[3] - sin(Deg2Rad(yaw[3] - 90)) * x_gap[3] );
+
+	double x_value = P_x_gain * x_speed[3] + D_x_gain * (x_speed[3] - x_speed_old[3]) / dt;
+	double y_value = P_y_gain * y_speed[3] + D_y_gain * (y_speed[3] - y_speed_old[3]) / dt;
+	double z_value = P_z_gain * z_gap[3] + D_z_gain * (z_gap[3] - z_gap_old[3]) / dt;
+	double yaw_value = P_yaw_gain * yaw_gap[3] + D_yaw_gain * (yaw_gap[3] - yaw_gap_old[3]) / dt;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+
+	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
+	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+
+	x_speed_old[3] = x_speed[3];
+	y_speed_old[3] = y_speed[3];
+	z_gap_old[3] = z_gap[3];
+	yaw_gap_old[3] = yaw_gap[3];
+
+	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
+	last.linear.x = y_value; // which acts like y_value;
+	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.z = z_value;
+	last.angular.z = yaw_value;
+
+	pub_4[VELOCITY].publish(last);
+}
+
+void ManualControl::position_control_5() {
+	x_gap[4] = x_des[4] - x[4];
+	y_gap[4] = y_des[4] - y[4];
+	z_gap[4] = z_des[4] - z[4];
+	yaw_gap[4] = yaw_des[4] - yaw[4];
+
+	x_speed[4] = ( sin(Deg2Rad(yaw[4])) * x_gap[4] - cos(Deg2Rad(yaw[4])) * y_gap[4] );
+	y_speed[4] = ( cos(Deg2Rad(yaw[4] - 90)) * y_gap[4] - sin(Deg2Rad(yaw[4] - 90)) * x_gap[4] );
+
+	double x_value = P_x_gain * x_speed[4] + D_x_gain * (x_speed[4] - x_speed_old[4]) / dt;
+	double y_value = P_y_gain * y_speed[4] + D_y_gain * (y_speed[4] - y_speed_old[4]) / dt;
+	double z_value = P_z_gain * z_gap[4] + D_z_gain * (z_gap[4] - z_gap_old[4]) / dt;
+	double yaw_value = P_yaw_gain * yaw_gap[4] + D_yaw_gain * (yaw_gap[4] - yaw_gap_old[4]) / dt;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+
+	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
+	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+
+	x_speed_old[4] = x_speed[4];
+	y_speed_old[4] = y_speed[4];
+	z_gap_old[4] = z_gap[4];
+	yaw_gap_old[4] = yaw_gap[4];
+
+	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
+	last.linear.x = y_value; // which acts like y_value;
+	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.z = z_value;
+	last.angular.z = yaw_value;
+
+	pub_5[VELOCITY].publish(last);
+}
+
+void ManualControl::position_control_6() {
+	x_gap[5] = x_des[5] - x[5];
+	y_gap[5] = y_des[5] - y[5];
+	z_gap[5] = z_des[5] - z[5];
+	yaw_gap[5] = yaw_des[5] - yaw[5];
+
+	x_speed[5] = ( sin(Deg2Rad(yaw[5])) * x_gap[5] - cos(Deg2Rad(yaw[5])) * y_gap[5] );
+	y_speed[5] = ( cos(Deg2Rad(yaw[5] - 90)) * y_gap[5] - sin(Deg2Rad(yaw[5] - 90)) * x_gap[5] );
+
+	double x_value = P_x_gain * x_speed[5] + D_x_gain * (x_speed[5] - x_speed_old[5]) / dt;
+	double y_value = P_y_gain * y_speed[5] + D_y_gain * (y_speed[5] - y_speed_old[5]) / dt;
+	double z_value = P_z_gain * z_gap[5] + D_z_gain * (z_gap[5] - z_gap_old[5]) / dt;
+	double yaw_value = P_yaw_gain * yaw_gap[5] + D_yaw_gain * (yaw_gap[5] - yaw_gap_old[5]) / dt;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+
+	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
+	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+
+	x_speed_old[5] = x_speed[5];
+	y_speed_old[5] = y_speed[5];
+	z_gap_old[5] = z_gap[5];
+	yaw_gap_old[5] = yaw_gap[5];
+
+	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
+	last.linear.x = y_value; // which acts like y_value;
+	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.z = z_value;
+	last.angular.z = yaw_value;
+
+	pub_6[VELOCITY].publish(last);
+}
+
+void ManualControl::position_control_7() {
+	x_gap[6] = x_des[6] - x[6];
+	y_gap[6] = y_des[6] - y[6];
+	z_gap[6] = z_des[6] - z[6];
+	yaw_gap[6] = yaw_des[6] - yaw[6];
+
+	x_speed[6] = ( sin(Deg2Rad(yaw[6])) * x_gap[6] - cos(Deg2Rad(yaw[6])) * y_gap[6] );
+	y_speed[6] = ( cos(Deg2Rad(yaw[6] - 90)) * y_gap[6] - sin(Deg2Rad(yaw[6] - 90)) * x_gap[6] );
+
+	double x_value = P_x_gain * x_speed[6] + D_x_gain * (x_speed[6] - x_speed_old[6]) / dt;
+	double y_value = P_y_gain * y_speed[6] + D_y_gain * (y_speed[6] - y_speed_old[6]) / dt;
+	double z_value = P_z_gain * z_gap[6] + D_z_gain * (z_gap[6] - z_gap_old[6]) / dt;
+	double yaw_value = P_yaw_gain * yaw_gap[6] + D_yaw_gain * (yaw_gap[6] - yaw_gap_old[6]) / dt;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+
+	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
+	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+
+	x_speed_old[6] = x_speed[6];
+	y_speed_old[6] = y_speed[6];
+	z_gap_old[6] = z_gap[6];
+	yaw_gap_old[6] = yaw_gap[6];
+
+	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
+	last.linear.x = y_value; // which acts like y_value;
+	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.z = z_value;
+	last.angular.z = yaw_value;
+
+	pub_7[VELOCITY].publish(last);
 }
 
 void ManualControl::doMisc_1(short type) {
@@ -870,22 +1127,18 @@ void ManualControl::UpDown_1(short count) {
 	if ( count == 0)	{
 		motion.linear.x = 0;
 		pub_1[VELOCITY].publish(motion);
-		ROS_INFO("1");
 	}
 	else if ( count == 1)	{
 		motion.linear.x = 0.1;
 		pub_1[VELOCITY].publish(motion);
-		ROS_INFO("2");
 	}
 	else if ( count == 2)	{
 		motion.linear.x = -0.1;
 		pub_1[VELOCITY].publish(motion);
-		ROS_INFO("3");
 	}
 	else	{
 		motion.linear.x = 0;
 		pub_1[VELOCITY].publish(motion);
-		ROS_INFO("4");
 		UpDownFlag_1 = false;
 	}
 }

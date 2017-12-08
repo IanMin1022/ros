@@ -19,6 +19,12 @@ void Motion_timer(const ros::TimerEvent& event);
 class ManualControl {
 public:
 	void position_control_1();
+	void position_control_2();
+	void position_control_3();
+	void position_control_4();
+	void position_control_5();
+	void position_control_6();
+	void position_control_7();
 
 	void doMisc_1(short);
 	void doMisc_2(short);
@@ -79,13 +85,10 @@ private:
 	ros::Publisher pub_7[9];
 
 	double x_gap[7], y_gap[7], z_gap[7], yaw_gap[7];
-	double x_speed_old[7], y_speed_old[7];
+	double x_speed_old[7], y_speed_old[7], z_gap_old[7], yaw_gap_old[7];
 	double x_speed[7];
 	double y_speed[7];
-	double P_x_gain = 0.2, P_y_gain = 0.2;
-	double D_x_gain = 2, D_y_gain = 2;
-	double x_value = 0, y_value = 0;
-	double dt = 0.05;
+
 	double speed = 0.7;
 	double rotSpeed = 0.7;
 

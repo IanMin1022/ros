@@ -12,6 +12,7 @@ find_package(catkin REQUIRED
   rospy
   std_msgs
   message_generation
+  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -72,6 +73,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 generate_messages(
  DEPENDENCIES
  std_msgs
+ geometry_msgs
 )
 
 ################################################
@@ -106,7 +108,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES my_first_pkg
-  CATKIN_DEPENDS roscpp std_msgs
+  CATKIN_DEPENDS roscpp std_msgs geometry_msgs
   DEPENDS system_lib
 )
 
@@ -136,3 +138,7 @@ target_link_libraries(test2 ${catkin_LIBRARIES})
 add_executable(receiving src/subscribe.cpp src/sub.cpp)
 add_dependencies(receiving my_first_pkg_generate_message_cpp)
 target_link_libraries(receiving ${catkin_LIBRARIES})
+
+add_executable(tired src/test.cpp)
+add_dependencies(tired my_first_pkg_generate_message_cpp)
+target_link_libraries(tired ${catkin_LIBRARIES})
