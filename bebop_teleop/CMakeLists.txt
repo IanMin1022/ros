@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
 	bebop_msgs
 	cv_bridge
 	image_transport
+	OpenCV REQUIRED
 )
 
 include(FindPkgConfig)
@@ -53,4 +54,5 @@ target_link_libraries( bebop_teleop
 
 target_link_libraries( webcam
 	${catkin_LIBRARIES}
+	${OpenCV_LIBS}
 )

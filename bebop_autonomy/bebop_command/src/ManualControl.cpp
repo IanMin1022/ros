@@ -25,14 +25,22 @@
 #define SPEED_Z_MAX 0.5
 #define SPEED_YAW_MAX 0.5
 
-#define P_x_gain 0.2
-#define P_y_gain 0.2
-#define P_z_gain 0.2
-#define P_yaw_gain 0.2
-#define D_x_gain 0.2
-#define D_y_gain 0.2
-#define D_z_gain 0.2
-#define D_yaw_gain 0.2
+#define Kp_x 0.4
+#define Ki_x 0
+#define Kd_x 0
+
+#define Kp_y 0.4
+#define Ki_y 0
+#define Kd_y 0
+
+#define Kp_z 0.4
+#define Ki_z 0
+#define Kd_z 0
+
+#define Kp_yaw 0.02
+#define Ki_yaw 0
+#define Kd_yaw 0
+
 #define dt 0.05
 
 ManualControl* control;
@@ -197,7 +205,6 @@ void ManualControl::key_2(const char* transmit) {
 
 	if(transmit != NULL)
 		switch(flag) {
-
 		case 1:
 			doFlip_2(0);
 			break;
@@ -244,7 +251,6 @@ void ManualControl::key_3(const char* transmit) {
 
 	if(transmit != NULL)
 		switch(flag) {
-
 		case 1:
 			doFlip_3(0);
 			break;
@@ -291,7 +297,6 @@ void ManualControl::key_4(const char* transmit) {
 
 	if(transmit != NULL)
 		switch(flag) {
-
 		case 1:
 			doFlip_4(0);
 			break;
@@ -338,7 +343,6 @@ void ManualControl::key_5(const char* transmit) {
 
 	if(transmit != NULL)
 		switch(flag) {
-
 		case 1:
 			doFlip_5(0);
 			break;
@@ -385,7 +389,6 @@ void ManualControl::key_6(const char* transmit) {
 
 	if(transmit != NULL)
 		switch(flag) {
-
 		case 1:
 			doFlip_6(0);
 			break;
@@ -432,7 +435,6 @@ void ManualControl::key_7(const char* transmit) {
 
 	if(transmit != NULL)
 		switch(flag) {
-
 		case 1:
 			doFlip_7(0);
 			break;
@@ -547,42 +549,64 @@ void ManualControl::advertise(ros::NodeHandle& nh) {
 }
 // horizontal axis is x, vertical axis is y.
 void ManualControl::position_control_1() {
-	x_gap[0] = x_des[0] - x[0];
-	y_gap[0] = y_des[0] - y[0];
-	z_gap[0] = z_des[0] - z[0];
-	yaw_gap[0] = yaw_des[0] - yaw[0];
+	x_gap[0] = x_des[0] - x[0]; // x is horizontal data from motive
+	y_gap[0] = y_des[0] - y[0]; // y is axis to sky
+	z_gap[0] = z_des[0] - z[0]; // z is vertical data from motive
+
+	if ( abs(yaw_des[0] - yaw[0]) <=  180) 	yaw_gap[0] = yaw_des[0] - yaw[0];
+	else {
+		if ( yaw_des[0] >= yaw[0]) yaw_gap[0] = -yaw[0] - (360 - yaw_des[0]);
+		else yaw_gap[0] = yaw_des[0] + (360 - yaw[0]);
+	}
 
 	// 0 <= speed <= 1
 	// change yaw to fit in 0 - 360
-	x_speed[0] = ( sin(Deg2Rad(yaw[0])) * x_gap[0] - cos(Deg2Rad(yaw[0])) * y_gap[0] );
-	y_speed[0] = ( cos(Deg2Rad(yaw[0] - 90)) * y_gap[0] - sin(Deg2Rad(yaw[0] - 90)) * x_gap[0] );
+	x_speed[0] = ( -sin(Deg2Rad(yaw[0])) * x_gap[0] + cos(Deg2Rad(yaw[0])) * y_gap[0] );
+	y_speed[0] = ( -cos(Deg2Rad(yaw[0])) * x_gap[0] - sin(Deg2Rad(yaw[0])) * y_gap[0] );
 
-	double x_value = P_x_gain * x_speed[0] + D_x_gain * (x_speed[0] - x_speed_old[0]) / dt;
-	double y_value = P_y_gain * y_speed[0] + D_y_gain * (y_speed[0] - y_speed_old[0]) / dt;
-	double z_value = P_z_gain * z_gap[0] + D_z_gain * (z_gap[0] - z_gap_old[0]) / dt;
-	double yaw_value = P_yaw_gain * yaw_gap[0] + D_yaw_gain * (yaw_gap[0] - yaw_gap_old[0]) / dt;
+	double P_control_x = Kp_x * x_speed[0];
+	double I_control_x = I_control_x + Ki_x * x_speed[0] * dt;
+	double D_control_x = Kd_x * (x_speed[0] - x_speed_old[0]) / dt;
 
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
-	ROS_INFO("x speed is %f", x_value);
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
-	ROS_INFO("y speed is %f", y_value);
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
-	ROS_INFO("z speed is %f", z_value);
-	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
-	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
-	ROS_INFO("yaw speed is %f", yaw_value);
+	double P_control_y = Kp_y * y_speed[0];
+	double I_control_y = I_control_y + Ki_y * y_speed[0] * dt;
+	double D_control_y = Kd_y * (y_speed[0] - y_speed_old[0]) / dt;
+
+	double P_control_z = Kp_z * z_gap[0];
+	double I_control_z = I_control_z + Ki_z * z_gap[0] * dt;
+	double D_control_z = Kd_z * (z_gap[0] - z_gap_old[0]) / dt;
+
+	double P_control_yaw = Kp_yaw * yaw_gap[0];
+	double I_control_yaw = I_control_yaw + Ki_yaw * yaw_gap[0] * dt;
+	double D_control_yaw = Kd_yaw * (yaw_gap[0] - yaw_gap_old[0]) / dt;
 
 	x_speed_old[0] = x_speed[0];
 	y_speed_old[0] = y_speed[0];
 	z_gap_old[0] = z_gap[0];
 	yaw_gap_old[0] = yaw_gap[0];
 
-	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = y_value; // which acts like y_value;
-	last.linear.y = -x_value; // which acts like x_value;
+	double x_value = P_control_x + I_control_x + D_control_x;
+	double y_value = P_control_y + I_control_y + D_control_y;
+	double z_value = P_control_z + I_control_z + D_control_z;
+	double yaw_value = P_control_yaw + I_control_yaw + D_control_yaw;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	//ROS_INFO("x speed is %f", x_value);
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	//ROS_INFO("y speed is %f", y_value);
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	//ROS_INFO("z speed is %f", z_value);
+	if ( yaw_value > SPEED_YAW_MAX) yaw_value = SPEED_YAW_MAX;
+	else if ( yaw_value < -SPEED_YAW_MAX) yaw_value = -SPEED_YAW_MAX;
+	//ROS_INFO("yaw speed is %f", yaw_value);
+	//ROS_INFO("yaw  is %f", yaw_gap[0]);
+
+	// x is forward-backward (forward is positive), y is side (left is positive)
+	last.linear.x = x_value;
+	last.linear.y = y_value;
 	last.linear.z = z_value;
 	last.angular.z = yaw_value;
 
@@ -593,36 +617,60 @@ void ManualControl::position_control_2() {
 	x_gap[1] = x_des[1] - x[1];
 	y_gap[1] = y_des[1] - y[1];
 	z_gap[1] = z_des[1] - z[1];
-	yaw_gap[1] = yaw_des[1] - yaw[1];
 
-	x_speed[1] = ( sin(Deg2Rad(yaw[1])) * x_gap[1] - cos(Deg2Rad(yaw[1])) * y_gap[1] );
-	y_speed[1] = ( cos(Deg2Rad(yaw[1] - 90)) * y_gap[1] - sin(Deg2Rad(yaw[1] - 90)) * x_gap[1] );
+	if ( abs(yaw_des[1] - yaw[1]) <=  180) 	yaw_gap[1] = yaw_des[1] - yaw[1];
+	else {
+		if ( yaw_des[1] >= yaw[1]) yaw_gap[1] = -yaw[1] - (360 - yaw_des[1]);
+		else yaw_gap[1] = yaw_des[1] + (360 - yaw[1]);
+	}
 
-	double x_value = P_x_gain * x_speed[1] + D_x_gain * (x_speed[1] - x_speed_old[1]) / dt;
-	double y_value = P_y_gain * y_speed[1] + D_y_gain * (y_speed[1] - y_speed_old[1]) / dt;
-	double z_value = P_z_gain * z_gap[1] + D_z_gain * (z_gap[1] - z_gap_old[1]) / dt;
-	double yaw_value = P_yaw_gain * yaw_gap[1] + D_yaw_gain * (yaw_gap[1] - yaw_gap_old[1]) / dt;
+	x_speed[1] = ( -sin(Deg2Rad(yaw[1])) * x_gap[1] + cos(Deg2Rad(yaw[1])) * y_gap[1] );
+	y_speed[1] = ( -cos(Deg2Rad(yaw[1])) * x_gap[1] - sin(Deg2Rad(yaw[1])) * y_gap[1] );
 
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	double P_control_x = Kp_x * x_speed[1];
+	double I_control_x = I_control_x + Ki_x * x_speed[1] * dt;
+	double D_control_x = Kd_x * (x_speed[1] - x_speed_old[1]) / dt;
 
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	double P_control_y = Kp_y * y_speed[1];
+	double I_control_y = I_control_y + Ki_y * y_speed[1] * dt;
+	double D_control_y = Kd_y * (y_speed[1] - y_speed_old[1]) / dt;
 
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	double P_control_z = Kp_z * z_gap[1];
+	double I_control_z = I_control_z + Ki_z * z_gap[1] * dt;
+	double D_control_z = Kd_z * (z_gap[1] - z_gap_old[1]) / dt;
 
-	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
-	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+	double P_control_yaw = Kp_yaw * yaw_gap[1];
+	double I_control_yaw = I_control_yaw + Ki_yaw * yaw_gap[1] * dt;
+	double D_control_yaw = Kd_yaw * (yaw_gap[1] - yaw_gap_old[1]) / dt;
 
 	x_speed_old[1] = x_speed[1];
 	y_speed_old[1] = y_speed[1];
 	z_gap_old[1] = z_gap[1];
 	yaw_gap_old[1] = yaw_gap[1];
 
+	double x_value = P_control_x + I_control_x + D_control_x;
+	double y_value = P_control_y + I_control_y + D_control_y;
+	double z_value = P_control_z + I_control_z + D_control_z;
+	double yaw_value = P_control_yaw + I_control_yaw + D_control_yaw;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	ROS_INFO("x speed is %f", x_value);
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	ROS_INFO("y speed is %f", y_value);
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	ROS_INFO("z speed is %f", z_value);
+	if ( yaw_value > SPEED_YAW_MAX) yaw_value = SPEED_YAW_MAX;
+	else if ( yaw_value < -SPEED_YAW_MAX) yaw_value = -SPEED_YAW_MAX;
+	ROS_INFO("yaw speed is %f", yaw_value);
+	//ROS_INFO("yaw ***** is %f", yaw[1]);
+	//ROS_INFO("yaw $$$$$$ is %f", yaw_des[1]);
+
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = y_value; // which acts like y_value;
-	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.x = x_value; // which acts like y_value;
+	last.linear.y = y_value; // which acts like x_value;
 	last.linear.z = z_value;
 	last.angular.z = yaw_value;
 
@@ -633,36 +681,58 @@ void ManualControl::position_control_3() {
 	x_gap[2] = x_des[2] - x[2];
 	y_gap[2] = y_des[2] - y[2];
 	z_gap[2] = z_des[2] - z[2];
-	yaw_gap[2] = yaw_des[2] - yaw[2];
 
-	x_speed[2] = ( sin(Deg2Rad(yaw[2])) * x_gap[2] - cos(Deg2Rad(yaw[2])) * y_gap[2] );
-	y_speed[2] = ( cos(Deg2Rad(yaw[2] - 90)) * y_gap[2] - sin(Deg2Rad(yaw[2] - 90)) * x_gap[2] );
+	if ( abs(yaw_des[2] - yaw[2]) <=  180) 	yaw_gap[2] = yaw_des[2] - yaw[2];
+	else {
+		if ( yaw_des[2] >= yaw[2]) yaw_gap[2] = -yaw[2] - (360 - yaw_des[2]);
+		else yaw_gap[2] = yaw_des[2] + (360 - yaw[2]);
+	}
 
-	double x_value = P_x_gain * x_speed[2] + D_x_gain * (x_speed[2] - x_speed_old[2]) / dt;
-	double y_value = P_y_gain * y_speed[2] + D_y_gain * (y_speed[2] - y_speed_old[2]) / dt;
-	double z_value = P_z_gain * z_gap[2] + D_z_gain * (z_gap[2] - z_gap_old[2]) / dt;
-	double yaw_value = P_yaw_gain * yaw_gap[2] + D_yaw_gain * (yaw_gap[2] - yaw_gap_old[2]) / dt;
+	x_speed[2] = ( -sin(Deg2Rad(yaw[2])) * x_gap[2] + cos(Deg2Rad(yaw[2])) * y_gap[2] );
+	y_speed[2] = ( -cos(Deg2Rad(yaw[2])) * x_gap[2] - sin(Deg2Rad(yaw[2])) * y_gap[2] );
 
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	double P_control_x = Kp_x * x_speed[2];
+	double I_control_x = I_control_x + Ki_x * x_speed[2] * dt;
+	double D_control_x = Kd_x * (x_speed[2] - x_speed_old[2]) / dt;
 
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	double P_control_y = Kp_y * y_speed[2];
+	double I_control_y = I_control_y + Ki_y * y_speed[2] * dt;
+	double D_control_y = Kd_y * (y_speed[2] - y_speed_old[2]) / dt;
 
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	double P_control_z = Kp_z * z_gap[2];
+	double I_control_z = I_control_z + Ki_z * z_gap[2] * dt;
+	double D_control_z = Kd_z * (z_gap[2] - z_gap_old[2]) / dt;
 
-	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
-	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+	double P_control_yaw = Kp_yaw * yaw_gap[2];
+	double I_control_yaw = I_control_yaw + Ki_yaw * yaw_gap[2] * dt;
+	double D_control_yaw = Kd_yaw * (yaw_gap[2] - yaw_gap_old[2]) / dt;
 
 	x_speed_old[2] = x_speed[2];
 	y_speed_old[2] = y_speed[2];
 	z_gap_old[2] = z_gap[2];
 	yaw_gap_old[2] = yaw_gap[2];
 
+	double x_value = P_control_x + I_control_x + D_control_x;
+	double y_value = P_control_y + I_control_y + D_control_y;
+	double z_value = P_control_z + I_control_z + D_control_z;
+	double yaw_value = P_control_yaw + I_control_yaw + D_control_yaw;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	//ROS_INFO("x speed is %f", x_value);
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	//ROS_INFO("y speed is %f", y_value);
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	//ROS_INFO("z speed is %f", z_value);
+	if ( yaw_value > SPEED_YAW_MAX) yaw_value = SPEED_YAW_MAX;
+	else if ( yaw_value < -SPEED_YAW_MAX) yaw_value = -SPEED_YAW_MAX;
+	//ROS_INFO("yaw speed is %f", yaw_value);
+
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = y_value; // which acts like y_value;
-	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.x = x_value; // which acts like y_value;
+	last.linear.y = y_value; // which acts like x_value;
 	last.linear.z = z_value;
 	last.angular.z = yaw_value;
 
@@ -673,36 +743,58 @@ void ManualControl::position_control_4() {
 	x_gap[3] = x_des[3] - x[3];
 	y_gap[3] = y_des[3] - y[3];
 	z_gap[3] = z_des[3] - z[3];
-	yaw_gap[3] = yaw_des[3] - yaw[3];
 
-	x_speed[3] = ( sin(Deg2Rad(yaw[3])) * x_gap[3] - cos(Deg2Rad(yaw[3])) * y_gap[3] );
-	y_speed[3] = ( cos(Deg2Rad(yaw[3] - 90)) * y_gap[3] - sin(Deg2Rad(yaw[3] - 90)) * x_gap[3] );
+	if ( abs(yaw_des[3] - yaw[3]) <=  180) 	yaw_gap[3] = yaw_des[3] - yaw[3];
+	else {
+		if ( yaw_des[3] >= yaw[3]) yaw_gap[3] = -yaw[3] - (360 - yaw_des[3]);
+		else yaw_gap[3] = yaw_des[3] + (360 - yaw[3]);
+	}
 
-	double x_value = P_x_gain * x_speed[3] + D_x_gain * (x_speed[3] - x_speed_old[3]) / dt;
-	double y_value = P_y_gain * y_speed[3] + D_y_gain * (y_speed[3] - y_speed_old[3]) / dt;
-	double z_value = P_z_gain * z_gap[3] + D_z_gain * (z_gap[3] - z_gap_old[3]) / dt;
-	double yaw_value = P_yaw_gain * yaw_gap[3] + D_yaw_gain * (yaw_gap[3] - yaw_gap_old[3]) / dt;
+	x_speed[3] = ( -sin(Deg2Rad(yaw[3])) * x_gap[3] + cos(Deg2Rad(yaw[3])) * y_gap[3] );
+	y_speed[3] = ( -cos(Deg2Rad(yaw[3])) * x_gap[3] - sin(Deg2Rad(yaw[3])) * y_gap[3] );
 
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	double P_control_x = Kp_x * x_speed[3];
+	double I_control_x = I_control_x + Ki_x * x_speed[3] * dt;
+	double D_control_x = Kd_x * (x_speed[3] - x_speed_old[3]) / dt;
 
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	double P_control_y = Kp_y * y_speed[3];
+	double I_control_y = I_control_y + Ki_y * y_speed[3] * dt;
+	double D_control_y = Kd_y * (y_speed[3] - y_speed_old[3]) / dt;
 
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	double P_control_z = Kp_z * z_gap[3];
+	double I_control_z = I_control_z + Ki_z * z_gap[3] * dt;
+	double D_control_z = Kd_z * (z_gap[3] - z_gap_old[3]) / dt;
 
-	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
-	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+	double P_control_yaw = Kp_yaw * yaw_gap[3];
+	double I_control_yaw = I_control_yaw + Ki_yaw * yaw_gap[3] * dt;
+	double D_control_yaw = Kd_yaw * (yaw_gap[3] - yaw_gap_old[3]) / dt;
 
 	x_speed_old[3] = x_speed[3];
 	y_speed_old[3] = y_speed[3];
 	z_gap_old[3] = z_gap[3];
 	yaw_gap_old[3] = yaw_gap[3];
 
+	double x_value = P_control_x + I_control_x + D_control_x;
+	double y_value = P_control_y + I_control_y + D_control_y;
+	double z_value = P_control_z + I_control_z + D_control_z;
+	double yaw_value = P_control_yaw + I_control_yaw + D_control_yaw;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	//ROS_INFO("x speed is %f", x_value);
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	//ROS_INFO("y speed is %f", y_value);
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	//ROS_INFO("z speed is %f", z_value);
+	if ( yaw_value > SPEED_YAW_MAX) yaw_value = SPEED_YAW_MAX;
+	else if ( yaw_value < -SPEED_YAW_MAX) yaw_value = -SPEED_YAW_MAX;
+	//ROS_INFO("yaw speed is %f", yaw_value);
+
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = y_value; // which acts like y_value;
-	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.x = x_value; // which acts like y_value;
+	last.linear.y = y_value; // which acts like x_value;
 	last.linear.z = z_value;
 	last.angular.z = yaw_value;
 
@@ -713,36 +805,58 @@ void ManualControl::position_control_5() {
 	x_gap[4] = x_des[4] - x[4];
 	y_gap[4] = y_des[4] - y[4];
 	z_gap[4] = z_des[4] - z[4];
-	yaw_gap[4] = yaw_des[4] - yaw[4];
 
-	x_speed[4] = ( sin(Deg2Rad(yaw[4])) * x_gap[4] - cos(Deg2Rad(yaw[4])) * y_gap[4] );
-	y_speed[4] = ( cos(Deg2Rad(yaw[4] - 90)) * y_gap[4] - sin(Deg2Rad(yaw[4] - 90)) * x_gap[4] );
+	if ( abs(yaw_des[4] - yaw[4]) <=  180) 	yaw_gap[4] = yaw_des[4] - yaw[4];
+	else {
+		if ( yaw_des[4] >= yaw[4]) yaw_gap[4] = -yaw[4] - (360 - yaw_des[4]);
+		else yaw_gap[4] = yaw_des[4] + (360 - yaw[4]);
+	}
 
-	double x_value = P_x_gain * x_speed[4] + D_x_gain * (x_speed[4] - x_speed_old[4]) / dt;
-	double y_value = P_y_gain * y_speed[4] + D_y_gain * (y_speed[4] - y_speed_old[4]) / dt;
-	double z_value = P_z_gain * z_gap[4] + D_z_gain * (z_gap[4] - z_gap_old[4]) / dt;
-	double yaw_value = P_yaw_gain * yaw_gap[4] + D_yaw_gain * (yaw_gap[4] - yaw_gap_old[4]) / dt;
+	x_speed[4] = ( -sin(Deg2Rad(yaw[4])) * x_gap[4] + cos(Deg2Rad(yaw[4])) * y_gap[4] );
+	y_speed[4] = ( -cos(Deg2Rad(yaw[4])) * x_gap[4] - sin(Deg2Rad(yaw[4])) * y_gap[4] );
 
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	double P_control_x = Kp_x * x_speed[4];
+	double I_control_x = I_control_x + Ki_x * x_speed[4] * dt;
+	double D_control_x = Kd_x * (x_speed[4] - x_speed_old[4]) / dt;
 
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	double P_control_y = Kp_y * y_speed[4];
+	double I_control_y = I_control_y + Ki_y * y_speed[4] * dt;
+	double D_control_y = Kd_y * (y_speed[4] - y_speed_old[4]) / dt;
 
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	double P_control_z = Kp_z * z_gap[4];
+	double I_control_z = I_control_z + Ki_z * z_gap[4] * dt;
+	double D_control_z = Kd_z * (z_gap[4] - z_gap_old[4]) / dt;
 
-	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
-	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+	double P_control_yaw = Kp_yaw * yaw_gap[4];
+	double I_control_yaw = I_control_yaw + Ki_yaw * yaw_gap[4] * dt;
+	double D_control_yaw = Kd_yaw * (yaw_gap[4] - yaw_gap_old[4]) / dt;
 
 	x_speed_old[4] = x_speed[4];
 	y_speed_old[4] = y_speed[4];
 	z_gap_old[4] = z_gap[4];
 	yaw_gap_old[4] = yaw_gap[4];
 
+	double x_value = P_control_x + I_control_x + D_control_x;
+	double y_value = P_control_y + I_control_y + D_control_y;
+	double z_value = P_control_z + I_control_z + D_control_z;
+	double yaw_value = P_control_yaw + I_control_yaw + D_control_yaw;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	//ROS_INFO("x speed is %f", x_value);
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	//ROS_INFO("y speed is %f", y_value);
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	//ROS_INFO("z speed is %f", z_value);
+	if ( yaw_value > SPEED_YAW_MAX) yaw_value = SPEED_YAW_MAX;
+	else if ( yaw_value < -SPEED_YAW_MAX) yaw_value = -SPEED_YAW_MAX;
+	//ROS_INFO("yaw speed is %f", yaw_value);
+
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = y_value; // which acts like y_value;
-	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.x = x_value; // which acts like y_value;
+	last.linear.y = y_value; // which acts like x_value;
 	last.linear.z = z_value;
 	last.angular.z = yaw_value;
 
@@ -753,36 +867,58 @@ void ManualControl::position_control_6() {
 	x_gap[5] = x_des[5] - x[5];
 	y_gap[5] = y_des[5] - y[5];
 	z_gap[5] = z_des[5] - z[5];
-	yaw_gap[5] = yaw_des[5] - yaw[5];
 
-	x_speed[5] = ( sin(Deg2Rad(yaw[5])) * x_gap[5] - cos(Deg2Rad(yaw[5])) * y_gap[5] );
-	y_speed[5] = ( cos(Deg2Rad(yaw[5] - 90)) * y_gap[5] - sin(Deg2Rad(yaw[5] - 90)) * x_gap[5] );
+	if ( abs(yaw_des[5] - yaw[5]) <=  180) 	yaw_gap[5] = yaw_des[5] - yaw[5];
+	else {
+		if ( yaw_des[5] >= yaw[5]) yaw_gap[5] = -yaw[5] - (360 - yaw_des[5]);
+		else yaw_gap[5] = yaw_des[5] + (360 - yaw[5]);
+	}
 
-	double x_value = P_x_gain * x_speed[5] + D_x_gain * (x_speed[5] - x_speed_old[5]) / dt;
-	double y_value = P_y_gain * y_speed[5] + D_y_gain * (y_speed[5] - y_speed_old[5]) / dt;
-	double z_value = P_z_gain * z_gap[5] + D_z_gain * (z_gap[5] - z_gap_old[5]) / dt;
-	double yaw_value = P_yaw_gain * yaw_gap[5] + D_yaw_gain * (yaw_gap[5] - yaw_gap_old[5]) / dt;
+	x_speed[5] = ( -sin(Deg2Rad(yaw[5])) * x_gap[5] + cos(Deg2Rad(yaw[5])) * y_gap[5] );
+	y_speed[5] = ( -cos(Deg2Rad(yaw[5])) * x_gap[5] - sin(Deg2Rad(yaw[5])) * y_gap[5] );
 
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	double P_control_x = Kp_x * x_speed[5];
+	double I_control_x = I_control_x + Ki_x * x_speed[5] * dt;
+	double D_control_x = Kd_x * (x_speed[5] - x_speed_old[5]) / dt;
 
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	double P_control_y = Kp_y * y_speed[5];
+	double I_control_y = I_control_y + Ki_y * y_speed[5] * dt;
+	double D_control_y = Kd_y * (y_speed[5] - y_speed_old[5]) / dt;
 
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	double P_control_z = Kp_z * z_gap[5];
+	double I_control_z = I_control_z + Ki_z * z_gap[5] * dt;
+	double D_control_z = Kd_z * (z_gap[5] - z_gap_old[5]) / dt;
 
-	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
-	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+	double P_control_yaw = Kp_yaw * yaw_gap[5];
+	double I_control_yaw = I_control_yaw + Ki_yaw * yaw_gap[5] * dt;
+	double D_control_yaw = Kd_yaw * (yaw_gap[5] - yaw_gap_old[5]) / dt;
 
 	x_speed_old[5] = x_speed[5];
 	y_speed_old[5] = y_speed[5];
 	z_gap_old[5] = z_gap[5];
 	yaw_gap_old[5] = yaw_gap[5];
 
+	double x_value = P_control_x + I_control_x + D_control_x;
+	double y_value = P_control_y + I_control_y + D_control_y;
+	double z_value = P_control_z + I_control_z + D_control_z;
+	double yaw_value = P_control_yaw + I_control_yaw + D_control_yaw;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	//ROS_INFO("x speed is %f", x_value);
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	//ROS_INFO("y speed is %f", y_value);
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	//ROS_INFO("z speed is %f", z_value);
+	if ( yaw_value > SPEED_YAW_MAX) yaw_value = SPEED_YAW_MAX;
+	else if ( yaw_value < -SPEED_YAW_MAX) yaw_value = -SPEED_YAW_MAX;
+	//ROS_INFO("yaw speed is %f", yaw_value);
+
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = y_value; // which acts like y_value;
-	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.x = x_value; // which acts like y_value;
+	last.linear.y = y_value; // which acts like x_value;
 	last.linear.z = z_value;
 	last.angular.z = yaw_value;
 
@@ -793,36 +929,58 @@ void ManualControl::position_control_7() {
 	x_gap[6] = x_des[6] - x[6];
 	y_gap[6] = y_des[6] - y[6];
 	z_gap[6] = z_des[6] - z[6];
-	yaw_gap[6] = yaw_des[6] - yaw[6];
 
-	x_speed[6] = ( sin(Deg2Rad(yaw[6])) * x_gap[6] - cos(Deg2Rad(yaw[6])) * y_gap[6] );
-	y_speed[6] = ( cos(Deg2Rad(yaw[6] - 90)) * y_gap[6] - sin(Deg2Rad(yaw[6] - 90)) * x_gap[6] );
+	if ( abs(yaw_des[6] - yaw[6]) <=  180) 	yaw_gap[6] = yaw_des[6] - yaw[6];
+	else {
+		if ( yaw_des[6] >= yaw[6]) yaw_gap[6] = -yaw[6] - (360 - yaw_des[6]);
+		else yaw_gap[6] = yaw_des[6] + (360 - yaw[6]);
+	}
 
-	double x_value = P_x_gain * x_speed[6] + D_x_gain * (x_speed[6] - x_speed_old[6]) / dt;
-	double y_value = P_y_gain * y_speed[6] + D_y_gain * (y_speed[6] - y_speed_old[6]) / dt;
-	double z_value = P_z_gain * z_gap[6] + D_z_gain * (z_gap[6] - z_gap_old[6]) / dt;
-	double yaw_value = P_yaw_gain * yaw_gap[6] + D_yaw_gain * (yaw_gap[6] - yaw_gap_old[6]) / dt;
+	x_speed[6] = ( -sin(Deg2Rad(yaw[6])) * x_gap[6] + cos(Deg2Rad(yaw[6])) * y_gap[6] );
+	y_speed[6] = ( -cos(Deg2Rad(yaw[6])) * x_gap[6] - sin(Deg2Rad(yaw[6])) * y_gap[6] );
 
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	double P_control_x = Kp_x * x_speed[6];
+	double I_control_x = I_control_x + Ki_x * x_speed[6] * dt;
+	double D_control_x = Kd_x * (x_speed[6] - x_speed_old[6]) / dt;
 
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	double P_control_y = Kp_y * y_speed[6];
+	double I_control_y = I_control_y + Ki_y * y_speed[6] * dt;
+	double D_control_y = Kd_y * (y_speed[6] - y_speed_old[6]) / dt;
 
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	double P_control_z = Kp_z * z_gap[6];
+	double I_control_z = I_control_z + Ki_z * z_gap[6] * dt;
+	double D_control_z = Kd_z * (z_gap[6] - z_gap_old[6]) / dt;
 
-	if ( z_value > SPEED_YAW_MAX) z_value = SPEED_YAW_MAX;
-	else if ( z_value < -SPEED_YAW_MAX) z_value = -SPEED_YAW_MAX;
+	double P_control_yaw = Kp_yaw * yaw_gap[6];
+	double I_control_yaw = I_control_yaw + Ki_yaw * yaw_gap[6] * dt;
+	double D_control_yaw = Kd_yaw * (yaw_gap[6] - yaw_gap_old[6]) / dt;
 
 	x_speed_old[6] = x_speed[6];
 	y_speed_old[6] = y_speed[6];
 	z_gap_old[6] = z_gap[6];
 	yaw_gap_old[6] = yaw_gap[6];
 
+	double x_value = P_control_x + I_control_x + D_control_x;
+	double y_value = P_control_y + I_control_y + D_control_y;
+	double z_value = P_control_z + I_control_z + D_control_z;
+	double yaw_value = P_control_yaw + I_control_yaw + D_control_yaw;
+
+	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
+	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
+	//ROS_INFO("x speed is %f", x_value);
+	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
+	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
+	//ROS_INFO("y speed is %f", y_value);
+	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
+	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
+	//ROS_INFO("z speed is %f", z_value);
+	if ( yaw_value > SPEED_YAW_MAX) yaw_value = SPEED_YAW_MAX;
+	else if ( yaw_value < -SPEED_YAW_MAX) yaw_value = -SPEED_YAW_MAX;
+	//ROS_INFO("yaw speed is %f", yaw_value);
+
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = y_value; // which acts like y_value;
-	last.linear.y = -x_value; // which acts like x_value;
+	last.linear.x = x_value; // which acts like y_value;
+	last.linear.y = y_value; // which acts like x_value;
 	last.linear.z = z_value;
 	last.angular.z = yaw_value;
 

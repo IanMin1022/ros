@@ -33,19 +33,22 @@ double toEulerAngle(double x, double y, double z, double w) {
 	// yaw (z-axis rotation)
 	double siny = +2.0 * (y * w - x * z);
 	double cosy = +1.0 - 2.0 * (y * y + z * z);
-
-	double result = Rad2Deg(atan2(siny, cosy)) + 90;
-
-	if ( result >= 0) return result;
+	
+	double result = Rad2Deg(atan2(siny, cosy));
+	//ROS_INFO("yaw is %f", result);
+	if ( result >= 0) {
+		//ROS_INFO("yaw is %f", result);
+		return result;
+	}
 	else {
-		if ( result < 0 ) return result + 360;
-		else return result + 90;
+		//ROS_INFO("yaw is %f", result + 360);
+		return result + 360;
 	}
 }
 
 void Camera_node::Reading_camera_1(const geometry_msgs::PoseStamped& msg) {
     control->x[0] = msg.pose.position.x;
-    control->y[0] = msg.pose.position.z;
+    control->y[0] = -msg.pose.position.z;
     control->z[0] = msg.pose.position.y;
 		// 0~180 => 0~180, 180~360 => -180~0
     control->yaw[0] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
@@ -54,7 +57,7 @@ void Camera_node::Reading_camera_1(const geometry_msgs::PoseStamped& msg) {
 
 void Camera_node::Reading_camera_2(const geometry_msgs::PoseStamped& msg) {
     control->x[1] = msg.pose.position.x;
-    control->y[1] = msg.pose.position.z;
+    control->y[1] = -msg.pose.position.z;
     control->z[1] = msg.pose.position.y;
 		// 0~180 => 0~180, 180~360 => -180~0
     control->yaw[1] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
@@ -63,7 +66,7 @@ void Camera_node::Reading_camera_2(const geometry_msgs::PoseStamped& msg) {
 
 void Camera_node::Reading_camera_3(const geometry_msgs::PoseStamped& msg) {
     control->x[2] = msg.pose.position.x;
-    control->y[2] = msg.pose.position.z;
+    control->y[2] = -msg.pose.position.z;
     control->z[2] = msg.pose.position.y;
 		// 0~180 => 0~180, 180~360 => -180~0
     control->yaw[2] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
@@ -72,7 +75,7 @@ void Camera_node::Reading_camera_3(const geometry_msgs::PoseStamped& msg) {
 
 void Camera_node::Reading_camera_4(const geometry_msgs::PoseStamped& msg) {
     control->x[3] = msg.pose.position.x;
-    control->y[3] = msg.pose.position.z;
+    control->y[3] = -msg.pose.position.z;
     control->z[3] = msg.pose.position.y;
 		// 0~180 => 0~180, 180~360 => -180~0
     control->yaw[3] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
@@ -81,7 +84,7 @@ void Camera_node::Reading_camera_4(const geometry_msgs::PoseStamped& msg) {
 
 void Camera_node::Reading_camera_5(const geometry_msgs::PoseStamped& msg) {
     control->x[4] = msg.pose.position.x;
-    control->y[4] = msg.pose.position.z;
+    control->y[4] = -msg.pose.position.z;
     control->z[4] = msg.pose.position.y;
 		// 0~180 => 0~180, 180~360 => -180~0
     control->yaw[4] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
@@ -90,7 +93,7 @@ void Camera_node::Reading_camera_5(const geometry_msgs::PoseStamped& msg) {
 
 void Camera_node::Reading_camera_6(const geometry_msgs::PoseStamped& msg) {
     control->x[5] = msg.pose.position.x;
-    control->y[5] = msg.pose.position.z;
+    control->y[5] = -msg.pose.position.z;
     control->z[5] = msg.pose.position.y;
 		// 0~180 => 0~180, 180~360 => -180~0
     control->yaw[5] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
@@ -99,7 +102,7 @@ void Camera_node::Reading_camera_6(const geometry_msgs::PoseStamped& msg) {
 
 void Camera_node::Reading_camera_7(const geometry_msgs::PoseStamped& msg) {
     control->x[6] = msg.pose.position.x;
-    control->y[6] = msg.pose.position.z;
+    control->y[6] = -msg.pose.position.z;
     control->z[6] = msg.pose.position.y;
 		// 0~180 => 0~180, 180~360 => -180~0
     control->yaw[6] = toEulerAngle(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);

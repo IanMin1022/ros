@@ -51,7 +51,10 @@ void Script_subscriber::Script_node_1(const std_msgs::String::ConstPtr& msg)
     double z = ::atof(temp.c_str());
 
     devide >> temp;
-    double yaw = ::atof(temp.c_str());
+    double yaw_temp = ::atof(temp.c_str());
+    double yaw;
+    if ( yaw >= 0) yaw = yaw_temp;
+  	else  yaw = yaw_temp + 360;
 
     // Check whether x_des moved well or not
     subscriber -> manner_1 = true;
@@ -88,7 +91,10 @@ void Script_subscriber::Script_node_2(const std_msgs::String::ConstPtr& msg)
     double z = ::atof(temp.c_str());
 
     devide >> temp;
-    double yaw = ::atof(temp.c_str());
+    double yaw_temp = ::atof(temp.c_str());
+    double yaw;
+    if ( yaw >= 0) yaw = yaw_temp;
+  	else  yaw = yaw_temp + 360;
 
     // Check whether x_des moved well or not
     subscriber -> manner_2 = true;
@@ -125,7 +131,10 @@ void Script_subscriber::Script_node_3(const std_msgs::String::ConstPtr& msg)
     double z = ::atof(temp.c_str());
 
     devide >> temp;
-    double yaw = ::atof(temp.c_str());
+    double yaw_temp = ::atof(temp.c_str());
+    double yaw;
+    if ( yaw >= 0) yaw = yaw_temp;
+  	else  yaw = yaw_temp + 360;
 
     // Check whether x_des moved well or not
     subscriber -> manner_3 = true;
@@ -162,7 +171,10 @@ void Script_subscriber::Script_node_4(const std_msgs::String::ConstPtr& msg)
     double z = ::atof(temp.c_str());
 
     devide >> temp;
-    double yaw = ::atof(temp.c_str());
+    double yaw_temp = ::atof(temp.c_str());
+    double yaw;
+    if ( yaw >= 0) yaw = yaw_temp;
+  	else  yaw = yaw_temp + 360;
 
     // Check whether x_des moved well or not
     subscriber -> manner_4 = true;
@@ -199,7 +211,10 @@ void Script_subscriber::Script_node_5(const std_msgs::String::ConstPtr& msg)
     double z = ::atof(temp.c_str());
 
     devide >> temp;
-    double yaw = ::atof(temp.c_str());
+    double yaw_temp = ::atof(temp.c_str());
+    double yaw;
+    if ( yaw >= 0) yaw = yaw_temp;
+  	else  yaw = yaw_temp + 360;
 
     // Check whether x_des moved well or not
     subscriber -> manner_5 = true;
@@ -236,7 +251,10 @@ void Script_subscriber::Script_node_6(const std_msgs::String::ConstPtr& msg)
     double z = ::atof(temp.c_str());
 
     devide >> temp;
-    double yaw = ::atof(temp.c_str());
+    double yaw_temp = ::atof(temp.c_str());
+    double yaw;
+    if ( yaw >= 0) yaw = yaw_temp;
+  	else  yaw = yaw_temp + 360;
 
     // Check whether x_des moved well or not
     subscriber -> manner_6 = true;
@@ -273,7 +291,10 @@ void Script_subscriber::Script_node_7(const std_msgs::String::ConstPtr& msg)
     double z = ::atof(temp.c_str());
 
     devide >> temp;
-    double yaw = ::atof(temp.c_str());
+    double yaw_temp = ::atof(temp.c_str());
+    double yaw;
+    if ( yaw >= 0) yaw = yaw_temp;
+  	else  yaw = yaw_temp + 360;
 
     // Check whether x_des moved well or not
     subscriber -> manner_7 = true;
