@@ -84,13 +84,17 @@ private:
 	ros::Publisher pub_6[9];
 	ros::Publisher pub_7[9];
 
+	double P_control_x[7], P_control_y[7], P_control_z[7], P_control_yaw[7];
+	double I_control_x[7] = {0, 0, 0, 0, 0, 0, 0};
+	double I_control_y[7] = {0, 0, 0, 0, 0, 0, 0};
+	double I_control_z[7] = {0, 0, 0, 0, 0, 0, 0};
+	double I_control_yaw[7] = {0, 0, 0, 0, 0, 0, 0};
+	double D_control_x[7], D_control_y[7], D_control_z[7], D_control_yaw[7];
+
 	double x_gap[7], y_gap[7], z_gap[7], yaw_gap[7];
 	double x_speed_old[7], y_speed_old[7], z_gap_old[7], yaw_gap_old[7];
 	double x_speed[7];
 	double y_speed[7];
-
-	double speed = 0.7;
-	double rotSpeed = 0.7;
 
 	geometry_msgs::Twist last;
 	geometry_msgs::Twist motion;

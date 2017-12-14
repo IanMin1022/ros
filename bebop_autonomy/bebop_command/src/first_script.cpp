@@ -18,6 +18,7 @@ int main(int argc, char **argv)
   loop_rate.sleep();
   // Command is TAKE_OFF LAND FLIP_FORWARD FLIP_BACKWARD FLIP_LEFT FLIP_RIGHT UPDOWN SIDE
   // Make a time function so that you can know the whole function time****
+  // -180 < yaw < 180
   if (ros::ok())
   {
     ros::spinOnce();
@@ -32,32 +33,86 @@ int main(int argc, char **argv)
     script->timer(3);
 
     script->script_1("0 0 0 0");
-    script->script_2("0 0 0.3 0");
-    script->script_3("FLIP_FORWARD");
-    script->script_4("FLIP_FORWARD");
-    script->script_5("FLIP_FORWARD");
-    script->script_6("FLIP_FORWARD");
-    script->script_7("FLIP_FORWARD");
+    script->script_3("0 0 0 0");
+    script->script_2("0 0 1.1 0");
+    script->script_4("0 0 0 0");
+    script->script_5("0 0 0 0");
+    script->script_6("0 0 0 0");
+    script->script_7("0 0 0 0");
     script->timer(7);
 
     script->script_1("0 0 0 0");
-    script->script_2("0 0 0.3 0");
-    script->script_3("SIDE");
-    script->script_4("SIDE");
-    script->script_5("SIDE");
-    script->script_6("SIDE");
-    script->script_7("SIDE");
-    script->timer(10);
+    script->script_2("0 0 1.5 0");
+    script->script_3("0 0 0 0");
+    script->script_4("0 0 0 0");
+    script->script_5("0 0 0 0");
+    script->script_6("0 0 0 0");
+    script->script_7("0 0 0 0");
+    script->timer(12);
 
-    script->script_1("LAND");
-    script->script_2("0 0 0.3 30");
-    script->script_3("LAND");
-    script->script_4("LAND");
-    script->script_5("LAND");
-    script->script_6("LAND");
-    script->script_7("LAND");
-    script->timer(15);
+    script->script_1("0 0 0 0");
+    script->script_2("0 0 1.1 0");
+    script->script_3("0 0 0 0");
+    script->script_4("0 0 0 0");
+    script->script_5("0 0 0 0");
+    script->script_6("0 0 0 0");
+    script->script_7("0 0 0 0");
+    script->timer(17);
+/*
+    script->script_1("0 0 0 0");
+    script->script_2("0 0 0.5 0");
+    script->script_3("0 0 0 0");
+    script->script_4("0 0 0 0");
+    script->script_5("0 0 0 0");
+    script->script_6("0 0 0 0");
+    script->script_7("0 0 0 0");
+    script->timer(22);
 
+    script->script_1("0 0 0 0");
+    script->script_2("0 0 0 0");
+    script->script_3("0 0 0 0");
+    script->script_4("0 0 0 0");
+    script->script_5("0 0 0 0");
+    script->script_6("0 0 0 0");
+    script->script_7("0 0 0 0");
+    script->timer(16);
+
+    script->script_1("0 0 0 0");
+    script->script_2("0 0 0 0");
+    script->script_3("0 0 0 0");
+    script->script_4("0 0 0 0");
+    script->script_5("0 0 0 0");
+    script->script_6("0 0 0 0");
+    script->script_7("0 0 0 0");
+    script->timer(19);
+
+    script->script_1("0 0 0 0");
+    script->script_2("0 0 0 0");
+    script->script_3("0 0 0 0");
+    script->script_4("0 0 0 0");
+    script->script_5("0 0 0 0");
+    script->script_6("0 0 0 0");
+    script->script_7("0 0 0 0");
+    script->timer(22);
+
+    script->script_1("0 0 0 0");
+    script->script_2("0 0 0 0");
+    script->script_3("0 0 0 0");
+    script->script_4("0 0 0 0");
+    script->script_5("0 0 0 0");
+    script->script_6("0 0 0 0");
+    script->script_7("0 0 0 0");
+    script->timer(25);
+
+    script->script_1("0 0 0 0");
+    script->script_2("0 0 0 0");
+    script->script_3("0 0 0 0");
+    script->script_4("0 0 0 0");
+    script->script_5("0 0 0 0");
+    script->script_6("0 0 0 0");
+    script->script_7("0 0 0 0");
+    script->timer(27);
+*/
     script->script_1("LAND");
     script->script_2("LAND");
     script->script_3("LAND");
@@ -65,7 +120,7 @@ int main(int argc, char **argv)
     script->script_5("LAND");
     script->script_6("LAND");
     script->script_7("LAND");
-    script->timer(19);
+    script->timer(22);
 
 
   }

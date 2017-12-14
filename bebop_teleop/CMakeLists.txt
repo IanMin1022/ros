@@ -3,6 +3,7 @@ project(bebop_teleop)
 
 add_definitions(-std=c++11)
 
+find_package(OpenCV REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
 	geometry_msgs
 	roscpp
@@ -11,7 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
 	bebop_msgs
 	cv_bridge
 	image_transport
-	OpenCV REQUIRED
 )
 
 include(FindPkgConfig)
@@ -33,6 +33,7 @@ catkin_package(
 	CATKIN_DEPENDS geometry_msgs roscpp std_msgs sensor_msgs bebop_msgs cv_bridge image_transport
 	DEPENDS ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY}
 )
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 include_directories(include
 	${SDL2_INCLUDE_DIRS}
@@ -42,7 +43,6 @@ include_directories(include
 link_directories(${SDL2_LIBRARY_DIRS}
 	${SDL2_TTF_LIBRARY_DIRS}
 	${catkin_LIBRARY_DIRS})
-
 
 add_executable( bebop_teleop src/Events.cpp src/Input.cpp src/Window.cpp src/ManualControl.cpp src/GUI.cpp src/StateTracker.cpp src/Patroller.cpp src/main.cpp)
 add_executable( webcam src/WebcamPublisher.cpp)
@@ -54,5 +54,5 @@ target_link_libraries( bebop_teleop
 
 target_link_libraries( webcam
 	${catkin_LIBRARIES}
-	${OpenCV_LIBS}
+	${OpenCV_LIBRARIES}
 )
