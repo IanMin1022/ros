@@ -1,2 +1,5 @@
+To the one who owns the license
+- sorry I needed to upload this file on my git for personal usage. If it's a problem, let me know sorry and thank you.
+
 How to use launch file
 ex: roslaunch vrpn_client_ros sample.launch server:=169.254.90.237
