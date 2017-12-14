@@ -1,0 +1,2 @@
+How to use launch file
+ex: roslaunch vrpn_client_ros sample.launch server:=172.20.10.2
