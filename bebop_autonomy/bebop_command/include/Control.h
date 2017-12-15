@@ -16,7 +16,7 @@
 
 void Motion_timer(const ros::TimerEvent& event);
 
-class ManualControl {
+class Control {
 public:
 	void position_control_1();
 	void position_control_2();
@@ -100,6 +100,6 @@ private:
 	geometry_msgs::Twist motion;
 };
 
-extern ManualControl* control;
+extern Control* control;
 
 #endif

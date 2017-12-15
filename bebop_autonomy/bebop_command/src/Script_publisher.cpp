@@ -1,6 +1,6 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
-#include "ManualControl.h"
+#include "Control.h"
 #include "Script_publisher.h"
 #include <string>
 #include <iostream>

@@ -1,6 +1,6 @@
 #include "ros/ros.h"
 #include "geometry_msgs/PoseStamped.h"
-#include "ManualControl.h"
+#include "Control.h"
 #include "Script_subscriber.h"
 #include "Camera.h"
 

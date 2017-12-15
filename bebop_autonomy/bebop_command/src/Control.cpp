@@ -1,4 +1,4 @@
-#include "ManualControl.h"
+#include "Control.h"
 #include "Script_subscriber.h"
 #include <geometry_msgs/Twist.h>
 #include <ros/ros.h>
@@ -20,29 +20,29 @@
 #define SIDE 10
 #define UPDOWN 11
 
-#define SPEED_X_MAX 0.7
-#define SPEED_Y_MAX 0.7
-#define SPEED_Z_MAX 0.7
+#define SPEED_X_MAX 1
+#define SPEED_Y_MAX 1
+#define SPEED_Z_MAX 1
 
-#define Kp_x 0.02
-#define Ki_x 0
-#define Kd_x 0
+#define Kp_x 0.43
+#define Ki_x 0.0003
+#define Kd_x 2.35
 
-#define Kp_y 0.02
-#define Ki_y 0
-#define Kd_y 0
+#define Kp_y 0.43
+#define Ki_y 0.0003
+#define Kd_y 2.35
 
-#define Kp_z 1.2
-#define Ki_z 0
-#define Kd_z 0.4
+#define Kp_z 1.5
+#define Ki_z 0.0003
+#define Kd_z 0.97
 
-#define Kp_yaw 0.062
+#define Kp_yaw 0.043
 #define Ki_yaw 0
-#define Kd_yaw 0.040
+#define Kd_yaw 0.024
 
 #define dt 0.05
 
-ManualControl* control;
+Control* control;
 
 void Motion_timer(const ros::TimerEvent& event) {
 	if ( control->SideFlag ) {
@@ -153,7 +153,7 @@ double Deg2Rad(double deg) {
 	return deg * M_PI / 180;
 }
 
-void ManualControl::key_1(const char* transmit) {
+void Control::key_1(const char* transmit) {
 	int flag = Converter(transmit);
 
 	if(transmit != NULL)
@@ -199,7 +199,7 @@ void ManualControl::key_1(const char* transmit) {
 		}
 }
 
-void ManualControl::key_2(const char* transmit) {
+void Control::key_2(const char* transmit) {
 	int flag = Converter(transmit);
 
 	if(transmit != NULL)
@@ -245,7 +245,7 @@ void ManualControl::key_2(const char* transmit) {
 		}
 }
 
-void ManualControl::key_3(const char* transmit) {
+void Control::key_3(const char* transmit) {
 	int flag = Converter(transmit);
 
 	if(transmit != NULL)
@@ -291,7 +291,7 @@ void ManualControl::key_3(const char* transmit) {
 		}
 }
 
-void ManualControl::key_4(const char* transmit) {
+void Control::key_4(const char* transmit) {
 	int flag = Converter(transmit);
 
 	if(transmit != NULL)
@@ -337,7 +337,7 @@ void ManualControl::key_4(const char* transmit) {
 		}
 }
 
-void ManualControl::key_5(const char* transmit) {
+void Control::key_5(const char* transmit) {
 	int flag = Converter(transmit);
 
 	if(transmit != NULL)
@@ -383,7 +383,7 @@ void ManualControl::key_5(const char* transmit) {
 		}
 }
 
-void ManualControl::key_6(const char* transmit) {
+void Control::key_6(const char* transmit) {
 	int flag = Converter(transmit);
 
 	if(transmit != NULL)
@@ -429,7 +429,7 @@ void ManualControl::key_6(const char* transmit) {
 		}
 }
 
-void ManualControl::key_7(const char* transmit) {
+void Control::key_7(const char* transmit) {
 	int flag = Converter(transmit);
 
 	if(transmit != NULL)
@@ -475,7 +475,7 @@ void ManualControl::key_7(const char* transmit) {
 		}
 }
 
-void ManualControl::advertise(ros::NodeHandle& nh) {
+void Control::advertise(ros::NodeHandle& nh) {
 	pub_1[VELOCITY] = nh.advertise<geometry_msgs::Twist>("bebop_1/cmd_vel", 1);
 	pub_1[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_1/takeoff", 1);
 	pub_1[LAND] = nh.advertise<std_msgs::Empty>("bebop_1/land", 1);
@@ -547,7 +547,7 @@ void ManualControl::advertise(ros::NodeHandle& nh) {
 	pub_7[HOME] = nh.advertise<std_msgs::Bool>("bebop_7/autoflight/navigate_home", 1);
 }
 // horizontal axis is x, vertical axis is y.
-void ManualControl::position_control_1() {
+void Control::position_control_1() {
 	x_gap[0] = x_des[0] - x[0]; // x is horizontal data from motive
 	y_gap[0] = y_des[0] - y[0]; // y is axis to sky
 	z_gap[0] = z_des[0] - z[0]; // z is vertical data from motive
@@ -607,7 +607,7 @@ void ManualControl::position_control_1() {
 	pub_1[VELOCITY].publish(last);
 }
 
-void ManualControl::position_control_2() {
+void Control::position_control_2() {
 	x_gap[1] = x_des[1] - x[1];
 	y_gap[1] = y_des[1] - y[1];
 	z_gap[1] = z_des[1] - z[1];
@@ -650,7 +650,7 @@ void ManualControl::position_control_2() {
 	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
 	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
 	//ROS_INFO("x speed is %f", y_value);
-	//ROS_INFO("x ***** is %f", x[1]);
+	ROS_INFO("x = %f              y = %f", x[1], y[1]);
 	//ROS_INFO("x $$$$$$ is %f", y_speed[1]);
 	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
 	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
@@ -659,12 +659,12 @@ void ManualControl::position_control_2() {
 	//ROS_INFO("y $$$$$$ is %f", x_speed[1]);
 	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
 	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
-	ROS_INFO("z speed is %f", z_value);
+	//ROS_INFO("z speed is %f", z_value);
 	//ROS_INFO("z ***** is %f", z[1]);
 	//ROS_INFO("z $$$$$$ is %f", z_gap[1]);
 	//ROS_INFO("yaw speed is %f", yaw_value);
 	//ROS_INFO("yaw ***** is %f", yaw[1]);
-	//ROS_INFO("yaw $$$$$$ is %f", yaw_des[1]);
+	//ROS_INFO("yaw $$$$$$ is %f", D_control_z[1]);
 
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
 	last.linear.x = x_value; // which acts like y_value;
@@ -675,7 +675,7 @@ void ManualControl::position_control_2() {
 	pub_2[VELOCITY].publish(last);
 }
 
-void ManualControl::position_control_3() {
+void Control::position_control_3() {
 	x_gap[2] = x_des[2] - x[2];
 	y_gap[2] = y_des[2] - y[2];
 	z_gap[2] = z_des[2] - z[2];
@@ -733,7 +733,7 @@ void ManualControl::position_control_3() {
 	pub_3[VELOCITY].publish(last);
 }
 
-void ManualControl::position_control_4() {
+void Control::position_control_4() {
 	x_gap[3] = x_des[3] - x[3];
 	y_gap[3] = y_des[3] - y[3];
 	z_gap[3] = z_des[3] - z[3];
@@ -791,7 +791,7 @@ void ManualControl::position_control_4() {
 	pub_4[VELOCITY].publish(last);
 }
 
-void ManualControl::position_control_5() {
+void Control::position_control_5() {
 	x_gap[4] = x_des[4] - x[4];
 	y_gap[4] = y_des[4] - y[4];
 	z_gap[4] = z_des[4] - z[4];
@@ -849,7 +849,7 @@ void ManualControl::position_control_5() {
 	pub_5[VELOCITY].publish(last);
 }
 
-void ManualControl::position_control_6() {
+void Control::position_control_6() {
 	x_gap[5] = x_des[5] - x[5];
 	y_gap[5] = y_des[5] - y[5];
 	z_gap[5] = z_des[5] - z[5];
@@ -907,7 +907,7 @@ void ManualControl::position_control_6() {
 	pub_6[VELOCITY].publish(last);
 }
 
-void ManualControl::position_control_7() {
+void Control::position_control_7() {
 	x_gap[6] = x_des[6] - x[6];
 	y_gap[6] = y_des[6] - y[6];
 	z_gap[6] = z_des[6] - z[6];
@@ -965,7 +965,7 @@ void ManualControl::position_control_7() {
 	pub_7[VELOCITY].publish(last);
 }
 
-void ManualControl::doMisc_1(short type) {
+void Control::doMisc_1(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
 		subscriber->manner_1 = false;
@@ -981,7 +981,7 @@ void ManualControl::doMisc_1(short type) {
 	}
 }
 
-void ManualControl::doMisc_2(short type) {
+void Control::doMisc_2(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
 		subscriber->manner_2 = false;
@@ -997,7 +997,7 @@ void ManualControl::doMisc_2(short type) {
 	}
 }
 
-void ManualControl::doMisc_3(short type) {
+void Control::doMisc_3(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
 		subscriber->manner_3 = false;
@@ -1013,7 +1013,7 @@ void ManualControl::doMisc_3(short type) {
 	}
 }
 
-void ManualControl::doMisc_4(short type) {
+void Control::doMisc_4(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
 		subscriber->manner_4 = false;
@@ -1029,7 +1029,7 @@ void ManualControl::doMisc_4(short type) {
 	}
 }
 
-void ManualControl::doMisc_5(short type) {
+void Control::doMisc_5(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
 		subscriber->manner_5 = false;
@@ -1045,7 +1045,7 @@ void ManualControl::doMisc_5(short type) {
 	}
 }
 
-void ManualControl::doMisc_6(short type) {
+void Control::doMisc_6(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
 		subscriber->manner_6 = false;
@@ -1061,7 +1061,7 @@ void ManualControl::doMisc_6(short type) {
 	}
 }
 
-void ManualControl::doMisc_7(short type) {
+void Control::doMisc_7(short type) {
 	if(type == DO_LAND) {
 		std_msgs::Empty m;
 		subscriber->manner_7 = false;
@@ -1077,49 +1077,49 @@ void ManualControl::doMisc_7(short type) {
 	}
 }
 
-void ManualControl::doFlip_1(short type) {
+void Control::doFlip_1(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_1[FLIP].publish(m);
 }
 
-void ManualControl::doFlip_2(short type) {
+void Control::doFlip_2(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_2[FLIP].publish(m);
 }
 
-void ManualControl::doFlip_3(short type) {
+void Control::doFlip_3(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_3[FLIP].publish(m);
 }
 
-void ManualControl::doFlip_4(short type) {
+void Control::doFlip_4(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_4[FLIP].publish(m);
 }
 
-void ManualControl::doFlip_5(short type) {
+void Control::doFlip_5(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_5[FLIP].publish(m);
 }
 
-void ManualControl::doFlip_6(short type) {
+void Control::doFlip_6(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_6[FLIP].publish(m);
 }
 
-void ManualControl::doFlip_7(short type) {
+void Control::doFlip_7(short type) {
 	std_msgs::UInt8 m;
 	m.data = type;
 	pub_7[FLIP].publish(m);
 }
 
-void ManualControl::LeftNRight_1(short count) {
+void Control::LeftNRight_1(short count) {
 	if ( count == 0)	{
 		motion.angular.z = 0;
 		pub_1[VELOCITY].publish(motion);
@@ -1139,7 +1139,7 @@ void ManualControl::LeftNRight_1(short count) {
 	}
 }
 
-void ManualControl::LeftNRight_2(short count) {
+void Control::LeftNRight_2(short count) {
 	if ( count == 0)	{
 		motion.angular.z = 0;
 		pub_2[VELOCITY].publish(motion);
@@ -1159,7 +1159,7 @@ void ManualControl::LeftNRight_2(short count) {
 	}
 }
 
-void ManualControl::LeftNRight_3(short count) {
+void Control::LeftNRight_3(short count) {
 	if ( count == 0)	{
 		motion.angular.z = 0;
 		pub_3[VELOCITY].publish(motion);
@@ -1179,7 +1179,7 @@ void ManualControl::LeftNRight_3(short count) {
 	}
 }
 
-void ManualControl::LeftNRight_4(short count) {
+void Control::LeftNRight_4(short count) {
 	if ( count == 0)	{
 		motion.angular.z = 0;
 		pub_4[VELOCITY].publish(motion);
@@ -1199,7 +1199,7 @@ void ManualControl::LeftNRight_4(short count) {
 	}
 }
 
-void ManualControl::LeftNRight_5(short count) {
+void Control::LeftNRight_5(short count) {
 	if ( count == 0)	{
 		motion.angular.z = 0;
 		pub_5[VELOCITY].publish(motion);
@@ -1219,7 +1219,7 @@ void ManualControl::LeftNRight_5(short count) {
 	}
 }
 
-void ManualControl::LeftNRight_6(short count) {
+void Control::LeftNRight_6(short count) {
 	if ( count == 0)	{
 		motion.angular.z = 0;
 		pub_6[VELOCITY].publish(motion);
@@ -1239,7 +1239,7 @@ void ManualControl::LeftNRight_6(short count) {
 	}
 }
 
-void ManualControl::LeftNRight_7(short count) {
+void Control::LeftNRight_7(short count) {
 	if ( count == 0)	{
 		motion.angular.z = 0;
 		pub_7[VELOCITY].publish(motion);
@@ -1259,7 +1259,7 @@ void ManualControl::LeftNRight_7(short count) {
 	}
 }
 
-void ManualControl::UpDown_1(short count) {
+void Control::UpDown_1(short count) {
 	if ( count == 0)	{
 		motion.linear.x = 0;
 		pub_1[VELOCITY].publish(motion);
@@ -1279,7 +1279,7 @@ void ManualControl::UpDown_1(short count) {
 	}
 }
 
-void ManualControl::UpDown_2(short count) {
+void Control::UpDown_2(short count) {
 	if ( count == 0)	{
 		motion.linear.x = 0;
 		pub_2[VELOCITY].publish(motion);
@@ -1299,7 +1299,7 @@ void ManualControl::UpDown_2(short count) {
 	}
 }
 
-void ManualControl::UpDown_3(short count) {
+void Control::UpDown_3(short count) {
 	if ( count == 0)	{
 		motion.linear.x = 0;
 		pub_3[VELOCITY].publish(motion);
@@ -1319,7 +1319,7 @@ void ManualControl::UpDown_3(short count) {
 	}
 }
 
-void ManualControl::UpDown_4(short count) {
+void Control::UpDown_4(short count) {
 	if ( count == 0)	{
 		motion.linear.x = 0;
 		pub_4[VELOCITY].publish(motion);
@@ -1339,7 +1339,7 @@ void ManualControl::UpDown_4(short count) {
 	}
 }
 
-void ManualControl::UpDown_5(short count) {
+void Control::UpDown_5(short count) {
 	if ( count == 0)	{
 		motion.linear.x = 0;
 		pub_5[VELOCITY].publish(motion);
@@ -1359,7 +1359,7 @@ void ManualControl::UpDown_5(short count) {
 	}
 }
 
-void ManualControl::UpDown_6(short count) {
+void Control::UpDown_6(short count) {
 	if ( count == 0)	{
 		motion.linear.x = 0;
 		pub_6[VELOCITY].publish(motion);
@@ -1379,7 +1379,7 @@ void ManualControl::UpDown_6(short count) {
 	}
 }
 
-void ManualControl::UpDown_7(short count) {
+void Control::UpDown_7(short count) {
 	if ( count == 0)	{
 		motion.linear.x = 0;
 		pub_7[VELOCITY].publish(motion);

@@ -1,4 +1,4 @@
-#include "ManualControl.h"
+#include "Control.h"
 #include "Script_subscriber.h"
 #include "StateTracker.h"
 #include "Camera.h"
@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
   // need to add current coordinates subscriber (a.k.a camera node)
 
 	stats = new StateTracker();
-	control = new ManualControl();
+	control = new Control();
   subscriber = new Script_subscriber();
   camera_node = new Camera_node();
 
