@@ -1,3 +1,0 @@
-<launch>
-	<node launch-prefix="valgrind --leak-check=full -v --track-origins=yes" name="bebop_dobob" pkg="bebop_dobob" type="bebop_dobob" required="true" output="screen"/>
-</launch>

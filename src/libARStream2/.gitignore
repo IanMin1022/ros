@@ -1,7 +1,0 @@
-/Build/
-/build/
-.DS_Store
-.project
-.cproject
-*~
-libARStream2.iml
