@@ -1,6 +1,6 @@
 #include "Control.h"
 #include "Script_subscriber.h"
-#include "StateTracker.h"
+#include "StateCheck.h"
 #include "Camera.h"
 #include <geometry_msgs/Twist.h>
 #include <ros/ros.h>
@@ -15,13 +15,13 @@ int main(int argc, char** argv) {
 	ros::init(argc, argv, "node_master");
 	ros::NodeHandle nh;
   //ros::NodeHandle local_nh("~");
-  ros::Timer CheckTime = nh.createTimer(ros::Duration(0.4), Motion_timer);
+  ros::Timer CheckTime = nh.createTimer(ros::Duration(0.05), Motion_timer);
 	//ros::Subscriber camera_node = nh.subscribe("Camera", 1000, Camera_node);
 
   // you should check the frequency and how it works depend on the frequency
   // need to add current coordinates subscriber (a.k.a camera node)
 
-	stats = new StateTracker();
+	stats = new StateCheck();
 	control = new Control();
   subscriber = new Script_subscriber();
   camera_node = new Camera_node();

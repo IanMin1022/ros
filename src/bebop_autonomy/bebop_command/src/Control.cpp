@@ -24,13 +24,13 @@
 #define SPEED_Y_MAX 1
 #define SPEED_Z_MAX 1
 
-#define Kp_x 0.43
-#define Ki_x 0.0003
-#define Kd_x 2.35
+#define Kp_x 0.7
+#define Ki_x 0.0001
+#define Kd_x 2.55					// 2.35
 
-#define Kp_y 0.43
-#define Ki_y 0.0003
-#define Kd_y 2.35
+#define Kp_y 0.7
+#define Ki_y 0.0001
+#define Kd_y 2.55					// 2.35
 
 #define Kp_z 1.5
 #define Ki_z 0.0003
@@ -45,72 +45,127 @@
 Control* control;
 
 void Motion_timer(const ros::TimerEvent& event) {
-	if ( control->SideFlag ) {
+	if ( control->TakeoffNLandFlag ) {
+		if ( control->TakeoffFlag_1 ) {
+			control->doMisc_1(DO_TAKEOFF);
+		}
+
+		if ( control->TakeoffFlag_2 ) {
+			control->doMisc_2(DO_TAKEOFF);
+		}
+
+		if ( control->TakeoffFlag_3 ) {
+			control->doMisc_3(DO_TAKEOFF);
+		}
+
+		if ( control->TakeoffFlag_4 ) {
+			control->doMisc_4(DO_TAKEOFF);
+		}
+
+		if ( control->TakeoffFlag_5 ) {
+			control->doMisc_5(DO_TAKEOFF);
+		}
+
+		if ( control->TakeoffFlag_6 ) {
+			control->doMisc_6(DO_TAKEOFF);
+		}
+
+		if ( control->TakeoffFlag_7 ) {
+			control->doMisc_7(DO_TAKEOFF);
+		}
+
+		if ( control->LandFlag_1 ) {
+			control->doMisc_1(DO_LAND);
+		}
+
+		if ( control->LandFlag_2 ) {
+			control->doMisc_2(DO_LAND);
+		}
+
+		if ( control->LandFlag_3 ) {
+			control->doMisc_3(DO_LAND);
+		}
+
+		if ( control->LandFlag_4 ) {
+			control->doMisc_4(DO_LAND);
+		}
+
+		if ( control->LandFlag_5 ) {
+			control->doMisc_5(DO_LAND);
+		}
+
+		if ( control->LandFlag_6 ) {
+			control->doMisc_6(DO_LAND);
+		}
+
+		if ( control->LandFlag_7 ) {
+			control->doMisc_7(DO_LAND);
+		}
+
+		control->takeoffNland_counter++;
+	}
+
+	if ( control->MotionFlag ) {
 		if ( control->SideFlag_1 ) {
-			control->LeftNRight_1(control->side_counter);
+			control->LeftNRight_1();
 		}
 
 		if ( control->SideFlag_2 ) {
-			control->LeftNRight_2(control->side_counter);
+			control->LeftNRight_2();
 		}
 
 		if ( control->SideFlag_3 ) {
-			control->LeftNRight_3(control->side_counter);
+			control->LeftNRight_3();
 		}
 
 		if ( control->SideFlag_4 ) {
-			control->LeftNRight_4(control->side_counter);
+			control->LeftNRight_4();
 		}
 
 		if ( control->SideFlag_5 ) {
-			control->LeftNRight_5(control->side_counter);
+			control->LeftNRight_5();
 		}
 
 		if ( control->SideFlag_6 ) {
-			control->LeftNRight_6(control->side_counter);
+			control->LeftNRight_6();
 		}
 
 		if ( control->SideFlag_7 ) {
-			control->LeftNRight_7(control->side_counter);
+			control->LeftNRight_7();
 		}
 
-		control->side_counter++;
-	}
-
-	if ( control->UpDownFlag ) {
 		if ( control->UpDownFlag_1 ) {
-			control->UpDown_1(control->updown_counter);
+			control->UpDown_1();
 		}
 
 		if ( control->UpDownFlag_2 ) {
-			control->UpDown_2(control->updown_counter);
+			control->UpDown_2();
 		}
 
 		if ( control->UpDownFlag_3 ) {
-			control->UpDown_3(control->updown_counter);
+			control->UpDown_3();
 		}
 
 		if ( control->UpDownFlag_4 ) {
-			control->UpDown_4(control->updown_counter);
+			control->UpDown_4();
 		}
 
 		if ( control->UpDownFlag_5 ) {
-			control->UpDown_5(control->updown_counter);
+			control->UpDown_5();
 		}
 
 		if ( control->UpDownFlag_6 ) {
-			control->UpDown_6(control->updown_counter);
+			control->UpDown_6();
 		}
 
 		if ( control->UpDownFlag_7 ) {
-			control->UpDown_7(control->updown_counter);
+			control->UpDown_7();
 		}
 
-		control->updown_counter++;
+		control->motion_counter++;
 	}
 }
 
-// 좌우, 앞뒤로 까딱 추가하기
 int Converter(const char* input) {
 	char flip_forward = 'F';
 	char flip_backward = 'B';
@@ -175,23 +230,27 @@ void Control::key_1(const char* transmit) {
 			break;
 
 		case DO_LAND:
-			doMisc_1(DO_LAND);
+			control->TakeoffNLandFlag = true;
+			control->LandFlag_1 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case DO_TAKEOFF:
-			doMisc_1(DO_TAKEOFF);
+			control->TakeoffNLandFlag = true;
+			control->TakeoffFlag_1 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case SIDE:
-			control->SideFlag = true;
+			control->MotionFlag = true;
 			control->SideFlag_1 = true;
-			control->side_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
-			control->UpDownFlag = true;
+			control->MotionFlag = true;
 			control->UpDownFlag_1 = true;
-			control->updown_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		default:
@@ -221,23 +280,27 @@ void Control::key_2(const char* transmit) {
 			break;
 
 		case DO_LAND:
-			doMisc_2(DO_LAND);
+			control->TakeoffNLandFlag = true;
+			control->LandFlag_2 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case DO_TAKEOFF:
-			doMisc_2(DO_TAKEOFF);
+			control->TakeoffNLandFlag = true;
+			control->TakeoffFlag_2 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case SIDE:
-			control->SideFlag = true;
+			control->MotionFlag = true;
 			control->SideFlag_2 = true;
-			control->side_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
-			control->UpDownFlag = true;
+			control->MotionFlag = true;
 			control->UpDownFlag_2 = true;
-			control->updown_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		default:
@@ -267,23 +330,27 @@ void Control::key_3(const char* transmit) {
 			break;
 
 		case DO_LAND:
-			doMisc_3(DO_LAND);
+			control->TakeoffNLandFlag = true;
+			control->LandFlag_3 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case DO_TAKEOFF:
-			doMisc_3(DO_TAKEOFF);
+			control->TakeoffNLandFlag = true;
+			control->TakeoffFlag_3 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case SIDE:
-			control->SideFlag = true;
+			control->MotionFlag = true;
 			control->SideFlag_3 = true;
-			control->side_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
-			control->UpDownFlag = true;
+			control->MotionFlag = true;
 			control->UpDownFlag_3 = true;
-			control->updown_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		default:
@@ -313,23 +380,27 @@ void Control::key_4(const char* transmit) {
 			break;
 
 		case DO_LAND:
-			doMisc_4(DO_LAND);
+			control->TakeoffNLandFlag = true;
+			control->LandFlag_4 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case DO_TAKEOFF:
-			doMisc_4(DO_TAKEOFF);
+			control->TakeoffNLandFlag = true;
+			control->TakeoffFlag_4 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case SIDE:
-			control->SideFlag = true;
+			control->MotionFlag = true;
 			control->SideFlag_4 = true;
-			control->side_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
-			control->UpDownFlag = true;
+			control->MotionFlag = true;
 			control->UpDownFlag_4 = true;
-			control->updown_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		default:
@@ -359,23 +430,27 @@ void Control::key_5(const char* transmit) {
 			break;
 
 		case DO_LAND:
-			doMisc_5(DO_LAND);
+			control->TakeoffNLandFlag = true;
+			control->LandFlag_5 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case DO_TAKEOFF:
-			doMisc_5(DO_TAKEOFF);
+			control->TakeoffNLandFlag = true;
+			control->TakeoffFlag_5 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case SIDE:
-			control->SideFlag = true;
+			control->MotionFlag = true;
 			control->SideFlag_5 = true;
-			control->side_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
-			control->UpDownFlag = true;
+			control->MotionFlag = true;
 			control->UpDownFlag_5 = true;
-			control->updown_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		default:
@@ -405,23 +480,27 @@ void Control::key_6(const char* transmit) {
 			break;
 
 		case DO_LAND:
-			doMisc_6(DO_LAND);
+			control->TakeoffNLandFlag = true;
+			control->LandFlag_6 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case DO_TAKEOFF:
-			doMisc_6(DO_TAKEOFF);
+			control->TakeoffNLandFlag = true;
+			control->TakeoffFlag_6 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case SIDE:
-			control->SideFlag = true;
+			control->MotionFlag = true;
 			control->SideFlag_6 = true;
-			control->side_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
-			control->UpDownFlag = true;
+			control->MotionFlag = true;
 			control->UpDownFlag_6 = true;
-			control->updown_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		default:
@@ -451,23 +530,27 @@ void Control::key_7(const char* transmit) {
 			break;
 
 		case DO_LAND:
-			doMisc_7(DO_LAND);
+			control->TakeoffNLandFlag = true;
+			control->LandFlag_7 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case DO_TAKEOFF:
-			doMisc_7(DO_TAKEOFF);
+			control->TakeoffNLandFlag = true;
+			control->TakeoffFlag_7 = true;
+			control->takeoffNland_counter = 0;
 			break;
 
 		case SIDE:
-			control->SideFlag = true;
+			control->MotionFlag = true;
 			control->SideFlag_7 = true;
-			control->side_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
-			control->UpDownFlag = true;
+			control->MotionFlag = true;
 			control->UpDownFlag_7 = true;
-			control->updown_counter = 0;
+			control->motion_counter = 0;
 			break;
 
 		default:
@@ -480,9 +563,9 @@ void Control::advertise(ros::NodeHandle& nh) {
 	pub_1[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_1/takeoff", 1);
 	pub_1[LAND] = nh.advertise<std_msgs::Empty>("bebop_1/land", 1);
 	pub_1[RESET] = nh.advertise<std_msgs::Empty>("bebop_1/reset", 1);
-	pub_1[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_1/camera_control", 1);
-	pub_1[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_1/snapshot", 1);
-	pub_1[RECORD] = nh.advertise<std_msgs::Bool>("bebop_1/record", 1);
+	//pub_1[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_1/camera_control", 1);
+	//pub_1[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_1/snapshot", 1);
+	//pub_1[RECORD] = nh.advertise<std_msgs::Bool>("bebop_1/record", 1);
 	pub_1[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_1/flip", 1);
 	pub_1[HOME] = nh.advertise<std_msgs::Bool>("bebop_1/autoflight/navigate_home", 1);
 
@@ -490,9 +573,9 @@ void Control::advertise(ros::NodeHandle& nh) {
 	pub_2[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_2/takeoff", 1);
 	pub_2[LAND] = nh.advertise<std_msgs::Empty>("bebop_2/land", 1);
 	pub_2[RESET] = nh.advertise<std_msgs::Empty>("bebop_2/reset", 1);
-	pub_2[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_2/camera_control", 1);
-	pub_2[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_2/snapshot", 1);
-	pub_2[RECORD] = nh.advertise<std_msgs::Bool>("bebop_2/record", 1);
+	//pub_2[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_2/camera_control", 1);
+	//pub_2[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_2/snapshot", 1);
+	//pub_2[RECORD] = nh.advertise<std_msgs::Bool>("bebop_2/record", 1);
 	pub_2[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_2/flip", 1);
 	pub_2[HOME] = nh.advertise<std_msgs::Bool>("bebop_2/autoflight/navigate_home", 1);
 
@@ -500,9 +583,9 @@ void Control::advertise(ros::NodeHandle& nh) {
 	pub_3[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_3/takeoff", 1);
 	pub_3[LAND] = nh.advertise<std_msgs::Empty>("bebop_3/land", 1);
 	pub_3[RESET] = nh.advertise<std_msgs::Empty>("bebop_3/reset", 1);
-	pub_3[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_3/camera_control", 1);
-	pub_3[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_3/snapshot", 1);
-	pub_3[RECORD] = nh.advertise<std_msgs::Bool>("bebop_3/record", 1);
+	//pub_3[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_3/camera_control", 1);
+	//pub_3[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_3/snapshot", 1);
+	//pub_3[RECORD] = nh.advertise<std_msgs::Bool>("bebop_3/record", 1);
 	pub_3[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_3/flip", 1);
 	pub_3[HOME] = nh.advertise<std_msgs::Bool>("bebop_3/autoflight/navigate_home", 1);
 
@@ -510,9 +593,9 @@ void Control::advertise(ros::NodeHandle& nh) {
 	pub_4[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_4/takeoff", 1);
 	pub_4[LAND] = nh.advertise<std_msgs::Empty>("bebop_4/land", 1);
 	pub_4[RESET] = nh.advertise<std_msgs::Empty>("bebop_4/reset", 1);
-	pub_4[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_4/camera_control", 1);
-	pub_4[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_4/snapshot", 1);
-	pub_4[RECORD] = nh.advertise<std_msgs::Bool>("bebop_4/record", 1);
+	//pub_4[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_4/camera_control", 1);
+	//pub_4[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_4/snapshot", 1);
+	//pub_4[RECORD] = nh.advertise<std_msgs::Bool>("bebop_4/record", 1);
 	pub_4[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_4/flip", 1);
 	pub_4[HOME] = nh.advertise<std_msgs::Bool>("bebop_4/autoflight/navigate_home", 1);
 
@@ -520,9 +603,9 @@ void Control::advertise(ros::NodeHandle& nh) {
 	pub_5[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_5/takeoff", 1);
 	pub_5[LAND] = nh.advertise<std_msgs::Empty>("bebop_5/land", 1);
 	pub_5[RESET] = nh.advertise<std_msgs::Empty>("bebop_5/reset", 1);
-	pub_5[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_5/camera_control", 1);
-	pub_5[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_5/snapshot", 1);
-	pub_5[RECORD] = nh.advertise<std_msgs::Bool>("bebop_5/record", 1);
+	//pub_5[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_5/camera_control", 1);
+	//pub_5[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_5/snapshot", 1);
+	//pub_5[RECORD] = nh.advertise<std_msgs::Bool>("bebop_5/record", 1);
 	pub_5[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_5/flip", 1);
 	pub_5[HOME] = nh.advertise<std_msgs::Bool>("bebop_5/autoflight/navigate_home", 1);
 
@@ -530,9 +613,9 @@ void Control::advertise(ros::NodeHandle& nh) {
 	pub_6[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_6/takeoff", 1);
 	pub_6[LAND] = nh.advertise<std_msgs::Empty>("bebop_6/land", 1);
 	pub_6[RESET] = nh.advertise<std_msgs::Empty>("bebop_6/reset", 1);
-	pub_6[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_6/camera_control", 1);
-	pub_6[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_6/snapshot", 1);
-	pub_6[RECORD] = nh.advertise<std_msgs::Bool>("bebop_6/record", 1);
+	//pub_6[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_6/camera_control", 1);
+	//pub_6[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_6/snapshot", 1);
+	//pub_6[RECORD] = nh.advertise<std_msgs::Bool>("bebop_6/record", 1);
 	pub_6[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_6/flip", 1);
 	pub_6[HOME] = nh.advertise<std_msgs::Bool>("bebop_6/autoflight/navigate_home", 1);
 
@@ -540,9 +623,9 @@ void Control::advertise(ros::NodeHandle& nh) {
 	pub_7[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_7/takeoff", 1);
 	pub_7[LAND] = nh.advertise<std_msgs::Empty>("bebop_7/land", 1);
 	pub_7[RESET] = nh.advertise<std_msgs::Empty>("bebop_7/reset", 1);
-	pub_7[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_7/camera_control", 1);
-	pub_7[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_7/snapshot", 1);
-	pub_7[RECORD] = nh.advertise<std_msgs::Bool>("bebop_7/record", 1);
+	//pub_7[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_7/camera_control", 1);
+	//pub_7[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_7/snapshot", 1);
+	//pub_7[RECORD] = nh.advertise<std_msgs::Bool>("bebop_7/record", 1);
 	pub_7[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_7/flip", 1);
 	pub_7[HOME] = nh.advertise<std_msgs::Bool>("bebop_7/autoflight/navigate_home", 1);
 }
@@ -588,15 +671,6 @@ void Control::position_control_1() {
 	double y_value = P_control_y[0] + I_control_y[0] + D_control_y[0];
 	double z_value = P_control_z[0] + I_control_z[0] + D_control_z[0];
 	double yaw_value = P_control_yaw[0] + I_control_yaw[0] + D_control_yaw[0];
-
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
-
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
-
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
 
 	// x is forward-backward (forward is positive), y is side (left is positive)
 	last.linear.x = x_value;
@@ -647,25 +721,6 @@ void Control::position_control_2() {
 	double z_value = P_control_z[1] + I_control_z[1] + D_control_z[1];
 	double yaw_value = P_control_yaw[1] + I_control_yaw[1] + D_control_yaw[1];
 
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
-	//ROS_INFO("x speed is %f", y_value);
-	ROS_INFO("x = %f              y = %f", x[1], y[1]);
-	//ROS_INFO("x $$$$$$ is %f", y_speed[1]);
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
-	//ROS_INFO("y speed is %f", x_value);
-	//ROS_INFO("y ***** is %f", y[1]);
-	//ROS_INFO("y $$$$$$ is %f", x_speed[1]);
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
-	//ROS_INFO("z speed is %f", z_value);
-	//ROS_INFO("z ***** is %f", z[1]);
-	//ROS_INFO("z $$$$$$ is %f", z_gap[1]);
-	//ROS_INFO("yaw speed is %f", yaw_value);
-	//ROS_INFO("yaw ***** is %f", yaw[1]);
-	//ROS_INFO("yaw $$$$$$ is %f", D_control_z[1]);
-
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
 	last.linear.x = x_value; // which acts like y_value;
 	last.linear.y = y_value; // which acts like x_value;
@@ -714,15 +769,6 @@ void Control::position_control_3() {
 	double y_value = P_control_y[2] + I_control_y[2] + D_control_y[2];
 	double z_value = P_control_z[2] + I_control_z[2] + D_control_z[2];
 	double yaw_value = P_control_yaw[2] + I_control_yaw[2] + D_control_yaw[2];
-
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
-
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
-
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
 
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
 	last.linear.x = x_value; // which acts like y_value;
@@ -773,15 +819,6 @@ void Control::position_control_4() {
 	double z_value = P_control_z[3] + I_control_z[3] + D_control_z[3];
 	double yaw_value = P_control_yaw[3] + I_control_yaw[3] + D_control_yaw[3];
 
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
-
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
-
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
-
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
 	last.linear.x = x_value; // which acts like y_value;
 	last.linear.y = y_value; // which acts like x_value;
@@ -830,15 +867,6 @@ void Control::position_control_5() {
 	double y_value = P_control_y[4] + I_control_y[4] + D_control_y[4];
 	double z_value = P_control_z[4] + I_control_z[4] + D_control_z[4];
 	double yaw_value = P_control_yaw[4] + I_control_yaw[4] + D_control_yaw[4];
-
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
-
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
-
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
 
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
 	last.linear.x = x_value; // which acts like y_value;
@@ -889,15 +917,6 @@ void Control::position_control_6() {
 	double z_value = P_control_z[5] + I_control_z[5] + D_control_z[5];
 	double yaw_value = P_control_yaw[5] + I_control_yaw[5] + D_control_yaw[5];
 
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
-
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
-
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
-
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
 	last.linear.x = x_value; // which acts like y_value;
 	last.linear.y = y_value; // which acts like x_value;
@@ -947,15 +966,6 @@ void Control::position_control_7() {
 	double z_value = P_control_z[6] + I_control_z[6] + D_control_z[6];
 	double yaw_value = P_control_yaw[6] + I_control_yaw[6] + D_control_yaw[6];
 
-	if ( x_value > SPEED_X_MAX) x_value = SPEED_X_MAX;
-	else if ( x_value < -SPEED_X_MAX) x_value = -SPEED_X_MAX;
-
-	if ( y_value > SPEED_Y_MAX) y_value = SPEED_Y_MAX;
-	else if ( y_value < -SPEED_Y_MAX) y_value = -SPEED_Y_MAX;
-
-	if ( z_value > SPEED_Z_MAX) z_value = SPEED_Z_MAX;
-	else if ( z_value < -SPEED_Z_MAX) z_value = -SPEED_Z_MAX;
-
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
 	last.linear.x = x_value; // which acts like y_value;
 	last.linear.y = y_value; // which acts like x_value;
@@ -970,6 +980,11 @@ void Control::doMisc_1(short type) {
 		std_msgs::Empty m;
 		subscriber->manner_1 = false;
 		pub_1[LAND].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			LandFlag_1 = false;
+		}
 	}
 	else if(type == DO_RESET) {
 		std_msgs::Empty m;
@@ -978,6 +993,11 @@ void Control::doMisc_1(short type) {
 	else if(type == DO_TAKEOFF) {
 		std_msgs::Empty m;
 		pub_1[TAKEOFF].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			TakeoffFlag_1 = false;
+		}
 	}
 }
 
@@ -986,6 +1006,11 @@ void Control::doMisc_2(short type) {
 		std_msgs::Empty m;
 		subscriber->manner_2 = false;
 		pub_2[LAND].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			LandFlag_2 = false;
+		}
 	}
 	else if(type == DO_RESET) {
 		std_msgs::Empty m;
@@ -994,6 +1019,11 @@ void Control::doMisc_2(short type) {
 	else if(type == DO_TAKEOFF) {
 		std_msgs::Empty m;
 		pub_2[TAKEOFF].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			TakeoffFlag_2 = false;
+		}
 	}
 }
 
@@ -1002,6 +1032,11 @@ void Control::doMisc_3(short type) {
 		std_msgs::Empty m;
 		subscriber->manner_3 = false;
 		pub_3[LAND].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			LandFlag_3 = false;
+		}
 	}
 	else if(type == DO_RESET) {
 		std_msgs::Empty m;
@@ -1010,6 +1045,11 @@ void Control::doMisc_3(short type) {
 	else if(type == DO_TAKEOFF) {
 		std_msgs::Empty m;
 		pub_3[TAKEOFF].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			TakeoffFlag_3 = false;
+		}
 	}
 }
 
@@ -1018,6 +1058,11 @@ void Control::doMisc_4(short type) {
 		std_msgs::Empty m;
 		subscriber->manner_4 = false;
 		pub_4[LAND].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			LandFlag_4 = false;
+		}
 	}
 	else if(type == DO_RESET) {
 		std_msgs::Empty m;
@@ -1026,6 +1071,11 @@ void Control::doMisc_4(short type) {
 	else if(type == DO_TAKEOFF) {
 		std_msgs::Empty m;
 		pub_4[TAKEOFF].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			TakeoffFlag_4 = false;
+		}
 	}
 }
 
@@ -1034,6 +1084,11 @@ void Control::doMisc_5(short type) {
 		std_msgs::Empty m;
 		subscriber->manner_5 = false;
 		pub_5[LAND].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			LandFlag_5 = false;
+		}
 	}
 	else if(type == DO_RESET) {
 		std_msgs::Empty m;
@@ -1042,6 +1097,11 @@ void Control::doMisc_5(short type) {
 	else if(type == DO_TAKEOFF) {
 		std_msgs::Empty m;
 		pub_5[TAKEOFF].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			TakeoffFlag_5 = false;
+		}
 	}
 }
 
@@ -1050,6 +1110,11 @@ void Control::doMisc_6(short type) {
 		std_msgs::Empty m;
 		subscriber->manner_6 = false;
 		pub_6[LAND].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			LandFlag_6 = false;
+		}
 	}
 	else if(type == DO_RESET) {
 		std_msgs::Empty m;
@@ -1058,6 +1123,11 @@ void Control::doMisc_6(short type) {
 	else if(type == DO_TAKEOFF) {
 		std_msgs::Empty m;
 		pub_6[TAKEOFF].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			TakeoffFlag_6 = false;
+		}
 	}
 }
 
@@ -1066,6 +1136,11 @@ void Control::doMisc_7(short type) {
 		std_msgs::Empty m;
 		subscriber->manner_7 = false;
 		pub_7[LAND].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			LandFlag_7 = false;
+		}
 	}
 	else if(type == DO_RESET) {
 		std_msgs::Empty m;
@@ -1074,6 +1149,11 @@ void Control::doMisc_7(short type) {
 	else if(type == DO_TAKEOFF) {
 		std_msgs::Empty m;
 		pub_7[TAKEOFF].publish(m);
+
+		if ( takeoffNland_counter > 5)	{
+			TakeoffNLandFlag = false;
+			TakeoffFlag_7 = false;
+		}
 	}
 }
 
@@ -1119,16 +1199,16 @@ void Control::doFlip_7(short type) {
 	pub_7[FLIP].publish(m);
 }
 
-void Control::LeftNRight_1(short count) {
-	if ( count == 0)	{
+void Control::LeftNRight_1() {
+	if ( motion_counter == 0)	{
 		motion.angular.z = 0;
 		pub_1[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.angular.z = 0.1;
 		pub_1[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.angular.z = -0.1;
 		pub_1[VELOCITY].publish(motion);
 	}
@@ -1139,16 +1219,16 @@ void Control::LeftNRight_1(short count) {
 	}
 }
 
-void Control::LeftNRight_2(short count) {
-	if ( count == 0)	{
+void Control::LeftNRight_2() {
+	if ( motion_counter == 0)	{
 		motion.angular.z = 0;
 		pub_2[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.angular.z = 0.1;
 		pub_2[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.angular.z = -0.1;
 		pub_2[VELOCITY].publish(motion);
 	}
@@ -1159,16 +1239,16 @@ void Control::LeftNRight_2(short count) {
 	}
 }
 
-void Control::LeftNRight_3(short count) {
-	if ( count == 0)	{
+void Control::LeftNRight_3() {
+	if ( motion_counter == 0)	{
 		motion.angular.z = 0;
 		pub_3[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.angular.z = 0.1;
 		pub_3[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.angular.z = -0.1;
 		pub_3[VELOCITY].publish(motion);
 	}
@@ -1179,16 +1259,16 @@ void Control::LeftNRight_3(short count) {
 	}
 }
 
-void Control::LeftNRight_4(short count) {
-	if ( count == 0)	{
+void Control::LeftNRight_4() {
+	if ( motion_counter == 0)	{
 		motion.angular.z = 0;
 		pub_4[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.angular.z = 0.1;
 		pub_4[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.angular.z = -0.1;
 		pub_4[VELOCITY].publish(motion);
 	}
@@ -1199,16 +1279,16 @@ void Control::LeftNRight_4(short count) {
 	}
 }
 
-void Control::LeftNRight_5(short count) {
-	if ( count == 0)	{
+void Control::LeftNRight_5() {
+	if ( motion_counter == 0)	{
 		motion.angular.z = 0;
 		pub_5[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.angular.z = 0.1;
 		pub_5[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.angular.z = -0.1;
 		pub_5[VELOCITY].publish(motion);
 	}
@@ -1219,16 +1299,16 @@ void Control::LeftNRight_5(short count) {
 	}
 }
 
-void Control::LeftNRight_6(short count) {
-	if ( count == 0)	{
+void Control::LeftNRight_6() {
+	if ( motion_counter == 0)	{
 		motion.angular.z = 0;
 		pub_6[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.angular.z = 0.1;
 		pub_6[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.angular.z = -0.1;
 		pub_6[VELOCITY].publish(motion);
 	}
@@ -1239,16 +1319,16 @@ void Control::LeftNRight_6(short count) {
 	}
 }
 
-void Control::LeftNRight_7(short count) {
-	if ( count == 0)	{
+void Control::LeftNRight_7() {
+	if ( motion_counter == 0)	{
 		motion.angular.z = 0;
 		pub_7[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.angular.z = 0.1;
 		pub_7[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.angular.z = -0.1;
 		pub_7[VELOCITY].publish(motion);
 	}
@@ -1259,16 +1339,16 @@ void Control::LeftNRight_7(short count) {
 	}
 }
 
-void Control::UpDown_1(short count) {
-	if ( count == 0)	{
+void Control::UpDown_1() {
+	if ( motion_counter == 0)	{
 		motion.linear.x = 0;
 		pub_1[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.linear.x = 0.1;
 		pub_1[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.linear.x = -0.1;
 		pub_1[VELOCITY].publish(motion);
 	}
@@ -1279,16 +1359,16 @@ void Control::UpDown_1(short count) {
 	}
 }
 
-void Control::UpDown_2(short count) {
-	if ( count == 0)	{
+void Control::UpDown_2() {
+	if ( motion_counter == 0)	{
 		motion.linear.x = 0;
 		pub_2[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.linear.x = 0.1;
 		pub_2[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.linear.x = -0.1;
 		pub_2[VELOCITY].publish(motion);
 	}
@@ -1299,16 +1379,16 @@ void Control::UpDown_2(short count) {
 	}
 }
 
-void Control::UpDown_3(short count) {
-	if ( count == 0)	{
+void Control::UpDown_3() {
+	if ( motion_counter == 0)	{
 		motion.linear.x = 0;
 		pub_3[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.linear.x = 0.1;
 		pub_3[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.linear.x = -0.1;
 		pub_3[VELOCITY].publish(motion);
 	}
@@ -1319,16 +1399,16 @@ void Control::UpDown_3(short count) {
 	}
 }
 
-void Control::UpDown_4(short count) {
-	if ( count == 0)	{
+void Control::UpDown_4() {
+	if ( motion_counter == 0)	{
 		motion.linear.x = 0;
 		pub_4[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.linear.x = 0.1;
 		pub_4[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.linear.x = -0.1;
 		pub_4[VELOCITY].publish(motion);
 	}
@@ -1339,16 +1419,16 @@ void Control::UpDown_4(short count) {
 	}
 }
 
-void Control::UpDown_5(short count) {
-	if ( count == 0)	{
+void Control::UpDown_5() {
+	if ( motion_counter == 0)	{
 		motion.linear.x = 0;
 		pub_5[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.linear.x = 0.1;
 		pub_5[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.linear.x = -0.1;
 		pub_5[VELOCITY].publish(motion);
 	}
@@ -1359,16 +1439,16 @@ void Control::UpDown_5(short count) {
 	}
 }
 
-void Control::UpDown_6(short count) {
-	if ( count == 0)	{
+void Control::UpDown_6() {
+	if ( motion_counter == 0)	{
 		motion.linear.x = 0;
 		pub_6[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.linear.x = 0.1;
 		pub_6[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.linear.x = -0.1;
 		pub_6[VELOCITY].publish(motion);
 	}
@@ -1379,16 +1459,16 @@ void Control::UpDown_6(short count) {
 	}
 }
 
-void Control::UpDown_7(short count) {
-	if ( count == 0)	{
+void Control::UpDown_7() {
+	if ( motion_counter == 0)	{
 		motion.linear.x = 0;
 		pub_7[VELOCITY].publish(motion);
 	}
-	else if ( count == 1)	{
+	else if ( motion_counter == 1)	{
 		motion.linear.x = 0.1;
 		pub_7[VELOCITY].publish(motion);
 	}
-	else if ( count == 2)	{
+	else if ( motion_counter == 2)	{
 		motion.linear.x = -0.1;
 		pub_7[VELOCITY].publish(motion);
 	}

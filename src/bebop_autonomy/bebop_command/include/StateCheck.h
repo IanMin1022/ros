@@ -7,10 +7,10 @@
 #include <ros/ros.h>
 #include <sensor_msgs/NavSatFix.h>
 
-class StateTracker {
+class StateCheck {
 public:
-	StateTracker(void);
-	~StateTracker(void);
+	StateCheck(void);
+	~StateCheck(void);
 	void destroy(void);
 
 	short getBattery(void);
@@ -41,6 +41,6 @@ private:
 	ros::Subscriber sub[4];
 };
 
-extern StateTracker* stats;
+extern StateCheck* stats;
 
 #endif

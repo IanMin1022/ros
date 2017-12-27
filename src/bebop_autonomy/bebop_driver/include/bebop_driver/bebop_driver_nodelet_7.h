@@ -96,7 +96,7 @@ namespace util
 class BebopArdrone3Config;
 class Bebop;
 
-class BebopDriverNodelet : public nodelet::Nodelet
+class BebopDriverNodelet_7 : public nodelet::Nodelet
 {
 private:
   boost::shared_ptr<bebop_driver::Bebop> bebop_ptr_;
@@ -168,8 +168,8 @@ private:
   void ParamCallback(bebop_driver::BebopArdrone3Config &config, uint32_t level);
 
 public:
-  BebopDriverNodelet();
-  virtual ~BebopDriverNodelet();
+  BebopDriverNodelet_7();
+  virtual ~BebopDriverNodelet_7();
 
   virtual void onInit();
 };

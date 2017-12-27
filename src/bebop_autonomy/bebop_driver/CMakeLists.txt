@@ -39,7 +39,7 @@ pkg_check_modules(SWSCALE REQUIRED libswscale)
 # TODO: Should we state all catkin depends?
 catkin_package(
    INCLUDE_DIRS include
-   LIBRARIES libbebop bebop_driver_nodelet
+   LIBRARIES libbebop bebop_driver_nodelet_1 bebop_driver_nodelet_2 bebop_driver_nodelet_3 bebop_driver_nodelet_4 bebop_driver_nodelet_5 bebop_driver_nodelet_6 bebop_driver_nodelet_7
    CATKIN_DEPENDS parrot_arsdk bebop_msgs bebop_description roscpp nodelet camera_info_manager image_transport nav_msgs std_msgs tf2 tf2_ros tf2_geometry_msgs dynamic_reconfigure
    DEPENDS system_lib libavcodec libavformat libswscale
 )
@@ -50,10 +50,10 @@ set(ROSLINT_CPP_OPTS "--filter=-build/include")
 roslint_cpp(
   src/bebop.cpp
   src/bebop_driver_node_1.cpp
-  src/bebop_driver_nodelet.cpp
+  src/bebop_driver_nodelet_1.cpp
   src/bebop_video_decoder.cpp
   include/bebop_driver/bebop.h
-  include/bebop_driver/bebop_driver_nodelet.h
+  include/bebop_driver/bebop_driver_nodelet_1.h
   include/bebop_driver/bebop_video_decoder.h
 )
 
@@ -61,10 +61,65 @@ set(ROSLINT_CPP_OPTS "--filter=-build/include")
 roslint_cpp(
   src/bebop.cpp
   src/bebop_driver_node_2.cpp
-  src/bebop_driver_nodelet.cpp
+  src/bebop_driver_nodelet_2.cpp
   src/bebop_video_decoder.cpp
   include/bebop_driver/bebop.h
-  include/bebop_driver/bebop_driver_nodelet.h
+  include/bebop_driver/bebop_driver_nodelet_2.h
+  include/bebop_driver/bebop_video_decoder.h
+)
+
+set(ROSLINT_CPP_OPTS "--filter=-build/include")
+roslint_cpp(
+  src/bebop.cpp
+  src/bebop_driver_node_3.cpp
+  src/bebop_driver_nodelet_3.cpp
+  src/bebop_video_decoder.cpp
+  include/bebop_driver/bebop.h
+  include/bebop_driver/bebop_driver_nodelet_3.h
+  include/bebop_driver/bebop_video_decoder.h
+)
+
+set(ROSLINT_CPP_OPTS "--filter=-build/include")
+roslint_cpp(
+  src/bebop.cpp
+  src/bebop_driver_node_4.cpp
+  src/bebop_driver_nodelet_4.cpp
+  src/bebop_video_decoder.cpp
+  include/bebop_driver/bebop.h
+  include/bebop_driver/bebop_driver_nodelet_4.h
+  include/bebop_driver/bebop_video_decoder.h
+)
+
+set(ROSLINT_CPP_OPTS "--filter=-build/include")
+roslint_cpp(
+  src/bebop.cpp
+  src/bebop_driver_node_5.cpp
+  src/bebop_driver_nodelet_5.cpp
+  src/bebop_video_decoder.cpp
+  include/bebop_driver/bebop.h
+  include/bebop_driver/bebop_driver_nodelet_5.h
+  include/bebop_driver/bebop_video_decoder.h
+)
+
+set(ROSLINT_CPP_OPTS "--filter=-build/include")
+roslint_cpp(
+  src/bebop.cpp
+  src/bebop_driver_node_6.cpp
+  src/bebop_driver_nodelet_6.cpp
+  src/bebop_video_decoder.cpp
+  include/bebop_driver/bebop.h
+  include/bebop_driver/bebop_driver_nodelet_6.h
+  include/bebop_driver/bebop_video_decoder.h
+)
+
+set(ROSLINT_CPP_OPTS "--filter=-build/include")
+roslint_cpp(
+  src/bebop.cpp
+  src/bebop_driver_node_7.cpp
+  src/bebop_driver_nodelet_7.cpp
+  src/bebop_video_decoder.cpp
+  include/bebop_driver/bebop.h
+  include/bebop_driver/bebop_driver_nodelet_7.h
   include/bebop_driver/bebop_video_decoder.h
 )
 
@@ -88,7 +143,7 @@ link_directories(${ARDRONESDK3_PATH}/lib
   ${SWSCALE_LIBRARY_DIRS}
 )
 
-add_library(bebop src/bebop.cpp src/bebop_video_decoder.cpp)
+add_library(bebop src/bebop.cpp)
 target_link_libraries(bebop
   ${catkin_LIBRARIES}
   ${ARSDK_LIBS}
@@ -99,11 +154,48 @@ target_link_libraries(bebop
 
 add_dependencies(bebop ${PROJECT_NAME}_gencfg)
 
-add_library(bebop_driver_nodelet src/bebop_driver_nodelet.cpp)
-target_link_libraries(bebop_driver_nodelet
+add_library(bebop_driver_nodelet_1 src/bebop_driver_nodelet_1.cpp)
+target_link_libraries(bebop_driver_nodelet_1
   ${catkin_LIBRARIES}
   bebop
 )
+
+add_library(bebop_driver_nodelet_2 src/bebop_driver_nodelet_2.cpp)
+target_link_libraries(bebop_driver_nodelet_2
+  ${catkin_LIBRARIES}
+  bebop
+)
+
+add_library(bebop_driver_nodelet_3 src/bebop_driver_nodelet_3.cpp)
+target_link_libraries(bebop_driver_nodelet_3
+  ${catkin_LIBRARIES}
+  bebop
+)
+
+add_library(bebop_driver_nodelet_4 src/bebop_driver_nodelet_4.cpp)
+target_link_libraries(bebop_driver_nodelet_4
+  ${catkin_LIBRARIES}
+  bebop
+)
+
+add_library(bebop_driver_nodelet_5 src/bebop_driver_nodelet_5.cpp)
+target_link_libraries(bebop_driver_nodelet_5
+  ${catkin_LIBRARIES}
+  bebop
+)
+
+add_library(bebop_driver_nodelet_6 src/bebop_driver_nodelet_6.cpp)
+target_link_libraries(bebop_driver_nodelet_6
+  ${catkin_LIBRARIES}
+  bebop
+)
+
+add_library(bebop_driver_nodelet_7 src/bebop_driver_nodelet_7.cpp)
+target_link_libraries(bebop_driver_nodelet_7
+  ${catkin_LIBRARIES}
+  bebop
+)
+
 # make a excutable nodes
 add_executable(bebop_driver_node_1 src/bebop_driver_node_1.cpp)
 target_link_libraries(bebop_driver_node_1
@@ -113,6 +205,36 @@ target_link_libraries(bebop_driver_node_1
 
 add_executable(bebop_driver_node_2 src/bebop_driver_node_2.cpp)
 target_link_libraries(bebop_driver_node_2
+  ${catkin_LIBRARIES}
+  bebop
+)
+
+add_executable(bebop_driver_node_3 src/bebop_driver_node_3.cpp)
+target_link_libraries(bebop_driver_node_3
+  ${catkin_LIBRARIES}
+  bebop
+)
+
+add_executable(bebop_driver_node_4 src/bebop_driver_node_4.cpp)
+target_link_libraries(bebop_driver_node_4
+  ${catkin_LIBRARIES}
+  bebop
+)
+
+add_executable(bebop_driver_node_5 src/bebop_driver_node_5.cpp)
+target_link_libraries(bebop_driver_node_5
+  ${catkin_LIBRARIES}
+  bebop
+)
+
+add_executable(bebop_driver_node_6 src/bebop_driver_node_6.cpp)
+target_link_libraries(bebop_driver_node_6
+  ${catkin_LIBRARIES}
+  bebop
+)
+
+add_executable(bebop_driver_node_7 src/bebop_driver_node_7.cpp)
+target_link_libraries(bebop_driver_node_7
   ${catkin_LIBRARIES}
   bebop
 )

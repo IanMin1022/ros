@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
   nodelet::V_string nargv;
   const std::string nl_name = ros::this_node::getName();
   // use nodelet to connect to AP
-  nll.load(nl_name, "bebop_driver/BebopDriverNodelet", remap, nargv);
+  nll.load(nl_name, "bebop_driver/BebopDriverNodelet_1", remap, nargv);
 
   const std::vector<std::string>& loaded_nodelets = nll.listLoadedNodelets();
   if (std::find(loaded_nodelets.begin(),

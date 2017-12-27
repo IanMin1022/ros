@@ -42,21 +42,21 @@ public:
 	void doFlip_6(short);
 	void doFlip_7(short);
 
-	void LeftNRight_1(short);
-	void LeftNRight_2(short);
-	void LeftNRight_3(short);
-	void LeftNRight_4(short);
-	void LeftNRight_5(short);
-	void LeftNRight_6(short);
-	void LeftNRight_7(short);
+	void LeftNRight_1();
+	void LeftNRight_2();
+	void LeftNRight_3();
+	void LeftNRight_4();
+	void LeftNRight_5();
+	void LeftNRight_6();
+	void LeftNRight_7();
 
-	void UpDown_1(short);
-	void UpDown_2(short);
-	void UpDown_3(short);
-	void UpDown_4(short);
-	void UpDown_5(short);
-	void UpDown_6(short);
-	void UpDown_7(short);
+	void UpDown_1();
+	void UpDown_2();
+	void UpDown_3();
+	void UpDown_4();
+	void UpDown_5();
+	void UpDown_6();
+	void UpDown_7();
 
 	void advertise(ros::NodeHandle&);
 
@@ -70,8 +70,10 @@ public:
 
 	double x_des[7], y_des[7], z_des[7], yaw_des[7];
 	double x[7], y[7], z[7], yaw[7];
-	int side_counter = 0, updown_counter = 0;
-	bool SideFlag = false, UpDownFlag = false;
+	int takeoffNland_counter = 0, motion_counter = 0;
+	bool TakeoffNLandFlag = false, MotionFlag = false;
+	bool TakeoffFlag_1 = false, TakeoffFlag_2 = false, TakeoffFlag_3 = false, TakeoffFlag_4 = false, TakeoffFlag_5 = false, TakeoffFlag_6 = false, TakeoffFlag_7 = false;
+	bool LandFlag_1 = false, LandFlag_2 = false, LandFlag_3 = false, LandFlag_4 = false, LandFlag_5 = false, LandFlag_6 = false, LandFlag_7 = false;
 	bool SideFlag_1 = false, SideFlag_2 = false, SideFlag_3 = false, SideFlag_4 = false, SideFlag_5 = false, SideFlag_6 = false, SideFlag_7 = false;
 	bool UpDownFlag_1 = false, UpDownFlag_2 = false, UpDownFlag_3 = false, UpDownFlag_4 = false, UpDownFlag_5 = false, UpDownFlag_6 = false, UpDownFlag_7 = false;
 
