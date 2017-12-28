@@ -70,7 +70,7 @@ inline long int GetLWPId()
 
 // Forward declarations
 class BebopArdrone3Config;
-class VideoDecoder;
+//class VideoDecoder;
 namespace cb
 {
   class AbstractCommand;
@@ -92,7 +92,7 @@ private:
   eARCONTROLLER_ERROR error_;
   eARCONTROLLER_DEVICE_STATE device_state_;
   ARSAL_Sem_t state_sem_;
-  boost::shared_ptr<VideoDecoder> video_decoder_ptr_;
+//  boost::shared_ptr<VideoDecoder> video_decoder_ptr_;
   std::string bebop_ip_;
 
 //  boost::mutex callback_map_mutex_;

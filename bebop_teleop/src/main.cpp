@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 	ros::NodeHandle local_nh("~");
 
 	local_nh.param( "font_path", Window::font_path, std::string("/usr/share/fonts/truetype/freefont/FreeSans.ttf") );
-	local_nh.param( "circle_path", Window::circle_path, std::string("/home/michionlion/catkin_ws/src/bebop_teleop/circle.bmp") );
+	local_nh.param( "circle_path", Window::circle_path, std::string("/home/nsm/catkin_ws/src/bebop_teleop/circle.bmp") );
 
 	bool fail = false;
 	input = new Input();
@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
 
 	image_transport::ImageTransport it(nh);
 	image_transport::TransportHints hints("compressed", ros::TransportHints(), local_nh);
-	image_transport::Subscriber sub = it.subscribe("bebop_2/image_raw", 1, &Window::updateVideoTexture, window, hints);
+	image_transport::Subscriber sub = it.subscribe("bebop_7/image_raw", 1, &Window::updateVideoTexture, window, hints);
 
 	stats->subscribe(nh);
 

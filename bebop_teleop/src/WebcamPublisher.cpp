@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
 	ros::init(argc, argv, "webcam_publisher");
 	ros::NodeHandle nh;
 	image_transport::ImageTransport it(nh);
-	image_transport::Publisher pub = it.advertise("bebop_2/image_raw", 1);
+	image_transport::Publisher pub = it.advertise("bebop_7/image_raw", 1);
 
 	cv::VideoCapture capture(0);
 	if( !capture.isOpened() ) {

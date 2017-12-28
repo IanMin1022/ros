@@ -111,11 +111,11 @@ void Camera_node::Reading_camera_7(const geometry_msgs::PoseStamped& msg) {
 
 void Camera_node::subscribe(ros::NodeHandle& nh)
 {
-  sub[0] = nh.subscribe("/vrpn_client_node/Drone_01/pose", 100, &Camera_node::Reading_camera_1, this);
-  sub[1] = nh.subscribe("/vrpn_client_node/Drone_02/pose", 100, &Camera_node::Reading_camera_2, this);
-  sub[2] = nh.subscribe("/vrpn_client_node/Drone_03/pose", 100, &Camera_node::Reading_camera_3, this);
-  sub[3] = nh.subscribe("/vrpn_client_node/Drone_04/pose", 100, &Camera_node::Reading_camera_4, this);
-  sub[4] = nh.subscribe("/vrpn_client_node/Drone_05/pose", 100, &Camera_node::Reading_camera_5, this);
-  sub[5] = nh.subscribe("/vrpn_client_node/Drone_06/pose", 100, &Camera_node::Reading_camera_6, this);
-  sub[6] = nh.subscribe("/vrpn_client_node/Drone_07/pose", 100, &Camera_node::Reading_camera_7, this);
+  sub[0] = nh.subscribe("/vrpn_client_node/RigidBody01/pose", 100, &Camera_node::Reading_camera_1, this);
+  sub[1] = nh.subscribe("/vrpn_client_node/RigidBody02/pose", 100, &Camera_node::Reading_camera_2, this);
+  sub[2] = nh.subscribe("/vrpn_client_node/RigidBody03/pose", 100, &Camera_node::Reading_camera_3, this);
+  sub[3] = nh.subscribe("/vrpn_client_node/RigidBody04/pose", 100, &Camera_node::Reading_camera_4, this);
+  sub[4] = nh.subscribe("/vrpn_client_node/RigidBody05/pose", 100, &Camera_node::Reading_camera_5, this);
+  sub[5] = nh.subscribe("/vrpn_client_node/RigidBody06/pose", 100, &Camera_node::Reading_camera_6, this);
+  sub[6] = nh.subscribe("/vrpn_client_node/RigidBody07/pose", 100, &Camera_node::Reading_camera_7, this);
 }

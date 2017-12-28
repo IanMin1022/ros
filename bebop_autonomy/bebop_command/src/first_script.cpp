@@ -31,36 +31,45 @@ int main(int argc, char **argv)
     script->script_6("TAKE_OFF");
     script->script_7("TAKE_OFF");
     script->timer(3);
-    ROS_INFO("start");
-    script->script_1("0 0 0 0");
-    script->script_3("0 0 0 0");
-    script->script_2("0 0 0.6 0");
-    script->script_4("0 0 0 0");
-    script->script_5("0 0 0 0");
-    script->script_6("0 0 0 0");
-    script->script_7("0 0 0 0");
+
+    script->script_1("-3 1 0.6 0");
+    script->script_2("-1 1 0.6 0");
+    script->script_3("1 1 0.6 0");
+    script->script_4("3 1 0.6 0");
+    script->script_5("-2 -1 0.6 0");
+    script->script_6("0 -1 0.6 0");
+    script->script_7("2 -1 0.6 0");
     script->timer(7);
-    ROS_INFO("start");
-    script->script_1("0 0 0 0");
-    script->script_2("0 0 1.2 90");
+
+    script->script_1("-1 1 0.6 0");
+    script->script_2("1 1 0.6 0");
+    script->script_3("3 1 0.6 0");
+    script->script_4("2 -1 0.6 0");
+    script->script_5("-3 1 0.6 0");
+    script->script_6("-2 -1 0.6 0");
+    script->script_7("0 -1 0.6 0");
+    script->timer(10);
+/*
+    script->script_1("0 0.5 0.6 0");
+    script->script_2("0 -0.5 0.6 0");
     script->script_3("0 0 0 0");
     script->script_4("0 0 0 0");
     script->script_5("0 0 0 0");
     script->script_6("0 0 0 0");
     script->script_7("0 0 0 0");
     script->timer(12);
-    ROS_INFO("start");
-    script->script_1("0 0 0 0");
-    script->script_2("0 0 0.6 90");
+
+    script->script_1("-0.5 0 0.6 0");
+    script->script_2("0.5 0 0.6 0");
     script->script_3("0 0 0 0");
     script->script_4("0 0 0 0");
     script->script_5("0 0 0 0");
     script->script_6("0 0 0 0");
     script->script_7("0 0 0 0");
     script->timer(16);
-/*
-    script->script_1("0 0 0 0");
-    script->script_2("0 0 0.6 90");
+
+    script->script_1("-0.5 0 0.6 0");
+    script->script_2("0.5 0 0.6 0");
     script->script_3("0 0 0 0");
     script->script_4("0 0 0 0");
     script->script_5("0 0 0 0");
@@ -112,7 +121,8 @@ int main(int argc, char **argv)
     script->script_6("0 0 0 0");
     script->script_7("0 0 0 0");
     script->timer(27);
-*/
+    */
+
     script->script_1("LAND");
     script->script_2("LAND");
     script->script_3("LAND");
@@ -120,8 +130,7 @@ int main(int argc, char **argv)
     script->script_5("LAND");
     script->script_6("LAND");
     script->script_7("LAND");
-    script->timer(20);
-
+    script->timer(14);
 
   }
   delete script;

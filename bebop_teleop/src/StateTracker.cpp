@@ -22,10 +22,10 @@ void StateTracker::destroy() {
 }
 
 void StateTracker::subscribe(ros::NodeHandle& nh) {
-	sub[0] = nh.subscribe("bebop_2/states/common/CommonState/BatteryStateChanged", 100, &StateTracker::setBattery, this);
-	sub[2] = nh.subscribe("bebop_2/odom", 100, &StateTracker::setOdom, this);
-	sub[1] = nh.subscribe("bebop_2/states/common/CommonState/WifiSignalChanged", 100, &StateTracker::setWifi, this);
-	sub[3] = nh.subscribe("bebop_2/fix", 100, &StateTracker::setPos, this);
+	sub[0] = nh.subscribe("bebop_7/states/common/CommonState/BatteryStateChanged", 100, &StateTracker::setBattery, this);
+	sub[2] = nh.subscribe("bebop_7/odom", 100, &StateTracker::setOdom, this);
+	sub[1] = nh.subscribe("bebop_7/states/common/CommonState/WifiSignalChanged", 100, &StateTracker::setWifi, this);
+	sub[3] = nh.subscribe("bebop_7/fix", 100, &StateTracker::setPos, this);
 
 	// ROS_INFO("SUBSCRIBED");
 }
