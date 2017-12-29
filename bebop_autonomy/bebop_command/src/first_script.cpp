@@ -21,11 +21,11 @@ int main(int argc, char **argv)
 
   script->advertise(nh);
 
-  ros::Rate loop_rate(1);
+  ros::Rate loop_rate(30);
   loop_rate.sleep();
 
-  ros::Subscriber sub = nh.subscribe("start_sign", 10, chatterCallback);
-  while(jump_up != "30") {
+  ros::Subscriber sub = nh.subscribe("on_air", 10, chatterCallback);
+  while(jump_up <= "50") {
     ros::spinOnce();
     loop_rate.sleep();
   }
@@ -36,12 +36,14 @@ int main(int argc, char **argv)
   if (ros::ok())
   {
     ros::spinOnce();
-    while (ttt != 237)
+    /*
+    while (ttt < 237)
     {
-      ROS_INFO("now the time is %d", ttt);
+      ROS_INFO("%d", ttt);
       script->timer(ttt);
       ttt++;
     }
+    */
     /*
     script->script_1("TAKE_OFF");
     script->script_2("TAKE_OFF");

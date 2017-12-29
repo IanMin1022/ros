@@ -13,6 +13,17 @@
 #include "std_msgs/String.h"
 #include <sstream>
 
+int performance_time = 500;
+
+void timeset(const std_msgs::String::ConstPtr& msg) {
+  const char*  run_time = msg->data.c_str();
+	std::istringstream convert(run_time);
+	std::string temp;
+  convert >> temp;
+  double time_temp = ::atof(temp.c_str());
+	performance_time = time_temp * 100;
+}
+
 int main(int argc, char** argv) {
 	int time = 0;
 	ros::init(argc, argv, "node_master");
@@ -24,7 +35,7 @@ int main(int argc, char** argv) {
   // you should check the frequency and how it works depend on the frequency
   // need to add current coordinates subscriber (a.k.a camera node)
 
-	ros::Publisher chatter_pub = nh.advertise<std_msgs::String>("start_sign", 10);
+	ros::Publisher chatter_pub = nh.advertise<std_msgs::String>("on_air", 10);
 
 	stats = new StateCheck();
 	control = new Control();
@@ -39,17 +50,21 @@ int main(int argc, char** argv) {
 
   ros::Rate loop_rate(100);
 
+	ros::Subscriber sub = nh.subscribe("play_time", 10, timeset);
+
 	while( ros::ok() ) {
 		ros::spinOnce();
-		if (time < 30) {
-			time++;
+		if ( time < performance_time) {
+			time++;                        // when you use time for timer consider the """30""" and devide it with 1000
 			std_msgs::String msg;
 			std::stringstream ss;
 			ss << time;
 			msg.data = ss.str();
-
 			chatter_pub.publish(msg);
+			//ROS_INFO("%d", time);			
 		}
+		else break;
+
     //ROS_INFO("x = %f", control->x[0]);
     //ROS_INFO("y = %f", control->y[0]);
     //ROS_INFO("z = %f", control->z[0]);
