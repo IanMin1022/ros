@@ -5,9 +5,16 @@
 #include <sstream>
 #include "Script_publisher.h"
 
+std::string jump_up = "0";
+
+void chatterCallback(const std_msgs::String::ConstPtr& msg) {
+  const char*  q_sign = msg->data.c_str();
+  jump_up = q_sign;
+}
+
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "nice_reader");
+  ros::init(argc, argv, "First_script");
 
   ros::NodeHandle nh;
   script = new Script();
@@ -16,13 +23,26 @@ int main(int argc, char **argv)
 
   ros::Rate loop_rate(1);
   loop_rate.sleep();
+
+  ros::Subscriber sub = nh.subscribe("start_sign", 10, chatterCallback);
+  while(jump_up != "30") {
+    ros::spinOnce();
+    loop_rate.sleep();
+  }
+  int ttt = 0;
   // Command is TAKE_OFF LAND FLIP_FORWARD FLIP_BACKWARD FLIP_LEFT FLIP_RIGHT UPDOWN SIDE
   // Make a time function so that you can know the whole function time****
   // -180 < yaw < 180
   if (ros::ok())
   {
     ros::spinOnce();
-
+    while (ttt != 237)
+    {
+      ROS_INFO("now the time is %d", ttt);
+      script->timer(ttt);
+      ttt++;
+    }
+    /*
     script->script_1("TAKE_OFF");
     script->script_2("TAKE_OFF");
     script->script_3("TAKE_OFF");
@@ -49,7 +69,7 @@ int main(int argc, char **argv)
     script->script_6("-2 -1 0.6 0");
     script->script_7("0 -1 0.6 0");
     script->timer(10);
-/*
+
     script->script_1("0 0.5 0.6 0");
     script->script_2("0 -0.5 0.6 0");
     script->script_3("0 0 0 0");
@@ -59,70 +79,6 @@ int main(int argc, char **argv)
     script->script_7("0 0 0 0");
     script->timer(12);
 
-    script->script_1("-0.5 0 0.6 0");
-    script->script_2("0.5 0 0.6 0");
-    script->script_3("0 0 0 0");
-    script->script_4("0 0 0 0");
-    script->script_5("0 0 0 0");
-    script->script_6("0 0 0 0");
-    script->script_7("0 0 0 0");
-    script->timer(16);
-
-    script->script_1("-0.5 0 0.6 0");
-    script->script_2("0.5 0 0.6 0");
-    script->script_3("0 0 0 0");
-    script->script_4("0 0 0 0");
-    script->script_5("0 0 0 0");
-    script->script_6("0 0 0 0");
-    script->script_7("0 0 0 0");
-    script->timer(22);
-
-    script->script_1("0 0 0 0");
-    script->script_2("0 0 0 0");
-    script->script_3("0 0 0 0");
-    script->script_4("0 0 0 0");
-    script->script_5("0 0 0 0");
-    script->script_6("0 0 0 0");
-    script->script_7("0 0 0 0");
-    script->timer(16);
-
-    script->script_1("0 0 0 0");
-    script->script_2("0 0 0 0");
-    script->script_3("0 0 0 0");
-    script->script_4("0 0 0 0");
-    script->script_5("0 0 0 0");
-    script->script_6("0 0 0 0");
-    script->script_7("0 0 0 0");
-    script->timer(19);
-
-    script->script_1("0 0 0 0");
-    script->script_2("0 0 0 0");
-    script->script_3("0 0 0 0");
-    script->script_4("0 0 0 0");
-    script->script_5("0 0 0 0");
-    script->script_6("0 0 0 0");
-    script->script_7("0 0 0 0");
-    script->timer(22);
-
-    script->script_1("0 0 0 0");
-    script->script_2("0 0 0 0");
-    script->script_3("0 0 0 0");
-    script->script_4("0 0 0 0");
-    script->script_5("0 0 0 0");
-    script->script_6("0 0 0 0");
-    script->script_7("0 0 0 0");
-    script->timer(25);
-
-    script->script_1("0 0 0 0");
-    script->script_2("0 0 0 0");
-    script->script_3("0 0 0 0");
-    script->script_4("0 0 0 0");
-    script->script_5("0 0 0 0");
-    script->script_6("0 0 0 0");
-    script->script_7("0 0 0 0");
-    script->timer(27);
-    */
-
     script->script_1("LAND");
     script->script_2("LAND");
     script->script_3("LAND");
@@ -131,6 +87,7 @@ int main(int argc, char **argv)
     script->script_6("LAND");
     script->script_7("LAND");
     script->timer(14);
+    */
 
   }
   delete script;
