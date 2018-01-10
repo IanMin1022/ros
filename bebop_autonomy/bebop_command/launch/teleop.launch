@@ -1,4 +1,0 @@
-<launch>
-	<node name="bebop_command" pkg="bebop_command" type="bebop_command" required="true" output="screen">
-	</node>
-</launch>
