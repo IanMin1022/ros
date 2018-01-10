@@ -18,6 +18,7 @@ public:
   void script_7(const char*);
   void advertise(ros::NodeHandle&);
   void timer(float);
+  void repeater(float);
   ros::Publisher script_pub[7];
   float old_time = 0;
 

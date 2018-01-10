@@ -20,20 +20,16 @@
 #define SIDE 10
 #define UPDOWN 11
 
-#define SPEED_X_MAX 1
-#define SPEED_Y_MAX 1
-#define SPEED_Z_MAX 1
+#define Kp_x 0.6
+double Ki_x = 0.0001;
+#define Kd_x 2.65					// 2.35
 
-#define Kp_x 0.7
-#define Ki_x 0.0001
-#define Kd_x 2.55					// 2.35
-
-#define Kp_y 0.7
-#define Ki_y 0.0001
-#define Kd_y 2.55					// 2.35
+#define Kp_y 0.6
+double Ki_y = 0.0001;
+#define Kd_y 2.65					// 2.35
 
 #define Kp_z 1.5
-#define Ki_z 0.0003
+double Ki_z = 0.0003;
 #define Kd_z 0.97
 
 #define Kp_yaw 0.043
@@ -164,6 +160,15 @@ void Motion_timer(const ros::TimerEvent& event) {
 
 		control->motion_counter++;
 	}
+
+	if ( Ki_x == 0 ) {
+		if ( control->rest_timer > 20) {
+			Ki_x = 0.0001;
+			Ki_y = 0.0001;
+			Ki_z = 0.0003;
+		}
+		control->rest_timer++;
+	}
 }
 
 int Converter(const char* input) {
@@ -174,18 +179,21 @@ int Converter(const char* input) {
 	char land = 'L';
 	char take_off = 'T';
 	char side = 'S';
-	char updown = 'P';
-	if (input[5] == flip_forward)	{
-		return 1;
-	}
-	else if (input[5] == flip_backward)	{
-		return 2;
-	}
-	else if (input[6] == flip_left)	{
-		return 3;
-	}
-	else if (input[6] == flip_right) {
-		return 4;
+	char updown = 'U';
+
+	if (input[0] == 'F') {
+		if (input[5] == flip_forward)	{
+			return 1;
+		}
+		else if (input[5] == flip_backward)	{
+			return 2;
+		}
+		else if (input[6] == flip_left)	{
+			return 3;
+		}
+		else if (input[6] == flip_right) {
+			return 4;
+		}
 	}
 	else if (input[0] == land) {
 		return 5;
@@ -194,9 +202,54 @@ int Converter(const char* input) {
 		return 6;
 	}
 	else if (input[0] == side)	{
+		if (input[5] == 'L') {
+			control->direction = true;
+		}
+		else if (input[5] == 'R') {
+			control->direction = false;
+		}
+		else if (input[5] == '1') {
+			control->repeat = 1;
+		}
+		else if (input[5] == '2') {
+			control->repeat = 2;
+		}
+		else if (input[5] == '3') {
+			control->repeat = 3;
+		}
+		else if (input[5] == '4') {
+			control->repeat = 4;
+		}
+		else if (input[5] == '5') {
+			control->repeat = 5;
+		}
+		else {
+			control->repeat = 6;
+		}
 		return 10;
 	}
-	else if (input[1] == updown)	{
+	else if (input[0] == updown)	{
+		if (input[7] == 'G') {
+			control->repeat = 0;
+		}
+		else if (input[7] == '1') {
+			control->repeat = 1;
+		}
+		else if (input[7] == '2') {
+			control->repeat = 2;
+		}
+		else if (input[7] == '3') {
+			control->repeat = 3;
+		}
+		else if (input[7] == '4') {
+			control->repeat = 4;
+		}
+		else if (input[7] == '5') {
+			control->repeat = 5;
+		}
+		else {
+			control->repeat = 6;
+		}
 		return 11;
 	}
 	else	{
@@ -214,18 +267,22 @@ void Control::key_1(const char* transmit) {
 	if(transmit != NULL)
 		switch(flag) {
 		case 1:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_1(0);
 			break;
 
 		case 2:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_1(1);
 			break;
 
 		case 3:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_1(2);
 			break;
 
 		case 4:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_1(3);
 			break;
 
@@ -242,12 +299,14 @@ void Control::key_1(const char* transmit) {
 			break;
 
 		case SIDE:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->SideFlag_1 = true;
 			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->UpDownFlag_1 = true;
 			control->motion_counter = 0;
@@ -264,18 +323,22 @@ void Control::key_2(const char* transmit) {
 	if(transmit != NULL)
 		switch(flag) {
 		case 1:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_2(0);
 			break;
 
 		case 2:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_2(1);
 			break;
 
 		case 3:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_2(2);
 			break;
 
 		case 4:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_2(3);
 			break;
 
@@ -292,12 +355,14 @@ void Control::key_2(const char* transmit) {
 			break;
 
 		case SIDE:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->SideFlag_2 = true;
 			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->UpDownFlag_2 = true;
 			control->motion_counter = 0;
@@ -314,18 +379,22 @@ void Control::key_3(const char* transmit) {
 	if(transmit != NULL)
 		switch(flag) {
 		case 1:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_3(0);
 			break;
 
 		case 2:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_3(1);
 			break;
 
 		case 3:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_3(2);
 			break;
 
 		case 4:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_3(3);
 			break;
 
@@ -342,12 +411,14 @@ void Control::key_3(const char* transmit) {
 			break;
 
 		case SIDE:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->SideFlag_3 = true;
 			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->UpDownFlag_3 = true;
 			control->motion_counter = 0;
@@ -364,18 +435,22 @@ void Control::key_4(const char* transmit) {
 	if(transmit != NULL)
 		switch(flag) {
 		case 1:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_4(0);
 			break;
 
 		case 2:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_4(1);
 			break;
 
 		case 3:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_4(2);
 			break;
 
 		case 4:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_4(3);
 			break;
 
@@ -392,12 +467,14 @@ void Control::key_4(const char* transmit) {
 			break;
 
 		case SIDE:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->SideFlag_4 = true;
 			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->UpDownFlag_4 = true;
 			control->motion_counter = 0;
@@ -414,18 +491,22 @@ void Control::key_5(const char* transmit) {
 	if(transmit != NULL)
 		switch(flag) {
 		case 1:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_5(0);
 			break;
 
 		case 2:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_5(1);
 			break;
 
 		case 3:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_5(2);
 			break;
 
 		case 4:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_5(3);
 			break;
 
@@ -442,12 +523,14 @@ void Control::key_5(const char* transmit) {
 			break;
 
 		case SIDE:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->SideFlag_5 = true;
 			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->UpDownFlag_5 = true;
 			control->motion_counter = 0;
@@ -464,18 +547,22 @@ void Control::key_6(const char* transmit) {
 	if(transmit != NULL)
 		switch(flag) {
 		case 1:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_6(0);
 			break;
 
 		case 2:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_6(1);
 			break;
 
 		case 3:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_6(2);
 			break;
 
 		case 4:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_6(3);
 			break;
 
@@ -492,12 +579,14 @@ void Control::key_6(const char* transmit) {
 			break;
 
 		case SIDE:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->SideFlag_6 = true;
 			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->UpDownFlag_6 = true;
 			control->motion_counter = 0;
@@ -514,18 +603,22 @@ void Control::key_7(const char* transmit) {
 	if(transmit != NULL)
 		switch(flag) {
 		case 1:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_7(0);
 			break;
 
 		case 2:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_7(1);
 			break;
 
 		case 3:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_7(2);
 			break;
 
 		case 4:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			doFlip_7(3);
 			break;
 
@@ -542,12 +635,14 @@ void Control::key_7(const char* transmit) {
 			break;
 
 		case SIDE:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->SideFlag_7 = true;
 			control->motion_counter = 0;
 			break;
 
 		case UPDOWN:
+			Ki_x = 0, Ki_y = 0, Ki_z = 0;
 			control->MotionFlag = true;
 			control->UpDownFlag_7 = true;
 			control->motion_counter = 0;
@@ -563,72 +658,45 @@ void Control::advertise(ros::NodeHandle& nh) {
 	pub_1[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_1/takeoff", 1);
 	pub_1[LAND] = nh.advertise<std_msgs::Empty>("bebop_1/land", 1);
 	pub_1[RESET] = nh.advertise<std_msgs::Empty>("bebop_1/reset", 1);
-	//pub_1[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_1/camera_control", 1);
-	//pub_1[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_1/snapshot", 1);
-	//pub_1[RECORD] = nh.advertise<std_msgs::Bool>("bebop_1/record", 1);
 	pub_1[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_1/flip", 1);
-	pub_1[HOME] = nh.advertise<std_msgs::Bool>("bebop_1/autoflight/navigate_home", 1);
 
 	pub_2[VELOCITY] = nh.advertise<geometry_msgs::Twist>("bebop_2/cmd_vel", 1);
 	pub_2[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_2/takeoff", 1);
 	pub_2[LAND] = nh.advertise<std_msgs::Empty>("bebop_2/land", 1);
 	pub_2[RESET] = nh.advertise<std_msgs::Empty>("bebop_2/reset", 1);
-	//pub_2[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_2/camera_control", 1);
-	//pub_2[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_2/snapshot", 1);
-	//pub_2[RECORD] = nh.advertise<std_msgs::Bool>("bebop_2/record", 1);
 	pub_2[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_2/flip", 1);
-	pub_2[HOME] = nh.advertise<std_msgs::Bool>("bebop_2/autoflight/navigate_home", 1);
 
 	pub_3[VELOCITY] = nh.advertise<geometry_msgs::Twist>("bebop_3/cmd_vel", 1);
 	pub_3[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_3/takeoff", 1);
 	pub_3[LAND] = nh.advertise<std_msgs::Empty>("bebop_3/land", 1);
 	pub_3[RESET] = nh.advertise<std_msgs::Empty>("bebop_3/reset", 1);
-	//pub_3[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_3/camera_control", 1);
-	//pub_3[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_3/snapshot", 1);
-	//pub_3[RECORD] = nh.advertise<std_msgs::Bool>("bebop_3/record", 1);
 	pub_3[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_3/flip", 1);
-	pub_3[HOME] = nh.advertise<std_msgs::Bool>("bebop_3/autoflight/navigate_home", 1);
 
 	pub_4[VELOCITY] = nh.advertise<geometry_msgs::Twist>("bebop_4/cmd_vel", 1);
 	pub_4[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_4/takeoff", 1);
 	pub_4[LAND] = nh.advertise<std_msgs::Empty>("bebop_4/land", 1);
 	pub_4[RESET] = nh.advertise<std_msgs::Empty>("bebop_4/reset", 1);
-	//pub_4[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_4/camera_control", 1);
-	//pub_4[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_4/snapshot", 1);
-	//pub_4[RECORD] = nh.advertise<std_msgs::Bool>("bebop_4/record", 1);
 	pub_4[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_4/flip", 1);
-	pub_4[HOME] = nh.advertise<std_msgs::Bool>("bebop_4/autoflight/navigate_home", 1);
 
 	pub_5[VELOCITY] = nh.advertise<geometry_msgs::Twist>("bebop_5/cmd_vel", 1);
 	pub_5[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_5/takeoff", 1);
 	pub_5[LAND] = nh.advertise<std_msgs::Empty>("bebop_5/land", 1);
 	pub_5[RESET] = nh.advertise<std_msgs::Empty>("bebop_5/reset", 1);
-	//pub_5[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_5/camera_control", 1);
-	//pub_5[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_5/snapshot", 1);
-	//pub_5[RECORD] = nh.advertise<std_msgs::Bool>("bebop_5/record", 1);
 	pub_5[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_5/flip", 1);
-	pub_5[HOME] = nh.advertise<std_msgs::Bool>("bebop_5/autoflight/navigate_home", 1);
 
 	pub_6[VELOCITY] = nh.advertise<geometry_msgs::Twist>("bebop_6/cmd_vel", 1);
 	pub_6[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_6/takeoff", 1);
 	pub_6[LAND] = nh.advertise<std_msgs::Empty>("bebop_6/land", 1);
 	pub_6[RESET] = nh.advertise<std_msgs::Empty>("bebop_6/reset", 1);
-	//pub_6[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_6/camera_control", 1);
-	//pub_6[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_6/snapshot", 1);
-	//pub_6[RECORD] = nh.advertise<std_msgs::Bool>("bebop_6/record", 1);
 	pub_6[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_6/flip", 1);
-	pub_6[HOME] = nh.advertise<std_msgs::Bool>("bebop_6/autoflight/navigate_home", 1);
 
 	pub_7[VELOCITY] = nh.advertise<geometry_msgs::Twist>("bebop_7/cmd_vel", 1);
 	pub_7[TAKEOFF] = nh.advertise<std_msgs::Empty>("bebop_7/takeoff", 1);
 	pub_7[LAND] = nh.advertise<std_msgs::Empty>("bebop_7/land", 1);
 	pub_7[RESET] = nh.advertise<std_msgs::Empty>("bebop_7/reset", 1);
-	//pub_7[CAMERA] = nh.advertise<geometry_msgs::Twist>("bebop_7/camera_control", 1);
-	//pub_7[SNAPSHOT] = nh.advertise<std_msgs::Empty>("bebop_7/snapshot", 1);
-	//pub_7[RECORD] = nh.advertise<std_msgs::Bool>("bebop_7/record", 1);
 	pub_7[FLIP] = nh.advertise<std_msgs::UInt8>("bebop_7/flip", 1);
-	pub_7[HOME] = nh.advertise<std_msgs::Bool>("bebop_7/autoflight/navigate_home", 1);
 }
+
 // horizontal axis is x, vertical axis is y.
 void Control::position_control_1() {
 	x_gap[0] = x_des[0] - x[0]; // x is horizontal data from motive
@@ -673,12 +741,14 @@ void Control::position_control_1() {
 	double yaw_value = P_control_yaw[0] + I_control_yaw[0] + D_control_yaw[0];
 
 	// x is forward-backward (forward is positive), y is side (left is positive)
-	last.linear.x = x_value;
-	last.linear.y = y_value;
-	last.linear.z = z_value;
-	last.angular.z = yaw_value;
+	if ( x_break ) ;
+	else last_1.linear.x = x_value;
+	if ( y_break ) ;
+	else last_1.linear.y = y_value;
+	last_1.linear.z = z_value;
+	last_1.angular.z = yaw_value;
 
-	pub_1[VELOCITY].publish(last);
+	pub_1[VELOCITY].publish(last_1);
 }
 
 void Control::position_control_2() {
@@ -722,12 +792,14 @@ void Control::position_control_2() {
 	double yaw_value = P_control_yaw[1] + I_control_yaw[1] + D_control_yaw[1];
 
 	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = x_value; // which acts like y_value;
-	last.linear.y = y_value; // which acts like x_value;
-	last.linear.z = z_value;
-	last.angular.z = yaw_value;
+	if ( x_break ) ;
+	else last_2.linear.x = x_value;
+	if ( y_break ) ;
+	else last_2.linear.y = y_value;
+	last_2.linear.z = z_value;
+	last_2.angular.z = yaw_value;
 
-	pub_2[VELOCITY].publish(last);
+	pub_2[VELOCITY].publish(last_2);
 }
 
 void Control::position_control_3() {
@@ -770,13 +842,14 @@ void Control::position_control_3() {
 	double z_value = P_control_z[2] + I_control_z[2] + D_control_z[2];
 	double yaw_value = P_control_yaw[2] + I_control_yaw[2] + D_control_yaw[2];
 
-	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = x_value; // which acts like y_value;
-	last.linear.y = y_value; // which acts like x_value;
-	last.linear.z = z_value;
-	last.angular.z = yaw_value;
+	if ( x_break ) ;
+	else last_3.linear.x = x_value;
+	if ( y_break ) ;
+	else last_3.linear.y = y_value;
+	last_3.linear.z = z_value;
+	last_3.angular.z = yaw_value;
 
-	pub_3[VELOCITY].publish(last);
+	pub_3[VELOCITY].publish(last_3);
 }
 
 void Control::position_control_4() {
@@ -819,13 +892,14 @@ void Control::position_control_4() {
 	double z_value = P_control_z[3] + I_control_z[3] + D_control_z[3];
 	double yaw_value = P_control_yaw[3] + I_control_yaw[3] + D_control_yaw[3];
 
-	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = x_value; // which acts like y_value;
-	last.linear.y = y_value; // which acts like x_value;
-	last.linear.z = z_value;
-	last.angular.z = yaw_value;
+	if ( x_break ) ;
+	else last_4.linear.x = x_value;
+	if ( y_break ) ;
+	else last_4.linear.y = y_value;
+	last_4.linear.z = z_value;
+	last_4.angular.z = yaw_value;
 
-	pub_4[VELOCITY].publish(last);
+	pub_4[VELOCITY].publish(last_4);
 }
 
 void Control::position_control_5() {
@@ -868,13 +942,14 @@ void Control::position_control_5() {
 	double z_value = P_control_z[4] + I_control_z[4] + D_control_z[4];
 	double yaw_value = P_control_yaw[4] + I_control_yaw[4] + D_control_yaw[4];
 
-	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = x_value; // which acts like y_value;
-	last.linear.y = y_value; // which acts like x_value;
-	last.linear.z = z_value;
-	last.angular.z = yaw_value;
+	if ( x_break ) ;
+	else last_5.linear.x = x_value;
+	if ( y_break ) ;
+	else last_5.linear.y = y_value;
+	last_5.linear.z = z_value;
+	last_5.angular.z = yaw_value;
 
-	pub_5[VELOCITY].publish(last);
+	pub_5[VELOCITY].publish(last_5);
 }
 
 void Control::position_control_6() {
@@ -917,13 +992,14 @@ void Control::position_control_6() {
 	double z_value = P_control_z[5] + I_control_z[5] + D_control_z[5];
 	double yaw_value = P_control_yaw[5] + I_control_yaw[5] + D_control_yaw[5];
 
-	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = x_value; // which acts like y_value;
-	last.linear.y = y_value; // which acts like x_value;
-	last.linear.z = z_value;
-	last.angular.z = yaw_value;
+	if ( x_break ) ;
+	else last_6.linear.x = x_value;
+	if ( y_break ) ;
+	else last_6.linear.y = y_value;
+	last_6.linear.z = z_value;
+	last_6.angular.z = yaw_value;
 
-	pub_6[VELOCITY].publish(last);
+	pub_6[VELOCITY].publish(last_6);
 }
 
 void Control::position_control_7() {
@@ -966,22 +1042,33 @@ void Control::position_control_7() {
 	double z_value = P_control_z[6] + I_control_z[6] + D_control_z[6];
 	double yaw_value = P_control_yaw[6] + I_control_yaw[6] + D_control_yaw[6];
 
-	// y is side, x is forward-backward (means they need to be switched when you save the value to publish)
-	last.linear.x = x_value; // which acts like y_value;
-	last.linear.y = y_value; // which acts like x_value;
-	last.linear.z = z_value;
-	last.angular.z = yaw_value;
+	if ( x_break ) ;
+	else last_7.linear.x = x_value;
+	if ( y_break ) ;
+	else last_7.linear.y = y_value;
+	last_7.linear.z = z_value;
+	last_7.angular.z = yaw_value;
 
-	pub_7[VELOCITY].publish(last);
+	pub_7[VELOCITY].publish(last_7);
 }
 
 void Control::doMisc_1(short type) {
 	if(type == DO_LAND) {
-		std_msgs::Empty m;
-		subscriber->manner_1 = false;
-		pub_1[LAND].publish(m);
-
-		if ( takeoffNland_counter > 5)	{
+		bool position_setting = true;
+		if ( takeoffNland_counter < 20 ) {
+			if ( position_setting) {
+				x_des[0] = x[0];
+				y_des[0] = y[0];
+				z_des[0] = 0.1;
+				position_setting = false;
+			}
+		}
+		else if ( takeoffNland_counter < 25 ) {
+			std_msgs::Empty m;
+			subscriber->manner_1 = false;
+			pub_1[LAND].publish(m);
+		}
+		else {
 			TakeoffNLandFlag = false;
 			LandFlag_1 = false;
 		}
@@ -1003,11 +1090,21 @@ void Control::doMisc_1(short type) {
 
 void Control::doMisc_2(short type) {
 	if(type == DO_LAND) {
-		std_msgs::Empty m;
-		subscriber->manner_2 = false;
-		pub_2[LAND].publish(m);
-
-		if ( takeoffNland_counter > 5)	{
+		bool position_setting = true;
+		if ( takeoffNland_counter < 20 ) {
+			if ( position_setting) {
+				x_des[1] = x[1];
+				y_des[1] = y[1];
+				z_des[1] = 0.1;
+				position_setting = false;
+			}
+		}
+		else if ( takeoffNland_counter < 25 ) {
+			std_msgs::Empty m;
+			subscriber->manner_2 = false;
+			pub_2[LAND].publish(m);
+		}
+		else {
 			TakeoffNLandFlag = false;
 			LandFlag_2 = false;
 		}
@@ -1029,11 +1126,21 @@ void Control::doMisc_2(short type) {
 
 void Control::doMisc_3(short type) {
 	if(type == DO_LAND) {
-		std_msgs::Empty m;
-		subscriber->manner_3 = false;
-		pub_3[LAND].publish(m);
-
-		if ( takeoffNland_counter > 5)	{
+		bool position_setting = true;
+		if ( takeoffNland_counter < 20 ) {
+			if ( position_setting) {
+				x_des[2] = x[2];
+				y_des[2] = y[2];
+				z_des[2] = 0.1;
+				position_setting = false;
+			}
+		}
+		else if ( takeoffNland_counter < 25 ) {
+			std_msgs::Empty m;
+			subscriber->manner_3 = false;
+			pub_3[LAND].publish(m);
+		}
+		else {
 			TakeoffNLandFlag = false;
 			LandFlag_3 = false;
 		}
@@ -1055,11 +1162,21 @@ void Control::doMisc_3(short type) {
 
 void Control::doMisc_4(short type) {
 	if(type == DO_LAND) {
-		std_msgs::Empty m;
-		subscriber->manner_4 = false;
-		pub_4[LAND].publish(m);
-
-		if ( takeoffNland_counter > 5)	{
+		bool position_setting = true;
+		if ( takeoffNland_counter < 20 ) {
+			if ( position_setting) {
+				x_des[3] = x[3];
+				y_des[3] = y[3];
+				z_des[3] = 0.1;
+				position_setting = false;
+			}
+		}
+		else if ( takeoffNland_counter < 25 ) {
+			std_msgs::Empty m;
+			subscriber->manner_4 = false;
+			pub_4[LAND].publish(m);
+		}
+		else {
 			TakeoffNLandFlag = false;
 			LandFlag_4 = false;
 		}
@@ -1081,11 +1198,21 @@ void Control::doMisc_4(short type) {
 
 void Control::doMisc_5(short type) {
 	if(type == DO_LAND) {
-		std_msgs::Empty m;
-		subscriber->manner_5 = false;
-		pub_5[LAND].publish(m);
-
-		if ( takeoffNland_counter > 5)	{
+		bool position_setting = true;
+		if ( takeoffNland_counter < 20 ) {
+			if ( position_setting) {
+				x_des[4] = x[4];
+				y_des[4] = y[4];
+				z_des[4] = 0.1;
+				position_setting = false;
+			}
+		}
+		else if ( takeoffNland_counter < 25 ) {
+			std_msgs::Empty m;
+			subscriber->manner_5 = false;
+			pub_5[LAND].publish(m);
+		}
+		else {
 			TakeoffNLandFlag = false;
 			LandFlag_5 = false;
 		}
@@ -1107,11 +1234,21 @@ void Control::doMisc_5(short type) {
 
 void Control::doMisc_6(short type) {
 	if(type == DO_LAND) {
-		std_msgs::Empty m;
-		subscriber->manner_6 = false;
-		pub_6[LAND].publish(m);
-
-		if ( takeoffNland_counter > 5)	{
+		bool position_setting = true;
+		if ( takeoffNland_counter < 20 ) {
+			if ( position_setting) {
+				x_des[5] = x[5];
+				y_des[5] = y[5];
+				z_des[5] = 0.1;
+				position_setting = false;
+			}
+		}
+		else if ( takeoffNland_counter < 25 ) {
+			std_msgs::Empty m;
+			subscriber->manner_6 = false;
+			pub_6[LAND].publish(m);
+		}
+		else {
 			TakeoffNLandFlag = false;
 			LandFlag_6 = false;
 		}
@@ -1133,11 +1270,21 @@ void Control::doMisc_6(short type) {
 
 void Control::doMisc_7(short type) {
 	if(type == DO_LAND) {
-		std_msgs::Empty m;
-		subscriber->manner_7 = false;
-		pub_7[LAND].publish(m);
-
-		if ( takeoffNland_counter > 5)	{
+		bool position_setting = true;
+		if ( takeoffNland_counter < 20 ) {
+			if ( position_setting) {
+				x_des[6] = x[6];
+				y_des[6] = y[6];
+				z_des[6] = 0.1;
+				position_setting = false;
+			}
+		}
+		else if ( takeoffNland_counter < 25 ) {
+			std_msgs::Empty m;
+			subscriber->manner_7 = false;
+			pub_7[LAND].publish(m);
+		}
+		else {
 			TakeoffNLandFlag = false;
 			LandFlag_7 = false;
 		}
@@ -1200,281 +1347,1527 @@ void Control::doFlip_7(short type) {
 }
 
 void Control::LeftNRight_1() {
-	if ( motion_counter == 0)	{
-		motion.angular.z = 0;
-		pub_1[VELOCITY].publish(motion);
+	y_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			if (direction) {
+				last_1.linear.y = 1;
+			}
+			else {
+				last_1.linear.y = -1;
+			}
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 6)	{
+			if (direction) {
+				last_1.linear.y = -1;
+			}
+			else {
+				last_1.linear.y = 1;
+			}
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else	{
+			last_1.linear.y = 0;
+			pub_1[VELOCITY].publish(last_1);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_1 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.angular.z = 0.1;
-		pub_1[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.angular.z = -0.1;
-		pub_1[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.angular.z = 0;
-		pub_1[VELOCITY].publish(motion);
-		SideFlag_1 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_1.linear.y = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_1.linear.y = -0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_1.linear.y = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_1.linear.y = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_1.linear.y = -0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_1.linear.y = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_1.linear.y = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_1.linear.y = -0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_1.linear.y = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_1.linear.y = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_1.linear.y = -0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_1.linear.y = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_1.linear.y = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_1.linear.y = -0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_1.linear.y = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_1.linear.y = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_1.linear.y = -0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_1.linear.y = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else	{
+			last_1.linear.y = 0;
+			pub_1[VELOCITY].publish(last_1);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_1 = false;
+		}
 	}
 }
 
 void Control::LeftNRight_2() {
-	if ( motion_counter == 0)	{
-		motion.angular.z = 0;
-		pub_2[VELOCITY].publish(motion);
+	y_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			if (direction) {
+				last_2.linear.y = 1;
+			}
+			else {
+				last_2.linear.y = -1;
+			}
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 6)	{
+			if (direction) {
+				last_2.linear.y = -1;
+			}
+			else {
+				last_2.linear.y = 1;
+			}
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else	{
+			last_2.linear.y = 0;
+			pub_2[VELOCITY].publish(last_2);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_2 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.angular.z = 0.1;
-		pub_2[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.angular.z = -0.1;
-		pub_2[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.angular.z = 0;
-		pub_2[VELOCITY].publish(motion);
-		SideFlag_2 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_2.linear.y = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_2.linear.y = -0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_2.linear.y = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_2.linear.y = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_2.linear.y = -0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_2.linear.y = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_2.linear.y = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_2.linear.y = -0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_2.linear.y = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_2.linear.y = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_2.linear.y = -0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_2.linear.y = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_2.linear.y = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_2.linear.y = -0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_2.linear.y = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_2.linear.y = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_2.linear.y = -0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_2.linear.y = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else	{
+			last_2.linear.y = 0;
+			pub_2[VELOCITY].publish(last_2);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_2 = false;
+		}
 	}
 }
 
 void Control::LeftNRight_3() {
-	if ( motion_counter == 0)	{
-		motion.angular.z = 0;
-		pub_3[VELOCITY].publish(motion);
+	y_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			if (direction) {
+				last_3.linear.y = 1;
+			}
+			else {
+				last_3.linear.y = -1;
+			}
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 6)	{
+			if (direction) {
+				last_3.linear.y = -1;
+			}
+			else {
+				last_3.linear.y = 1;
+			}
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else	{
+			last_3.linear.y = 0;
+			pub_3[VELOCITY].publish(last_3);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_3 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.angular.z = 0.1;
-		pub_3[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.angular.z = -0.1;
-		pub_3[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.angular.z = 0;
-		pub_3[VELOCITY].publish(motion);
-		SideFlag_3 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_3.linear.y = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_3.linear.y = -0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_3.linear.y = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_3.linear.y = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_3.linear.y = -0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_3.linear.y = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_3.linear.y = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_3.linear.y = -0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_3.linear.y = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_3.linear.y = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_3.linear.y = -0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_3.linear.y = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_3.linear.y = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_3.linear.y = -0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_3.linear.y = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_3.linear.y = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_3.linear.y = -0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_3.linear.y = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else	{
+			last_3.linear.y = 0;
+			pub_3[VELOCITY].publish(last_3);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_3 = false;
+		}
 	}
 }
 
 void Control::LeftNRight_4() {
-	if ( motion_counter == 0)	{
-		motion.angular.z = 0;
-		pub_4[VELOCITY].publish(motion);
+	y_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			if (direction) {
+				last_4.linear.y = 1;
+			}
+			else {
+				last_4.linear.y = -1;
+			}
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 6)	{
+			if (direction) {
+				last_4.linear.y = -1;
+			}
+			else {
+				last_4.linear.y = 1;
+			}
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else	{
+			last_4.linear.y = 0;
+			pub_4[VELOCITY].publish(last_4);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_4 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.angular.z = 0.1;
-		pub_4[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.angular.z = -0.1;
-		pub_4[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.angular.z = 0;
-		pub_4[VELOCITY].publish(motion);
-		SideFlag_4 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_4.linear.y = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_4.linear.y = -0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_4.linear.y = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_4.linear.y = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_4.linear.y = -0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_4.linear.y = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_4.linear.y = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_4.linear.y = -0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_4.linear.y = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_4.linear.y = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_4.linear.y = -0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_4.linear.y = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_4.linear.y = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_4.linear.y = -0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_4.linear.y = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_4.linear.y = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_4.linear.y = -0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_4.linear.y = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else	{
+			last_4.linear.y = 0;
+			pub_4[VELOCITY].publish(last_4);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_4 = false;
+		}
 	}
 }
 
 void Control::LeftNRight_5() {
-	if ( motion_counter == 0)	{
-		motion.angular.z = 0;
-		pub_5[VELOCITY].publish(motion);
+	y_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			if (direction) {
+				last_5.linear.y = 1;
+			}
+			else {
+				last_5.linear.y = -1;
+			}
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 6)	{
+			if (direction) {
+				last_5.linear.y = -1;
+			}
+			else {
+				last_5.linear.y = 1;
+			}
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else	{
+			last_5.linear.y = 0;
+			pub_5[VELOCITY].publish(last_5);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_5 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.angular.z = 0.1;
-		pub_5[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.angular.z = -0.1;
-		pub_5[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.angular.z = 0;
-		pub_5[VELOCITY].publish(motion);
-		SideFlag_5 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_5.linear.y = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_5.linear.y = -0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_5.linear.y = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_5.linear.y = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_5.linear.y = -0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_5.linear.y = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_5.linear.y = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_5.linear.y = -0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_5.linear.y = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_5.linear.y = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_5.linear.y = -0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_5.linear.y = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_5.linear.y = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_5.linear.y = -0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_5.linear.y = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_5.linear.y = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_5.linear.y = -0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_5.linear.y = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else	{
+			last_5.linear.y = 0;
+			pub_5[VELOCITY].publish(last_5);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_5 = false;
+		}
 	}
 }
 
 void Control::LeftNRight_6() {
-	if ( motion_counter == 0)	{
-		motion.angular.z = 0;
-		pub_6[VELOCITY].publish(motion);
+	y_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			if (direction) {
+				last_6.linear.y = 1;
+			}
+			else {
+				last_6.linear.y = -1;
+			}
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 6)	{
+			if (direction) {
+				last_6.linear.y = -1;
+			}
+			else {
+				last_6.linear.y = 1;
+			}
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else	{
+			last_6.linear.y = 0;
+			pub_6[VELOCITY].publish(last_6);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_6 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.angular.z = 0.1;
-		pub_6[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.angular.z = -0.1;
-		pub_6[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.angular.z = 0;
-		pub_6[VELOCITY].publish(motion);
-		SideFlag_6 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_6.linear.y = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_6.linear.y = -0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_6.linear.y = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_6.linear.y = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_6.linear.y = -0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_6.linear.y = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_6.linear.y = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_6.linear.y = -0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_6.linear.y = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_6.linear.y = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_6.linear.y = -0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_6.linear.y = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_6.linear.y = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_6.linear.y = -0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_6.linear.y = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_6.linear.y = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_6.linear.y = -0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_6.linear.y = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else	{
+			last_6.linear.y = 0;
+			pub_6[VELOCITY].publish(last_6);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_6 = false;
+		}
 	}
 }
 
 void Control::LeftNRight_7() {
-	if ( motion_counter == 0)	{
-		motion.angular.z = 0;
-		pub_7[VELOCITY].publish(motion);
+	y_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			if (direction) {
+				last_7.linear.y = 1;
+			}
+			else {
+				last_7.linear.y = -1;
+			}
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 6)	{
+			if (direction) {
+				last_7.linear.y = -1;
+			}
+			else {
+				last_7.linear.y = 1;
+			}
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else	{
+			last_7.linear.y = 0;
+			pub_7[VELOCITY].publish(last_7);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_7 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.angular.z = 0.1;
-		pub_7[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.angular.z = -0.1;
-		pub_7[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.angular.z = 0;
-		pub_7[VELOCITY].publish(motion);
-		SideFlag_7 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_7.linear.y = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_7.linear.y = -0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_7.linear.y = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_7.linear.y = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_7.linear.y = -0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_7.linear.y = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_7.linear.y = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_7.linear.y = -0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_7.linear.y = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_7.linear.y = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_7.linear.y = -0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_7.linear.y = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_7.linear.y = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_7.linear.y = -0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_7.linear.y = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_7.linear.y = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_7.linear.y = -0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_7.linear.y = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else	{
+			last_7.linear.y = 0;
+			pub_7[VELOCITY].publish(last_7);
+			y_break	= false;
+			repeat = 0;
+			MotionFlag = false;
+			SideFlag_7 = false;
+		}
 	}
 }
 
 void Control::UpDown_1() {
-	if ( motion_counter == 0)	{
-		motion.linear.x = 0;
-		pub_1[VELOCITY].publish(motion);
+	x_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			last_1.linear.x = 1;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 6)	{
+			last_1.linear.x = -1;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else	{
+			x_break	= false;
+			last_1.linear.x = 0;
+			repeat = 0;
+			pub_1[VELOCITY].publish(last_1);
+			MotionFlag = false;
+			UpDownFlag_1 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.linear.x = 0.1;
-		pub_1[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.linear.x = -0.1;
-		pub_1[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.linear.x = 0;
-		pub_1[VELOCITY].publish(motion);
-		UpDownFlag_1 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_1.linear.x = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_1.linear.x = -0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_1.linear.x = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_1.linear.x = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_1.linear.x = -0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_1.linear.x = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_1.linear.x = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_1.linear.x = -0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_1.linear.x = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_1.linear.x = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_1.linear.x = -0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_1.linear.x = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_1.linear.x = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_1.linear.x = -0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_1.linear.x = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_1.linear.x = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_1.linear.x = -0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_1.linear.x = 0.5;
+			pub_1[VELOCITY].publish(last_1);
+		}
+		else	{
+			x_break	= false;
+			last_1.linear.x = 0;
+			repeat = 0;
+			pub_1[VELOCITY].publish(last_1);
+			MotionFlag = false;
+			UpDownFlag_1 = false;
+		}
 	}
 }
 
 void Control::UpDown_2() {
-	if ( motion_counter == 0)	{
-		motion.linear.x = 0;
-		pub_2[VELOCITY].publish(motion);
+	x_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			last_2.linear.x = 1;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 6)	{
+			last_2.linear.x = -1;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else	{
+			x_break	= false;
+			last_2.linear.x = 0;
+			repeat = 0;
+			pub_2[VELOCITY].publish(last_2);
+			MotionFlag = false;
+			UpDownFlag_2 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.linear.x = 0.1;
-		pub_2[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.linear.x = -0.1;
-		pub_2[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.linear.x = 0;
-		pub_2[VELOCITY].publish(motion);
-		UpDownFlag_2 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_2.linear.x = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_2.linear.x = -0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_2.linear.x = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_2.linear.x = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_2.linear.x = -0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_2.linear.x = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_2.linear.x = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_2.linear.x = -0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_2.linear.x = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_2.linear.x = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_2.linear.x = -0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_2.linear.x = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_2.linear.x = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_2.linear.x = -0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_2.linear.x = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_2.linear.x = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_2.linear.x = -0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_2.linear.x = 0.5;
+			pub_2[VELOCITY].publish(last_2);
+		}
+		else	{
+			x_break	= false;
+			last_2.linear.x = 0;
+			repeat = 0;
+			pub_2[VELOCITY].publish(last_2);
+			MotionFlag = false;
+			UpDownFlag_2 = false;
+		}
 	}
 }
 
 void Control::UpDown_3() {
-	if ( motion_counter == 0)	{
-		motion.linear.x = 0;
-		pub_3[VELOCITY].publish(motion);
+	x_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			last_3.linear.x = 1;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 6)	{
+			last_3.linear.x = -1;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else	{
+			x_break	= false;
+			last_3.linear.x = 0;
+			repeat = 0;
+			pub_3[VELOCITY].publish(last_3);
+			MotionFlag = false;
+			UpDownFlag_3 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.linear.x = 0.1;
-		pub_3[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.linear.x = -0.1;
-		pub_3[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.linear.x = 0;
-		pub_3[VELOCITY].publish(motion);
-		UpDownFlag_3 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_3.linear.x = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_3.linear.x = -0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_3.linear.x = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_3.linear.x = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_3.linear.x = -0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_3.linear.x = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_3.linear.x = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_3.linear.x = -0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_3.linear.x = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_3.linear.x = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_3.linear.x = -0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_3.linear.x = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_3.linear.x = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_3.linear.x = -0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_3.linear.x = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_3.linear.x = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_3.linear.x = -0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_3.linear.x = 0.5;
+			pub_3[VELOCITY].publish(last_3);
+		}
+		else	{
+			x_break	= false;
+			last_3.linear.x = 0;
+			repeat = 0;
+			pub_3[VELOCITY].publish(last_3);
+			MotionFlag = false;
+			UpDownFlag_3 = false;
+		}
 	}
 }
 
 void Control::UpDown_4() {
-	if ( motion_counter == 0)	{
-		motion.linear.x = 0;
-		pub_4[VELOCITY].publish(motion);
+	x_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			last_4.linear.x = 1;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 6)	{
+			last_4.linear.x = -1;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else	{
+			x_break	= false;
+			last_4.linear.x = 0;
+			repeat = 0;
+			pub_4[VELOCITY].publish(last_4);
+			MotionFlag = false;
+			UpDownFlag_4 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.linear.x = 0.1;
-		pub_4[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.linear.x = -0.1;
-		pub_4[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.linear.x = 0;
-		pub_4[VELOCITY].publish(motion);
-		UpDownFlag_4 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_4.linear.x = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_4.linear.x = -0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_4.linear.x = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_4.linear.x = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_4.linear.x = -0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_4.linear.x = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_4.linear.x = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_4.linear.x = -0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_4.linear.x = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_4.linear.x = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_4.linear.x = -0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_4.linear.x = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_4.linear.x = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_4.linear.x = -0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_4.linear.x = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_4.linear.x = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_4.linear.x = -0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_4.linear.x = 0.5;
+			pub_4[VELOCITY].publish(last_4);
+		}
+		else	{
+			x_break	= false;
+			last_4.linear.x = 0;
+			repeat = 0;
+			pub_4[VELOCITY].publish(last_4);
+			MotionFlag = false;
+			UpDownFlag_4 = false;
+		}
 	}
 }
 
 void Control::UpDown_5() {
-	if ( motion_counter == 0)	{
-		motion.linear.x = 0;
-		pub_5[VELOCITY].publish(motion);
+	x_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			last_5.linear.x = 1;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 6)	{
+			last_5.linear.x = -1;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else	{
+			x_break	= false;
+			last_5.linear.x = 0;
+			repeat = 0;
+			pub_5[VELOCITY].publish(last_5);
+			MotionFlag = false;
+			UpDownFlag_5 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.linear.x = 0.1;
-		pub_5[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.linear.x = -0.1;
-		pub_5[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.linear.x = 0;
-		pub_5[VELOCITY].publish(motion);
-		UpDownFlag_5 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_5.linear.x = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_5.linear.x = -0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_5.linear.x = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_5.linear.x = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_5.linear.x = -0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_5.linear.x = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_5.linear.x = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_5.linear.x = -0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_5.linear.x = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_5.linear.x = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_5.linear.x = -0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_5.linear.x = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_5.linear.x = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_5.linear.x = -0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_5.linear.x = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_5.linear.x = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_5.linear.x = -0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_5.linear.x = 0.5;
+			pub_5[VELOCITY].publish(last_5);
+		}
+		else	{
+			x_break	= false;
+			last_5.linear.x = 0;
+			repeat = 0;
+			pub_5[VELOCITY].publish(last_5);
+			MotionFlag = false;
+			UpDownFlag_5 = false;
+		}
 	}
 }
 
 void Control::UpDown_6() {
-	if ( motion_counter == 0)	{
-		motion.linear.x = 0;
-		pub_6[VELOCITY].publish(motion);
+	x_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			last_6.linear.x = 1;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 6)	{
+			last_6.linear.x = -1;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else	{
+			x_break	= false;
+			last_6.linear.x = 0;
+			repeat = 0;
+			pub_6[VELOCITY].publish(last_6);
+			MotionFlag = false;
+			UpDownFlag_6 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.linear.x = 0.1;
-		pub_6[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.linear.x = -0.1;
-		pub_6[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.linear.x = 0;
-		pub_6[VELOCITY].publish(motion);
-		UpDownFlag_6 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_6.linear.x = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_6.linear.x = -0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_6.linear.x = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_6.linear.x = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_6.linear.x = -0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_6.linear.x = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_6.linear.x = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_6.linear.x = -0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_6.linear.x = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_6.linear.x = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_6.linear.x = -0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_6.linear.x = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_6.linear.x = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_6.linear.x = -0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_6.linear.x = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_6.linear.x = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_6.linear.x = -0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_6.linear.x = 0.5;
+			pub_6[VELOCITY].publish(last_6);
+		}
+		else	{
+			x_break	= false;
+			last_6.linear.x = 0;
+			repeat = 0;
+			pub_6[VELOCITY].publish(last_6);
+			MotionFlag = false;
+			UpDownFlag_6 = false;
+		}
 	}
 }
 
 void Control::UpDown_7() {
-	if ( motion_counter == 0)	{
-		motion.linear.x = 0;
-		pub_7[VELOCITY].publish(motion);
+	x_break	= true;
+	if (repeat == 0) {
+		if ( motion_counter < 3)	{
+			last_7.linear.x = 1;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 6)	{
+			last_7.linear.x = -1;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else	{
+			x_break	= false;
+			last_7.linear.x = 0;
+			repeat = 0;
+			pub_7[VELOCITY].publish(last_7);
+			MotionFlag = false;
+			UpDownFlag_7 = false;
+		}
 	}
-	else if ( motion_counter == 1)	{
-		motion.linear.x = 0.1;
-		pub_7[VELOCITY].publish(motion);
-	}
-	else if ( motion_counter == 2)	{
-		motion.linear.x = -0.1;
-		pub_7[VELOCITY].publish(motion);
-	}
-	else	{
-		motion.linear.x = 0;
-		pub_7[VELOCITY].publish(motion);
-		UpDownFlag_7 = false;
+	else {
+		if ( motion_counter < 4 && repeat >= 1)	{
+			last_7.linear.x = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 12 && repeat >= 1)	{
+			last_7.linear.x = -0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 16 && repeat >= 1)	{
+			last_7.linear.x = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 20 && repeat >= 2)	{
+			last_7.linear.x = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 28 && repeat >= 2)	{
+			last_7.linear.x = -0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 32 && repeat >= 2)	{
+			last_7.linear.x = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 36 && repeat >= 3)	{
+			last_7.linear.x = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 44 && repeat >= 3)	{
+			last_7.linear.x = -0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 48 && repeat >= 3)	{
+			last_7.linear.x = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 52 && repeat >= 4)	{
+			last_7.linear.x = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 60 && repeat >= 4)	{
+			last_7.linear.x = -0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 64 && repeat >= 4)	{
+			last_7.linear.x = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 68 && repeat >= 5)	{
+			last_7.linear.x = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 76 && repeat >= 5)	{
+			last_7.linear.x = -0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 80 && repeat >= 5)	{
+			last_7.linear.x = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 84 && repeat >= 6)	{
+			last_7.linear.x = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 92 && repeat >= 6)	{
+			last_7.linear.x = -0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else if ( motion_counter < 96 && repeat >= 6)	{
+			last_7.linear.x = 0.5;
+			pub_7[VELOCITY].publish(last_7);
+		}
+		else	{
+			x_break	= false;
+			last_7.linear.x = 0;
+			repeat = 0;
+			pub_7[VELOCITY].publish(last_7);
+			MotionFlag = false;
+			UpDownFlag_7 = false;
+		}
 	}
 }

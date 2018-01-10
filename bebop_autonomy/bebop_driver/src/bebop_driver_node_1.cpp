@@ -32,6 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 int main(int argc, char* argv[])
 {
   ros::init(argc, argv, "bebop_driver_node_1", ros::init_options::NoSigintHandler);
+  //ros::NodeHandle nh;
+  //ros::Publisher pub = nh.advertise<std_msgs::Empty>("bebop_1/turnon", 1);
   nodelet::Loader nll;
 
   nodelet::M_string remap(ros::names::getRemappings());
@@ -52,6 +54,14 @@ int main(int argc, char* argv[])
 
   // It reaches here when OnInit() succeeds
   ROS_INFO("bebop_driver nodelet loaded.");
+  /*
+  ros::Rate loop_rate(100);
+  while( ros::ok() ) {
+    ros::spinOnce();
+    pub.publish(m);
+    loop_rate.sleep();
+  }
+  */
   ros::spin();
   return 0;
 }

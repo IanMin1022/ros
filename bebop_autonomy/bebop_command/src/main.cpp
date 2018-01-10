@@ -13,7 +13,7 @@
 #include "std_msgs/String.h"
 #include <sstream>
 
-int performance_time = 500;
+int performance_time = 1;
 
 void timeset(const std_msgs::String::ConstPtr& msg) {
   const char*  run_time = msg->data.c_str();
@@ -25,7 +25,7 @@ void timeset(const std_msgs::String::ConstPtr& msg) {
 }
 
 int main(int argc, char** argv) {
-	int time = 0;
+	int time = -30;
 	ros::init(argc, argv, "node_master");
 	ros::NodeHandle nh;
   //ros::NodeHandle local_nh("~");
@@ -34,7 +34,6 @@ int main(int argc, char** argv) {
 
   // you should check the frequency and how it works depend on the frequency
   // need to add current coordinates subscriber (a.k.a camera node)
-
 	ros::Publisher chatter_pub = nh.advertise<std_msgs::String>("on_air", 10);
 
 	stats = new StateCheck();
@@ -55,15 +54,14 @@ int main(int argc, char** argv) {
 	while( ros::ok() ) {
 		ros::spinOnce();
 		if ( time < performance_time) {
-			time++;                        // when you use time for timer consider the """30""" and devide it with 1000
+			time++;
 			std_msgs::String msg;
 			std::stringstream ss;
 			ss << time;
 			msg.data = ss.str();
 			chatter_pub.publish(msg);
-			//ROS_INFO("%d", time);			
+			//ROS_INFO("%d", time);
 		}
-		else break;
 
     //ROS_INFO("x = %f", control->x[0]);
     //ROS_INFO("y = %f", control->y[0]);
