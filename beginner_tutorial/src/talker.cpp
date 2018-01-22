@@ -53,6 +53,7 @@ int main(int argc, char **argv)
    * a unique string for each message.
    */
   double count = 0;
+  int keke = 0;
   while (ros::ok())
   {
     /**
@@ -61,10 +62,12 @@ int main(int argc, char **argv)
     std_msgs::String msg;
 
     std::stringstream ss;
-    ss << "aaa" << " "<< count + 1;
+    ss << count + 1;
     msg.data = ss.str();
 
-    ROS_INFO("%s", msg.data.c_str());
+    //ROS_INFO("%s", msg.data.c_str());
+    keke = keke+1;
+    ROS_INFO("%d", keke);
 
     /**
      * The publish() function is how you send messages. The parameter
@@ -78,6 +81,7 @@ int main(int argc, char **argv)
 
     loop_rate.sleep();
     count = count + 0.5;
+
   }
 
 

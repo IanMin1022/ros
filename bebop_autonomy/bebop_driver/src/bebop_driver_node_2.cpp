@@ -25,6 +25,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <std_msgs/Bool.h>
 
 #include <ros/ros.h>
 #include <nodelet/loader.h>
@@ -32,6 +33,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 int main(int argc, char* argv[])
 {
   ros::init(argc, argv, "bebop_driver_node_2", ros::init_options::NoSigintHandler);
+  ros::NodeHandle nh;
+  ros::Publisher pub = nh.advertise<std_msgs::Bool>("wificonnection", 1);
   nodelet::Loader nll;
 
   nodelet::M_string remap(ros::names::getRemappings());
@@ -51,6 +54,22 @@ int main(int argc, char* argv[])
 
   // It reaches here when OnInit() succeeds
   ROS_INFO("bebop_driver nodelet loaded.");
+
+  int one_more = 0;
+  ros::Rate loop_rate(1);
+  while( ros::ok() ) {
+    ros::spinOnce();
+    std_msgs::Bool m;
+    m.data =  true;
+    pub.publish(m);
+    loop_rate.sleep();
+    one_more++;
+    if (one_more == 2) {
+      pub.shutdown();
+      break;
+    }
+  }
+
   ros::spin();
   return 0;
 }

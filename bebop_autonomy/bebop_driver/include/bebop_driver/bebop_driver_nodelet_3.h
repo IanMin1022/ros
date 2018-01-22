@@ -125,6 +125,7 @@ private:
   ros::Subscriber exposure_sub_;
   ros::Subscriber toggle_recording_sub_;
 
+  ros::Publisher wifi_condition;
   ros::Publisher odom_pub_;
   ros::Publisher camera_joint_pub_;
   ros::Publisher gps_fix_pub_;
@@ -143,6 +144,8 @@ private:
   std::string param_odom_frame_id_;
   bool param_publish_odom_tf_;
   double param_cmd_vel_timeout_;
+  int temp_number;
+  std_msgs::UInt8 wifi_signal;
 
   // This runs in its own context
   void CameraPublisherThread();

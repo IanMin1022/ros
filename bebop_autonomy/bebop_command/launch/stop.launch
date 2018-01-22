@@ -1,0 +1,3 @@
+<launch>
+  <node name="bebop_script_stop" pkg="bebop_command" type="stop" required="true" output="screen"/>
+</launch>

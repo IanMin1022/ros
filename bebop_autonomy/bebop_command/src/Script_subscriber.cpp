@@ -14,27 +14,30 @@ Script_subscriber::Script_subscriber() {
 Script_subscriber::~Script_subscriber() {
 }
 
+// 동적 제어부에서 전송된 스크립트를 받기 위한 준비하는 함수
 void Script_subscriber::subscribe(ros::NodeHandle& nh)
 {
-  sub[0] = nh.subscribe("Script_1", 100, &Script_subscriber::Script_node_1, this);
-  sub[1] = nh.subscribe("Script_2", 100, &Script_subscriber::Script_node_2, this);
-  sub[2] = nh.subscribe("Script_3", 100, &Script_subscriber::Script_node_3, this);
-  sub[3] = nh.subscribe("Script_4", 100, &Script_subscriber::Script_node_4, this);
-  sub[4] = nh.subscribe("Script_5", 100, &Script_subscriber::Script_node_5, this);
-  sub[5] = nh.subscribe("Script_6", 100, &Script_subscriber::Script_node_6, this);
-  sub[6] = nh.subscribe("Script_7", 100, &Script_subscriber::Script_node_7, this);
+  sub[0] = nh.subscribe("/Script_1", 100, &Script_subscriber::Script_node_1, this);
+  sub[1] = nh.subscribe("/Script_2", 100, &Script_subscriber::Script_node_2, this);
+  sub[2] = nh.subscribe("/Script_3", 100, &Script_subscriber::Script_node_3, this);
+  sub[3] = nh.subscribe("/Script_4", 100, &Script_subscriber::Script_node_4, this);
+  sub[4] = nh.subscribe("/Script_5", 100, &Script_subscriber::Script_node_5, this);
+  sub[5] = nh.subscribe("/Script_6", 100, &Script_subscriber::Script_node_6, this);
+  sub[6] = nh.subscribe("/Script_7", 100, &Script_subscriber::Script_node_7, this);
 }
 
+// 스크립트를 받아서 경우에 맞게 데이터를 처리하기 위한 함수
 void Script_subscriber::Script_node_1(const std_msgs::String::ConstPtr& msg)
 {
+  // 데이터를 char타입으로 변환
   const char* reading = msg->data.c_str();
-
+  // char로 변환된 데이터를 구간 별로 나눔
   std::istringstream devide(reading);
-
+  // 구간 별로 나눠진 데이터를 float으로 변환
   std::string temp;
   devide >> temp;
   double flag = ::atof(temp.c_str());
-
+  // float으로 변환이 안 될경우 원본 데이터를 그대로 구동부에 전송
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
@@ -42,6 +45,7 @@ void Script_subscriber::Script_node_1(const std_msgs::String::ConstPtr& msg)
   }
   else
   {
+    // float으로 변한된 데이터는 x,y,z,yaw로 쪼개서 구동부에 전송
     double x = ::atof(temp.c_str());
 
     devide >> temp;
@@ -56,7 +60,6 @@ void Script_subscriber::Script_node_1(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    // Check whether x_des moved well or not
     subscriber -> manner_1 = true;
   	control -> x_des[0] = x;
     control -> y_des[0] = y;
@@ -96,7 +99,6 @@ void Script_subscriber::Script_node_2(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    // Check whether x_des moved well or not
     subscriber -> manner_2 = true;
   	control -> x_des[1] = x;
     control -> y_des[1] = y;
@@ -136,7 +138,6 @@ void Script_subscriber::Script_node_3(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    // Check whether x_des moved well or not
     subscriber -> manner_3 = true;
   	control -> x_des[2] = x;
     control -> y_des[2] = y;
@@ -176,7 +177,6 @@ void Script_subscriber::Script_node_4(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    // Check whether x_des moved well or not
     subscriber -> manner_4 = true;
   	control -> x_des[3] = x;
     control -> y_des[3] = y;
@@ -216,7 +216,6 @@ void Script_subscriber::Script_node_5(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    // Check whether x_des moved well or not
     subscriber -> manner_5 = true;
   	control -> x_des[4] = x;
     control -> y_des[4] = y;
@@ -256,7 +255,6 @@ void Script_subscriber::Script_node_6(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    // Check whether x_des moved well or not
     subscriber -> manner_6 = true;
   	control -> x_des[5] = x;
     control -> y_des[5] = y;
@@ -296,7 +294,6 @@ void Script_subscriber::Script_node_7(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    // Check whether x_des moved well or not
     subscriber -> manner_7 = true;
   	control -> x_des[6] = x;
     control -> y_des[6] = y;

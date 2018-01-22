@@ -48,6 +48,7 @@ from diagnostic_msgs.msg import DiagnosticStatus, KeyValue, DiagnosticArray
 from sound_play.msg import SoundRequest, SoundRequestAction, SoundRequestResult, SoundRequestFeedback
 import actionlib
 from std_msgs.msg import String
+from std_msgs.msg import Float32
 
 try:
     import gi
@@ -167,12 +168,10 @@ class soundtype:
         try:
             position = self.sound.query_position(Gst.Format.TIME)[1]
             duration = self.sound.query_duration(Gst.Format.TIME)[1]
-            #print (position / 1001500000)
             if self.flag == True:
-                play_time = duration / 1001500000.0
-                pub = rospy.Publisher('play_time', String, queue_size=10)
-                time_count = "%.2f" % play_time
-                pub.publish(time_count)
+                play_time = round(duration / 1001500000.0, 2)
+                pub = rospy.Publisher('duration_time', Float32, queue_size=10)
+                pub.publish(play_time)
                 self.counter = self.counter + 1
                 if self.counter > 1:
                     self.flag = False

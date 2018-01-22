@@ -1,0 +1,4 @@
+<launch>
+	<node name="gui" pkg="gui" type="gui" required="true" output="screen">
+	</node>
+</launch>

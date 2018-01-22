@@ -1,0 +1,8 @@
+<launch>
+  <arg name="title" default="$(find bebop_command)/sounds/Amnesia.mp3" />
+  <node name="soundplay_node" pkg="sound_play" type="soundplay_node.py"/>
+  <node name="Music_Selector_play" pkg="sound_play" type="Music_Selector.py" output="screen">
+    <param name="song_title" value="$(arg title)" />
+  </node>
+  <node name="bebop_script_shooter" pkg="bebop_command" type="script_2" required="true" output="screen"/>
+</launch>

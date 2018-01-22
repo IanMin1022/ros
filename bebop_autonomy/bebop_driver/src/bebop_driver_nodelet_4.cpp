@@ -26,7 +26,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include <pluginlib/class_list_macros.h>
 #include <nodelet/nodelet.h>
 #include <nav_msgs/Odometry.h>
-#include <sensor_msgs/JointState.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -148,8 +147,8 @@ void BebopDriverNodelet_4::onInit()
   //exposure_sub_ = nh.subscribe("set_exposure", 10, &BebopDriverNodelet_4::SetExposureCallback, this);
   //toggle_recording_sub_ = nh.subscribe("record", 10, &BebopDriverNodelet_4::ToggleRecordingCallback, this);
 
+  wifi_condition = nh.advertise<std_msgs::UInt8>("wifi_condition", 30);
   odom_pub_ = nh.advertise<nav_msgs::Odometry>("odom", 30);
-  camera_joint_pub_ = nh.advertise<sensor_msgs::JointState>("joint_states", 10, true);
   gps_fix_pub_ = nh.advertise<sensor_msgs::NavSatFix>("fix", 10, true);
 
   cinfo_manager_ptr_.reset(new camera_info_manager::CameraInfoManager(nh, "bebop_front", param_camera_info_url));
@@ -642,6 +641,11 @@ void BebopDriverNodelet_4::AuxThread()
         odom_msg_ptr->pose.pose.position.z = odom_to_base_trans_v3.z();
         tf2::convert(odom_to_base_rot_q, odom_msg_ptr->pose.pose.orientation);
         odom_pub_.publish(odom_msg_ptr);
+
+        temp_number++;
+        if ( temp_number > 255 ) temp_number = 0;
+        wifi_signal.data = temp_number;
+        wifi_condition.publish(wifi_signal);
 
         if (param_publish_odom_tf_)
         {
