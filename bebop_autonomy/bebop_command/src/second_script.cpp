@@ -47,7 +47,7 @@ void write_scrip_here(void) {
 
     /* Take Off */
       script->timer(5.0);
-      script->script_1("SIDE_8");
+      script->script_1("UPDOWN_GREET");
       script->script_2("SIDE_8");
       script->script_3("SIDE_8");
       script->script_4("SIDE_8");
@@ -119,7 +119,7 @@ int main(int argc, char **argv)
       script->script_5("LAND");
       script->script_6("LAND");
       script->script_7("LAND");
-      if (ros::ok()) ros::Duration(1).sleep();
+      if (ros::ok()) ros::Duration(2).sleep();
     }
 
     loop_rate.sleep();

@@ -957,7 +957,7 @@ int main(int argc, char **argv)
       script->script_5("LAND");
       script->script_6("LAND");
       script->script_7("LAND");
-      if (ros::ok()) ros::Duration(1).sleep();
+      if (ros::ok()) ros::Duration(2).sleep();
     }
 
     loop_rate.sleep();

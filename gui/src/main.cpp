@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 	ros::NodeHandle nh;
 	ros::NodeHandle local_nh("~");
 
-	local_nh.param( "font_path", Window::font_path, std::string("/home/nsm/catkin_ws/src/gui/D2Coding.ttf") );
+	local_nh.param( "font_path", Window::font_path, std::string("/home/ian/git/ros/src/gui/D2Coding.ttf") );
 
   bool fail = false;
 	input = new Input();

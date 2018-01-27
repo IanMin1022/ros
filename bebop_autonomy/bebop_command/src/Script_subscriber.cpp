@@ -41,7 +41,7 @@ void Script_subscriber::Script_node_1(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    control-> key_1(do_it);
+    control-> key(0, do_it, control->pub_1[FLIP]);
   }
   else
   {
@@ -60,7 +60,6 @@ void Script_subscriber::Script_node_1(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    subscriber -> manner_1 = true;
   	control -> x_des[0] = x;
     control -> y_des[0] = y;
     control -> z_des[0] = z;
@@ -81,7 +80,7 @@ void Script_subscriber::Script_node_2(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    control-> key_2(do_it);
+    control-> key(1, do_it, control->pub_2[FLIP]);
   }
   else
   {
@@ -99,7 +98,6 @@ void Script_subscriber::Script_node_2(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    subscriber -> manner_2 = true;
   	control -> x_des[1] = x;
     control -> y_des[1] = y;
     control -> z_des[1] = z;
@@ -120,7 +118,7 @@ void Script_subscriber::Script_node_3(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    control-> key_3(do_it);
+    control-> key(2, do_it, control->pub_3[FLIP]);
   }
   else
   {
@@ -138,7 +136,6 @@ void Script_subscriber::Script_node_3(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    subscriber -> manner_3 = true;
   	control -> x_des[2] = x;
     control -> y_des[2] = y;
     control -> z_des[2] = z;
@@ -159,7 +156,7 @@ void Script_subscriber::Script_node_4(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    control-> key_4(do_it);
+    control-> key(3, do_it, control->pub_4[FLIP]);
   }
   else
   {
@@ -177,7 +174,6 @@ void Script_subscriber::Script_node_4(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    subscriber -> manner_4 = true;
   	control -> x_des[3] = x;
     control -> y_des[3] = y;
     control -> z_des[3] = z;
@@ -198,7 +194,7 @@ void Script_subscriber::Script_node_5(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    control-> key_5(do_it);
+    control-> key(4, do_it, control->pub_5[FLIP]);
   }
   else
   {
@@ -216,7 +212,6 @@ void Script_subscriber::Script_node_5(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    subscriber -> manner_5 = true;
   	control -> x_des[4] = x;
     control -> y_des[4] = y;
     control -> z_des[4] = z;
@@ -237,7 +232,7 @@ void Script_subscriber::Script_node_6(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    control-> key_6(do_it);
+    control-> key(5, do_it, control->pub_6[FLIP]);
   }
   else
   {
@@ -255,7 +250,6 @@ void Script_subscriber::Script_node_6(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    subscriber -> manner_6 = true;
   	control -> x_des[5] = x;
     control -> y_des[5] = y;
     control -> z_des[5] = z;
@@ -276,7 +270,7 @@ void Script_subscriber::Script_node_7(const std_msgs::String::ConstPtr& msg)
   if(flag == 0 && reading[0] != '0')
   {
     const char* do_it = msg->data.c_str();
-    control-> key_7(do_it);
+    control-> key(6, do_it, control->pub_7[FLIP]);
   }
   else
   {
@@ -294,7 +288,6 @@ void Script_subscriber::Script_node_7(const std_msgs::String::ConstPtr& msg)
     if ( yaw >= 0) yaw = yaw_temp;
   	else  yaw = yaw_temp + 360;
 
-    subscriber -> manner_7 = true;
   	control -> x_des[6] = x;
     control -> y_des[6] = y;
     control -> z_des[6] = z;

@@ -17,6 +17,7 @@ public:
   void Reading_camera_5(const geometry_msgs::PoseStamped&);
   void Reading_camera_6(const geometry_msgs::PoseStamped&);
   void Reading_camera_7(const geometry_msgs::PoseStamped&);
+  int takeoff_ready[7];
 
 private:
   ros::Subscriber sub[7];
